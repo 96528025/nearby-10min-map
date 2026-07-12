@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+map/cache/
+map/data/isochrone_raw.json
+.DS_Store
+.claude/settings.local.json

@@ -1,0 +1,68 @@
+[
+  {
+    "name_en": "Apple Park Visitor Center",
+    "name_zh": "Apple Park 访客中心",
+    "lat": 37.3328429,
+    "lon": -122.0053744,
+    "drive_min": 8.6,
+    "drive_km": 3.6,
+    "desc_en": "Public visitor center at 10600 N Tantau Ave, with an Apple Store and a rooftop terrace overlooking Apple Park.",
+    "desc_zh": "位于 10600 N Tantau Ave 的公众访客中心，设有 Apple Store 和可眺望 Apple Park 的屋顶露台。",
+    "osm": "way/518295584"
+  },
+  {
+    "name_en": "Apple Infinite Loop",
+    "name_zh": "Apple 无限循环园区（前总部）",
+    "lat": 37.3331345,
+    "lon": -122.0287872,
+    "drive_min": 10.0,
+    "drive_km": 4.1,
+    "desc_en": "Apple's former headquarters campus at 1 Infinite Loop, opened in 1993; Apple's HQ until the move to Apple Park in 2017.",
+    "desc_zh": "苹果公司前总部园区（1 Infinite Loop），1993 年启用，2017 年总部迁往 Apple Park 之前一直是苹果总部。",
+    "osm": "way/8955684"
+  },
+  {
+    "name_en": "Cupertino City Hall",
+    "name_zh": "库比蒂诺市政厅",
+    "lat": 37.318949,
+    "lon": -122.0287431,
+    "drive_min": 10.0,
+    "drive_km": 3.9,
+    "desc_en": "Seat of Cupertino's city government, at 10300 Torre Avenue.",
+    "desc_zh": "库比蒂诺市政府所在地，位于 10300 Torre Avenue。",
+    "osm": "way/52420097"
+  },
+  {
+    "name_en": "Main Street Cupertino",
+    "name_zh": "Main Street Cupertino 商业区",
+    "lat": 37.324356,
+    "lon": -122.0101823,
+    "drive_min": 8.8,
+    "drive_km": 3.0,
+    "desc_en": "Mixed-use district with restaurants and shops, just southwest of Apple Park.",
+    "desc_zh": "集餐饮与购物于一体的综合商业区，位于 Apple Park 西南侧。",
+    "osm": "way/390369819"
+  },
+  {
+    "name_en": "Cupertino Village",
+    "name_zh": "Cupertino Village 购物中心",
+    "lat": 37.3358942,
+    "lon": -122.015444,
+    "drive_min": 5.6,
+    "drive_km": 1.1,
+    "desc_en": "Shopping center at Wolfe Road and Homestead Road, known for its Asian restaurants and shops.",
+    "desc_zh": "位于 Wolfe Road 与 Homestead Road 路口的购物中心，以亚洲餐厅和商铺著称。",
+    "osm": "way/154066734"
+  },
+  {
+    "name_en": "Kaiser Permanente Santa Clara Medical Center",
+    "name_zh": "凯撒医疗集团圣克拉拉医学中心",
+    "lat": 37.33665,
+    "lon": -121.9991991,
+    "drive_min": 6.6,
+    "drive_km": 1.7,
+    "desc_en": "Major hospital and medical center at 710 Lawrence Expressway, Santa Clara.",
+    "desc_zh": "大型医院及医学中心，位于圣克拉拉市 710 Lawrence Expressway。",
+    "osm": "way/38198942"
+  }
+]
