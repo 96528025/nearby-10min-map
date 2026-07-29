@@ -444,10 +444,17 @@ whatever tree it was launched from. The field is now
 `git_tracked_files_modified` (tracked modifications only), with a test pinning
 the semantics against git.
 
-Run of record `20260729T082833Z` now closes the chain: `git_commit` equals
-`HEAD`, `script_sha256` equals the hash of the committed script at that
-commit, `git_tracked_files_modified` is `false`, 0 network requests, 161 cache
-hits. Verdicts and aggregates remain byte-identical to every earlier run.
+Run of record `20260729T082833Z` now closes the chain: it records code commit
+**`e6979db`** — which was `HEAD` at run start, and is a reachable commit whose
+`scripts/benchmark_accuracy.py` hashes to the recorded `script_sha256` —
+`git_tracked_files_modified` is `false`, 0 network requests, 161 cache hits.
+Verdicts and aggregates remain byte-identical to every earlier run.
+
+`HEAD` necessarily advances past `e6979db` once the run artifacts are
+themselves committed, so provenance is deliberately phrased against the
+recorded commit rather than against whatever `HEAD` happens to be at reading
+time. To re-derive the code that produced this run, check out `e6979db`; do
+not assume it is the tip.
 
 ### Run directories now present
 
