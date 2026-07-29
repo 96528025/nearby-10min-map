@@ -379,3 +379,87 @@ round exists to eliminate.
   the geometry independently recomputable at a size no portfolio repository
   should carry; a targeted alternative (committing only the five isochrone
   responses, a few hundred KB) is the right Run 2 fix.
+
+---
+
+## D-9 · Second review round: partial runs must not publish verdicts
+
+A follow-up review confirmed the D-8 fixes and found two more. Both are
+correct and both are fixed.
+
+### 1. The status tests did not test production code
+
+`TestRunStatus` reimplemented the status rule inside the test file, so it
+asserted against a *copy* of the logic. A regression in the real path would
+have left those tests green — the same self-referential mistake catalogued in
+D-4, reintroduced in the tests written to prevent it.
+
+The rule is now a single production function, `run_status()`, and the tests
+call it directly.
+
+### 2. A blocked run still published verdicts — and that can flip the answer
+
+This is material, not hypothetical. P4 tolerates **4 of 5** locations, so a
+run that loses one still clears the evidence floor and publishes a formal
+conclusion on a sample that is no longer the preregistered one.
+
+Measured on the run of record, dropping each location in turn and re-scoring
+the equal-area circle:
+
+| Location dropped | Macro FI | Macro FE | Verdict |
+|---|---|---|---|
+| apple_park | 7.4 % | 26.5 % | NOT FIT |
+| stanford_university | 11.1 % | 28.2 % | NOT FIT |
+| **sjc_airport** | 5.6 % | **19.3 %** | **FIT FOR PURPOSE** ← flips |
+| downtown_san_jose | 10.3 % | 27.5 % | NOT FIT |
+| half_moon_bay | 11.1 % | 22.2 % | NOT FIT |
+| *(none — full sample)* | 9.1 % | 24.7 % | NOT FIT |
+
+**Had the single SJC Overpass or Valhalla request failed, this round would
+have concluded the opposite of what it concluded** — and the conclusion would
+have been decided, in effect, by whichever request happened to fail. SJC is
+the worst-performing location, so losing it is not a neutral loss.
+
+`run_status()` now returns `publish_verdicts`, and **verdicts are withheld
+from any run that is not `complete`**. A dedicated test pins the SJC flip so
+the reason for the rule cannot be lost.
+
+Failed sub-metrics withhold too, even though a directional route cannot change
+a POI rate. Systematic route failures would indicate a degraded routing
+service, which would make the isochrones themselves suspect — and deciding
+case by case which failures are benign reintroduces exactly the discretion
+preregistration exists to remove.
+
+### 3. Provenance: process fixed, and one field was measuring the wrong thing
+
+The reviewer noted that run `20260729T081336Z` recorded an older commit and a
+dirty worktree, because it was executed before its own script was committed.
+The prescribed order — commit script and tests, run from a clean tree, then
+commit the artifacts — is correct and was followed for the run of record.
+
+Investigating also exposed a defect in the flag itself: it used
+`git status --porcelain`, which counts untracked files. Since a run writes its
+own output directory before finishing, **every** run reported as dirty,
+whatever tree it was launched from. The field is now
+`git_tracked_files_modified` (tracked modifications only), with a test pinning
+the semantics against git.
+
+Run of record `20260729T082833Z` now closes the chain: `git_commit` equals
+`HEAD`, `script_sha256` equals the hash of the committed script at that
+commit, `git_tracked_files_modified` is `false`, 0 network requests, 161 cache
+hits. Verdicts and aggregates remain byte-identical to every earlier run.
+
+### Run directories now present
+
+| Run | Status | Why retained |
+|---|---|---|
+| `20260729T072857Z_…` | superseded | Original; independently verified by the reviewer |
+| `20260729T081336Z_…` | superseded | Added provenance and plan §4 conformance |
+| `20260729T082833Z_…` | **run of record** | Clean provenance chain, gated and tested script |
+
+All three carry identical verdicts and aggregates. Two further runs were
+produced and discarded before any commit while serialisation, rendering and
+the provenance flag were finalised; none was ever published. Superseded runs
+are retained rather than deleted, per the immutability rule — pruning them to
+a single canonical run plus hashes is a Run 2 decision, not one to take
+unilaterally here.

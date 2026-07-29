@@ -1,0 +1,54 @@
+{
+ "run_id": "20260729T082833Z_cfge03df09d_pland796c05b",
+ "started_utc": "2026-07-29T08:28:33Z",
+ "plan_sha256": "d796c05b7c407c008b2e965c6946c57de5f9f4a5b7135c903fbc1e11014ca2e4",
+ "config_sha256": "e03df09d999b56a33bad33c6ba0889892c65f37e41df520c40a23d82d6ab8526",
+ "plan_path": "reports/accuracy/BENCHMARK_PLAN.md",
+ "config_path": "config/benchmark_locations.yaml",
+ "locations": [
+  "apple_park",
+  "stanford_university",
+  "sjc_airport",
+  "downtown_san_jose",
+  "half_moon_bay"
+ ],
+ "thresholds": {
+  "macro_fi": 0.1,
+  "macro_fe": 0.2,
+  "loc_fi": 0.2,
+  "loc_fe": 0.35,
+  "min_denom": 30,
+  "min_locations": 4
+ },
+ "bearings": [
+  0,
+  45,
+  90,
+  135,
+  180,
+  225,
+  270,
+  315
+ ],
+ "envelope_margin": 0.1,
+ "max_requests": 400,
+ "overture_release": "2026-07-22.0",
+ "provenance": {
+  "script_sha256": "dc094b39917ffe50ac935891b7d6778850a487539948e685aa05c3fd25ced357",
+  "script_path": "scripts/benchmark_accuracy.py",
+  "git_commit": "e6979db4303b4efd7261f907923f4e87cecc9363",
+  "git_tracked_files_modified": false,
+  "python": "3.14.6",
+  "packages": {
+   "shapely": "2.1.2",
+   "pyproj": "3.7.2",
+   "PyYAML": "6.0.3",
+   "overturemaps": "1.0.1"
+  },
+  "valhalla_host": "https://valhalla1.openstreetmap.de",
+  "overpass_host": "https://overpass-api.de/api/interpreter",
+  "overture_release": "2026-07-22.0",
+  "reproducibility_note": "The Valhalla public instance does not expose its graph build version through /isochrone, /route or /locate, so isochrone geometry, IoU and route times cannot be re-derived from this repository alone at a later date -- only re-measured against whatever graph is live then. Raw responses are cached under reports/accuracy/.request_cache/, which is gitignored for size (~490 MB). POI-level rates ARE fully recomputable from the committed poi_universe.json."
+ },
+ "note": "Written before any network access, so preregistration ordering does not depend on being able to create commits."
+}

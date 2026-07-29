@@ -1,7 +1,7 @@
 {
- "run_id": "20260729T081336Z_cfge03df09d_pland796c05b",
- "path": "reports/accuracy/runs/20260729T081336Z_cfge03df09d_pland796c05b",
- "finished_utc": "2026-07-29T08:16:16Z",
+ "run_id": "20260729T082833Z_cfge03df09d_pland796c05b",
+ "path": "reports/accuracy/runs/20260729T082833Z_cfge03df09d_pland796c05b",
+ "finished_utc": "2026-07-29T08:30:43Z",
  "status": "complete",
  "note": "Pointer to the newest run only; historical runs are immutable."
 }
