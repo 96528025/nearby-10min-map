@@ -304,3 +304,78 @@ fixing it changes merge behaviour and needs its own evidence.
 - **README is intentionally untouched.** Every discrepancy is recorded in
   `CURRENT_STATE_AUDIT.md` §9. Rewriting it before the boundary decision is
   implemented would document a product that does not exist yet.
+
+---
+
+## D-8 · Review findings on the benchmark implementation, and their fixes
+
+An independent review of the Run 1 artifacts (not just the execution log)
+accepted the research conclusions but found the benchmark script not yet fit to
+publish. All five findings were reproduced against the files and are correct.
+This section records them, the fixes, and — importantly — what was **not**
+changed.
+
+### Fixed in the script
+
+| # | Finding | Fix |
+|---|---|---|
+| 1 | A run with failed sub-requests could still be reported `complete`. `BUDGET.blocked` was written into results but the status line tested only the per-location exception list, so failed directional routes and skipped locations were invisible in the status. | Status is now derived from `blocked + BUDGET.blocked + skipped`. Any incomplete work yields `benchmark blocked` and is listed in the report under "Incomplete work". |
+| 2 | The preregistered validity gates were **recorded but not enforced**. The plan says an A1 failure means "the run fails" (§7) and a G1 failure means "results must not be interpreted until it is fixed" (§4); the script only wrote `pass: false` and carried on to publish verdicts. | New `validity_failures()` collects G1/G2/A1 breaches. On any breach the run is marked `invalid: preregistered guardrail failed`, `run_valid: false`, and **verdicts are withheld** rather than published. The report leads with a RUN INVALID section. |
+| 3 | The 1208-line benchmark had **no tests at all**. The 97 passing tests all targeted the original pipeline, so "97 passed" said nothing about the code that produces the decision. | `tests/test_benchmark_accuracy.py` adds 47 tests covering verdict logic P1–P4 (including the boundary cases and the "macro hides one bad location" case P3 exists for), undefined handling, macro-vs-micro pooling, validity gating, run-status determination, the geometry helpers, envelope/A1 slack, the exploratory solver (interior / censored / infeasible / non-monotonic), cache-key composition and provenance. Suite is now **144 tests, offline**. |
+| 4 | Runs recorded only plan and config hashes — not the script, commit, or dependency versions — so two runs could not be told apart. | `provenance()` records `script_sha256`, git commit and dirty flag, Python and library versions, hosts, and the Overture release, in both `preflight.json` and `results.json`. |
+| 5 | The plan requires a directional check for **every** formal candidate, but the script ran it only for the two circles. | `boundary_point_at_bearing()` handles arbitrary geometry by ray intersection (taking the outermost crossing, so concave isochrones are measured at their true edge). All three formal candidates now get 8 bearings. Circle behaviour is unchanged — verified byte-identical to the earlier run. |
+
+Writing the tests immediately paid for itself: they caught a `NameError` on
+`LineString` in the newly added ray-intersection code, which would have crashed
+the next real run, and they corrected one of my own expectations about the
+exploratory solver (returning the cap **was** right under the preregistered
+"largest radius meeting the target" rule; my test was wrong, not the code).
+
+### Plan v1 errata — disclosed, NOT edited
+
+`BENCHMARK_PLAN.md` contains two internal inconsistencies:
+
+1. §5 justifies the AEQD choice with "every formal candidate is a circle
+   *centred on the same origin*", but the formal candidates include
+   `true_isochrone`, which is not a circle.
+2. §4 requires 8 bearings "per formal candidate", which the original run did
+   not do for `true_isochrone`.
+
+**The plan file was deliberately left byte-identical.** Editing a frozen,
+hashed preregistration to make it agree with the implementation is exactly the
+failure mode preregistration exists to prevent, and it would invalidate the
+`plan_sha256` recorded in the published run. Both errata are recorded here
+instead; a corrected **plan v2** with a new hash will be issued for Run 2.
+
+Neither erratum affects any verdict. The substantive claim behind §5 — that
+origin-centred AEQD makes the circular candidates exact — still holds, and the
+isochrone's area distortion under AEQD is verified empirically by G2 (worst
+case 1.3e-07 against a 1e-3 tolerance). The directional check is explicitly a
+non-deciding guardrail metric (§2, §4).
+
+### Two runs are retained
+
+| Run | Script | Notes |
+|---|---|---|
+| `20260729T072857Z_…` | `f7017491…` (1208 lines) | Original. Verdicts and aggregates as published; independently re-verified by recomputing FI/FE from `poi_universe.json`. Lacks provenance and the `true_isochrone` directional check. |
+| `20260729T081336Z_…` | `bccf6dbe…` | Run of record. Produced by the gated, tested script; adds provenance and full plan §4 conformance. 32 new requests, 129 cache hits. |
+
+**Verdicts and aggregates are byte-identical between the two runs.** The new
+run supersedes the old one for citation purposes and `latest.json` points at
+it; the old run is **not** deleted or modified, per the immutability rule.
+Re-running was chosen over leaving the gap because a published run that does
+not satisfy its own frozen plan is the same class of undisclosed deviation this
+round exists to eliminate.
+
+### Still open after this round
+
+- The Valhalla public instance exposes no graph build version through
+  `/isochrone`, `/route` or `/locate`. Isochrone geometry, IoU and route times
+  therefore **cannot be re-derived from the repository alone** at a later date,
+  only re-measured against whatever graph is live then. This is now stated in
+  every run's `provenance.reproducibility_note`. POI-level rates **are** fully
+  recomputable from the committed `poi_universe.json`.
+- The ~490 MB raw response cache remains gitignored. Committing it would make
+  the geometry independently recomputable at a size no portfolio repository
+  should carry; a targeted alternative (committing only the five isochrone
+  responses, a few hundred KB) is the right Run 2 fix.
