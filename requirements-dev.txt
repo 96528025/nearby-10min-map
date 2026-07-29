@@ -1,0 +1,8 @@
+# Development / benchmark dependencies (not needed to run the app).
+#   pip install -r requirements.txt -r requirements-dev.txt
+pytest
+# Benchmark geometry. shapely arrives transitively via overturemaps today,
+# but scripts/benchmark_accuracy.py depends on it directly, so declare it.
+shapely
+pyproj
+PyYAML

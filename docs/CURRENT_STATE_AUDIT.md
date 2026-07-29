@@ -271,7 +271,7 @@ proper projected CRS and reports the difference.
 | 7 | Architecture diagram step 5: "OSM Overpass（同步，先出图）+ Overture Maps（后台补全，~1 分钟）" | Correct, but Overture took **longer than the stated ~1 min** for Stanford in the live run | Low |
 | 8 | Data-source table lists Overture as "开放数据，含 Meta/Microsoft/Foursquare 贡献" | No Overture **release version** is recorded anywhere in code or in any data artifact, and no NOTICE requirement is captured. See `ATTRIBUTION_AUDIT.md` | Medium (licensing) |
 | 9 | `facilities.json.metadata.filter` = `"named facilities inside the 10-min drive isochrone"` (also fetch_facilities.py:133) | The filter is the **circle**, not the isochrone. The shipped data artifact mislabels its own provenance | **High** — this is the isochrone/circle conflation baked into the data itself |
-| 10 | README Quick Start creates `.venv` in the project root | `.claude/launch.json:6` hardcodes `/Users/<username>/<unrelated-project>/.venv/bin/python` — an absolute path to an unrelated directory on the author's machine, committed to a public repo | Medium (leak + broken for anyone else) |
+| 10 | README Quick Start creates `.venv` in the project root | `.claude/launch.json:6` hardcodes an absolute interpreter path of the form `/Users/<username>/<unrelated-project>/.venv/bin/python` (redacted here deliberately; read the file to see it). It points outside this repository, discloses the author's local username and directory layout in a public repo, and is broken for every other user | Medium (leak + broken for anyone else) |
 
 Additionally, `fetch_facilities.py`'s own docstring says "inside the circular
 boundary" while the metadata string it writes says "inside the 10-min drive
