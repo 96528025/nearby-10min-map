@@ -610,6 +610,48 @@ def validity_failures(per_location):
     return out
 
 
+def run_status(validity, blocked, budget_blocked, skipped):
+    """Single source of truth for run status and whether verdicts may publish.
+
+    Verdicts are published ONLY by a run that finished everything it set out
+    to do. A run missing a location is no longer scored on the preregistered
+    sample, and dropping one is not a neutral act: on run
+    20260729T081336Z, losing `sjc_airport` alone moves the equal-area circle
+    from NOT FIT to FIT FOR PURPOSE, because P4 tolerates 4 of 5 locations.
+    Publishing that would be a formal conclusion drawn from a sample chosen,
+    in effect, by whichever request happened to fail.
+
+    Failed sub-metrics are withheld on too. A directional route cannot change
+    a POI rate, but systematic route failures indicate a degraded routing
+    service — which would make the isochrones themselves suspect. Deciding
+    case by case which failures are benign reintroduces exactly the
+    discretion preregistration exists to remove.
+    """
+    incomplete = list(blocked) + list(budget_blocked) + list(skipped)
+    if validity:
+        return {
+            "status": "invalid: preregistered guardrail failed",
+            "run_valid": False, "publish_verdicts": False,
+            "incomplete": incomplete,
+            "withheld_reason": (
+                "A preregistered validity gate failed; BENCHMARK_PLAN.md "
+                "forbids interpreting these results until it is fixed."),
+        }
+    if incomplete:
+        return {
+            "status": "benchmark blocked",
+            "run_valid": True, "publish_verdicts": False,
+            "incomplete": incomplete,
+            "withheld_reason": (
+                "The run did not complete. Verdicts are withheld because a "
+                "partial run is no longer scored on the preregistered "
+                "sample, and P4 tolerates 4 of 5 locations, so a missing "
+                "location can silently flip a verdict."),
+        }
+    return {"status": "complete", "run_valid": True, "publish_verdicts": True,
+            "incomplete": [], "withheld_reason": None}
+
+
 def verdict(per_location, agg, cand):
     """Preregistered P1..P4. Thresholds are read-only after freeze."""
     checks, fails = {}, []
@@ -1043,24 +1085,18 @@ def main():
     #   G2 -- projection handling "is suspect"
     # A run that trips any of them must not publish verdicts.
     validity = validity_failures(per_location)
-
-    # Anything that stopped work is a reason NOT to call the run complete:
-    # per-location exceptions, skipped locations, and failed sub-requests
-    # (directional routes) that only ever reached BUDGET.blocked.
     skipped = [f"{k}: {v.get('status')}" for k, v in per_location.items()
                if v.get("status") != "ok"]
-    incomplete = blocked + BUDGET.blocked + skipped
+    state = run_status(validity, blocked, BUDGET.blocked, skipped)
+    status, incomplete = state["status"], state["incomplete"]
 
-    if validity:
-        status = "invalid: preregistered guardrail failed"
-        verdicts = {c: {"verdict": "WITHHELD -- run invalid",
-                        "reason": ("A preregistered validity gate failed; "
-                                   "BENCHMARK_PLAN.md forbids interpreting "
-                                   "these results until it is fixed."),
-                        "validity_failures": validity} for c in formal}
-    else:
-        status = "benchmark blocked" if incomplete else "complete"
+    if state["publish_verdicts"]:
         verdicts = {c: verdict(ok_locs, agg, c) for c in formal}
+    else:
+        verdicts = {c: {"verdict": "WITHHELD",
+                        "reason": state["withheld_reason"],
+                        "validity_failures": validity,
+                        "incomplete": incomplete} for c in formal}
 
     results = {
         "run_id": run_id, "started_utc": started, "finished_utc": utcnow(),
@@ -1073,7 +1109,8 @@ def main():
         "request_budget": MAX_REQUESTS,
         "blocked": incomplete,
         "validity_failures": validity,
-        "run_valid": not validity,
+        "run_valid": state["run_valid"],
+        "verdicts_published": state["publish_verdicts"],
         "status": status,
         "thresholds": THRESH,
         "formal_candidates": formal,
@@ -1170,12 +1207,15 @@ def render_report(results, per_location):
               f"{v['consequence']} |")
         a("")
     if results.get("blocked"):
-        a("## Incomplete work\n")
+        a("## Incomplete work — verdicts withheld\n")
         a(f"Status `{results['status']}`. The following did not complete and "
           f"are listed rather than silently dropped:\n")
         for b in results["blocked"]:
             a(f"- {b}")
         a("")
+        a("Verdicts are **withheld**: a partial run is no longer scored on "
+          "the preregistered sample, and P4 tolerates 4 of 5 locations, so a "
+          "single missing location can flip a verdict.\n")
 
     a("## Verdicts against the preregistered rule\n")
     t = results["thresholds"]

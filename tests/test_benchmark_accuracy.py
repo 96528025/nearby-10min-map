@@ -21,6 +21,14 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 @pytest.fixture(scope="module")
+def committed():
+    """The published run of record."""
+    runs = sorted((ROOT / "reports" / "accuracy" / "runs").glob("*"))
+    assert runs, "no run directory committed"
+    return json.loads((runs[-1] / "results.json").read_text())
+
+
+@pytest.fixture(scope="module")
 def bench():
     spec = importlib.util.spec_from_file_location(
         "benchmark_accuracy", ROOT / "scripts" / "benchmark_accuracy.py")
@@ -212,28 +220,87 @@ class TestValidityGates:
 # Run status must reflect sub-request failures, not just top-level exceptions
 # --------------------------------------------------------------------------
 class TestRunStatus:
-    @staticmethod
-    def _status(bench, validity, blocked, budget_blocked, skipped):
-        incomplete = blocked + budget_blocked + skipped
-        if validity:
-            return "invalid: preregistered guardrail failed"
-        return "benchmark blocked" if incomplete else "complete"
+    """Calls production `run_status` directly.
 
-    def test_clean_run_is_complete(self, bench):
-        assert self._status(bench, [], [], [], []) == "complete"
+    An earlier version of this class reimplemented the status rule inside the
+    test, which meant it asserted against a copy of the logic rather than the
+    logic — the same self-referential mistake this project keeps auditing for
+    elsewhere. A regression in production would not have failed these tests.
+    """
 
-    def test_a_failed_directional_route_blocks_the_run(self, bench):
-        """The Run 1 defect: BUDGET.blocked was recorded but ignored."""
-        assert self._status(bench, [], [], ["route bearing 45 to r=100m"],
-                            []) == "benchmark blocked"
+    def test_clean_run_is_complete_and_publishes(self, bench):
+        s = bench.run_status([], [], [], [])
+        assert s["status"] == "complete"
+        assert s["publish_verdicts"] is True
+        assert s["run_valid"] is True
+        assert s["withheld_reason"] is None
 
-    def test_a_skipped_location_blocks_the_run(self, bench):
-        assert self._status(bench, [], [], [],
-                            ["hmb: geometry anomaly"]) == "benchmark blocked"
+    def test_a_failed_directional_route_blocks_and_withholds(self, bench):
+        s = bench.run_status([], [], ["route bearing 45 to r=100m"], [])
+        assert s["status"] == "benchmark blocked"
+        assert s["publish_verdicts"] is False
+        assert s["run_valid"] is True          # guardrails were fine
+        assert s["incomplete"] == ["route bearing 45 to r=100m"]
+
+    def test_a_skipped_location_blocks_and_withholds(self, bench):
+        s = bench.run_status([], [], [], ["hmb: geometry anomaly"])
+        assert s["status"] == "benchmark blocked"
+        assert s["publish_verdicts"] is False
+
+    def test_a_location_exception_blocks_and_withholds(self, bench):
+        s = bench.run_status([], [{"location": "sjc", "error": "HTTPError"}],
+                             [], [])
+        assert s["publish_verdicts"] is False
 
     def test_guardrail_failure_outranks_blocked(self, bench):
-        assert self._status(bench, [{"gate": "G1"}], [], ["x"], []) \
-            == "invalid: preregistered guardrail failed"
+        s = bench.run_status([{"gate": "G1"}], [], ["x"], [])
+        assert s["status"] == "invalid: preregistered guardrail failed"
+        assert s["run_valid"] is False
+        assert s["publish_verdicts"] is False
+
+    def test_all_incomplete_sources_are_collected(self, bench):
+        s = bench.run_status([], ["a"], ["b"], ["c"])
+        assert s["incomplete"] == ["a", "b", "c"]
+
+    def test_withheld_reason_is_given_whenever_verdicts_are_withheld(
+            self, bench):
+        for args in (([{"gate": "G1"}], [], [], []),
+                     ([], ["x"], [], []),
+                     ([], [], ["y"], []),
+                     ([], [], [], ["z"])):
+            s = bench.run_status(*args)
+            assert s["publish_verdicts"] is False
+            assert s["withheld_reason"]
+
+
+class TestPartialRunCannotPublish:
+    """A dropped location can flip a verdict, which is why blocked withholds.
+
+    P4 tolerates 4 of 5 locations, so a run that loses one still satisfies the
+    evidence floor. On the committed run, losing `sjc_airport` alone moves the
+    equal-area circle from NOT FIT to FIT FOR PURPOSE. If a blocked run were
+    allowed to publish, the conclusion would be decided by whichever request
+    happened to fail.
+    """
+
+    def test_full_sample_says_not_fit(self, committed):
+        assert committed["verdicts"]["equal_area_circle"]["verdict"] \
+            == "NOT FIT FOR PURPOSE"
+
+    def test_dropping_sjc_would_flip_the_verdict(self, bench, committed):
+        sub = {k: v for k, v in committed["locations"].items()
+               if k != "sjc_airport"}
+        agg = {"equal_area_circle": {
+            m: bench.aggregate(sub, "equal_area_circle", m)
+            for m in ("false_inclusion", "false_exclusion")}}
+        v = bench.verdict(sub, agg, "equal_area_circle")
+        assert v["verdict"] == "FIT FOR PURPOSE"
+        assert v["checks"]["P4_evidence_sufficiency"] is True
+
+    def test_so_a_blocked_run_must_not_publish(self, bench):
+        assert bench.run_status(
+            [], [{"location": "sjc_airport", "error": "HTTPError"}], [],
+            [])["publish_verdicts"] is False
 
 
 # --------------------------------------------------------------------------
