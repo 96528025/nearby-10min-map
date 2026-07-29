@@ -50,7 +50,7 @@ import yaml
 # is complete, and it is far more readable in results.json than WKT.
 warnings.filterwarnings("ignore", category=UserWarning, module="pyproj")
 from pyproj import CRS, Transformer
-from shapely.geometry import MultiPolygon, Point, Polygon, box, shape
+from shapely.geometry import LineString, Point, Polygon, box, shape
 from shapely.ops import transform as shapely_transform
 from shapely.ops import unary_union
 from shapely.validation import make_valid
@@ -99,6 +99,51 @@ def utcnow():
 
 def sha256_file(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def provenance():
+    """Everything needed to tell two runs apart and to re-derive one.
+
+    plan+config hashes alone do not identify a run: the script, the geometry
+    libraries and the routing graph all affect the numbers. Recorded in both
+    preflight.json and results.json.
+    """
+    def _ver(dist):
+        try:
+            import importlib.metadata as md
+            return md.version(dist)
+        except Exception:                             # noqa: BLE001
+            return None
+
+    def _git(*args):
+        try:
+            return subprocess.check_output(
+                ["git", "-C", str(ROOT), *args], text=True,
+                stderr=subprocess.DEVNULL).strip()
+        except Exception:                             # noqa: BLE001
+            return None
+
+    return {
+        "script_sha256": sha256_file(__file__),
+        "script_path": "scripts/benchmark_accuracy.py",
+        "git_commit": _git("rev-parse", "HEAD"),
+        "git_worktree_dirty": bool(_git("status", "--porcelain")),
+        "python": sys.version.split()[0],
+        "packages": {d: _ver(d) for d in
+                     ("shapely", "pyproj", "PyYAML", "overturemaps")},
+        "valhalla_host": VALHALLA,
+        "overpass_host": OVERPASS,
+        "overture_release": OVERTURE_RELEASE,
+        "reproducibility_note": (
+            "The Valhalla public instance does not expose its graph build "
+            "version through /isochrone, /route or /locate, so isochrone "
+            "geometry, IoU and route times cannot be re-derived from this "
+            "repository alone at a later date -- only re-measured against "
+            "whatever graph is live then. Raw responses are cached under "
+            "reports/accuracy/.request_cache/, which is gitignored for size "
+            "(~490 MB). POI-level rates ARE fully recomputable from the "
+            "committed poi_universe.json."),
+    }
 
 
 class Budget:
@@ -525,6 +570,46 @@ def aggregate(per_location, cand, metric):
     }
 
 
+def validity_failures(per_location):
+    """Collect the preregistered run-invalidating conditions.
+
+    These are gates, not annotations. BENCHMARK_PLAN.md §4 says a G1 failure
+    means "results must not be interpreted until it is fixed", §7 says an A1
+    failure means "the run fails". Recording `pass: false` and then publishing
+    a verdict anyway would defeat the point of preregistering them.
+    """
+    out = []
+    for loc_id, loc in per_location.items():
+        if loc.get("status") != "ok":
+            continue
+        g1 = loc.get("guardrail_G1_equal_area_identity")
+        if g1 and not g1.get("pass"):
+            out.append({
+                "location": loc_id, "gate": "G1_equal_area_identity",
+                "detail": (f"|FI-FE| / area = {g1['relative_to_area']:.3e} "
+                           f">= tolerance {g1['tolerance']}"),
+                "consequence": ("projection, polygon algebra or isochrone "
+                                "area computation is buggy")})
+        g2 = loc.get("guardrail_G2_projection")
+        if g2 and not g2.get("pass"):
+            out.append({
+                "location": loc_id, "gate": "G2_projection",
+                "detail": (f"AEQD vs LAEA relative difference "
+                           f"{g2['relative_difference']:.3e} >= tolerance "
+                           f"{g2['tolerance']}"),
+                "consequence": "projection handling is suspect"})
+        for name, a in (loc.get("assertion_A1_envelope_slack") or {}).items():
+            if not a.get("pass"):
+                out.append({
+                    "location": loc_id, "gate": "A1_envelope_slack",
+                    "detail": (f"candidate {name} slack "
+                               f"{a['slack_m']:.1f} m <= 0"),
+                    "consequence": ("query envelope margin was insufficient; "
+                                    "POIs must be re-fetched over a larger "
+                                    "envelope")})
+    return out
+
+
 def verdict(per_location, agg, cand):
     """Preregistered P1..P4. Thresholds are read-only after freeze."""
     checks, fails = {}, []
@@ -580,16 +665,49 @@ def verdict(per_location, agg, cand):
 
 
 # --------------------------------------------------------------------------
-def directional_check(origin_ll, radius_m, proj, offline):
+def boundary_point_at_bearing(geom, bearing_deg, reach_m):
+    """Where a ray from the origin last crosses `geom`'s boundary.
+
+    Lets the directional check cover non-circular candidates (the true
+    isochrone), which BENCHMARK_PLAN.md §4 requires for every formal
+    candidate. The outermost crossing is taken, so a concave isochrone is
+    measured at its actual edge along that bearing.
+    """
+    rad = math.radians(bearing_deg)
+    ray = LineString([(0.0, 0.0),
+                      (reach_m * math.sin(rad), reach_m * math.cos(rad))])
+    hit = ray.intersection(geom.boundary)
+    if hit.is_empty:
+        return None
+    pts = [hit] if hit.geom_type == "Point" else [
+        g for g in getattr(hit, "geoms", []) if g.geom_type == "Point"]
+    if not pts:
+        return None
+    return max(pts, key=lambda p: math.hypot(p.x, p.y))
+
+
+def directional_check(origin_ll, proj, offline, radius_m=None, geom=None,
+                      reach_m=None):
     """Valhalla route-estimated FREE-FLOW travel time to the boundary.
 
     NOT an observed travel time. /route and /isochrone share one road graph
     and one costing model, so this is a model self-consistency measurement.
+
+    `radius_m` is used for circular candidates (exact, and identical to the
+    behaviour of earlier runs); `geom` + `reach_m` handle arbitrary shapes.
     """
     out = []
     for b in BEARINGS:
-        rad = math.radians(b)
-        x, y = radius_m * math.sin(rad), radius_m * math.cos(rad)
+        if radius_m is not None:
+            rad = math.radians(b)
+            x, y = radius_m * math.sin(rad), radius_m * math.cos(rad)
+        else:
+            p = boundary_point_at_bearing(geom, b, reach_m)
+            if p is None:
+                out.append({"bearing_deg": b,
+                            "status": "no boundary crossing on this bearing"})
+                continue
+            x, y = p.x, p.y
         lon, lat = proj["inv"](x, y)
         req = {"locations": [{"lat": origin_ll[0], "lon": origin_ll[1]},
                              {"lat": lat, "lon": lon}],
@@ -608,7 +726,9 @@ def directional_check(origin_ll, radius_m, proj, offline):
             rec["status"] = "ok"
         except Exception as e:                       # noqa: BLE001
             rec["status"] = f"failed: {type(e).__name__}"
-            BUDGET.blocked.append(f"route bearing {b} r={radius_m:.0f}")
+            where = (f"r={radius_m:.0f}m" if radius_m is not None
+                     else "polygon boundary")
+            BUDGET.blocked.append(f"route bearing {b} to {where}")
         out.append(rec)
     return out
 
@@ -796,10 +916,16 @@ def run_location(loc, offline):
                 "symmetric_difference_km2": 0.0}
         else:
             entry["geometry"] = geom_metrics(geom, iso_p)
+        # BENCHMARK_PLAN.md §4 requires this for EVERY formal candidate, so
+        # the non-circular reference gets it too, via ray intersection.
+        if name == "true_isochrone":
             entry["directional_check"] = directional_check(
-                (slat, slon), rec["radii_m"][
+                (slat, slon), proj, offline, geom=geom, reach_m=r_cap * 1.5)
+        else:
+            entry["directional_check"] = directional_check(
+                (slat, slon), proj, offline, radius_m=rec["radii_m"][
                     "equal_area" if name == "equal_area_circle"
-                    else "inscribed"], proj, offline)
+                    else "inscribed"])
         in_cand = {i: geom.covers(pts_p[i]) for i in idxs}
         entry["poi"] = poi_metrics(idxs, in_ref, in_cand, cats)
         rec["candidates"][name] = entry
@@ -881,6 +1007,7 @@ def main():
         "envelope_margin": ENVELOPE_MARGIN,
         "max_requests": MAX_REQUESTS,
         "overture_release": OVERTURE_RELEASE,
+        "provenance": provenance(),
         "note": ("Written before any network access, so preregistration "
                  "ordering does not depend on being able to create commits."),
     }
@@ -908,7 +1035,32 @@ def main():
     agg = {c: {m: aggregate(ok_locs, c, m)
                for m in ("false_inclusion", "false_exclusion")}
            for c in formal}
-    verdicts = {c: verdict(ok_locs, agg, c) for c in formal}
+
+    # ---- preregistered validity gates, ENFORCED ---------------------------
+    # BENCHMARK_PLAN.md makes these run-invalidating, not merely recorded:
+    #   A1 -- "the run fails" if any candidate touches the envelope edge
+    #   G1 -- "results must not be interpreted until it is fixed"
+    #   G2 -- projection handling "is suspect"
+    # A run that trips any of them must not publish verdicts.
+    validity = validity_failures(per_location)
+
+    # Anything that stopped work is a reason NOT to call the run complete:
+    # per-location exceptions, skipped locations, and failed sub-requests
+    # (directional routes) that only ever reached BUDGET.blocked.
+    skipped = [f"{k}: {v.get('status')}" for k, v in per_location.items()
+               if v.get("status") != "ok"]
+    incomplete = blocked + BUDGET.blocked + skipped
+
+    if validity:
+        status = "invalid: preregistered guardrail failed"
+        verdicts = {c: {"verdict": "WITHHELD -- run invalid",
+                        "reason": ("A preregistered validity gate failed; "
+                                   "BENCHMARK_PLAN.md forbids interpreting "
+                                   "these results until it is fixed."),
+                        "validity_failures": validity} for c in formal}
+    else:
+        status = "benchmark blocked" if incomplete else "complete"
+        verdicts = {c: verdict(ok_locs, agg, c) for c in formal}
 
     results = {
         "run_id": run_id, "started_utc": started, "finished_utc": utcnow(),
@@ -916,10 +1068,13 @@ def main():
         "reference_geometry": "Valhalla 10-minute auto isochrone (free-flow)",
         "scope_limit": ("Measures agreement with Valhalla's free-flow model. "
                         "Does NOT measure real-world drive time."),
+        "provenance": provenance(),
         "requests_made": BUDGET.used, "cache_hits": BUDGET.cache_hits,
         "request_budget": MAX_REQUESTS,
-        "blocked": blocked + BUDGET.blocked,
-        "status": "benchmark blocked" if blocked else "complete",
+        "blocked": incomplete,
+        "validity_failures": validity,
+        "run_valid": not validity,
+        "status": status,
         "thresholds": THRESH,
         "formal_candidates": formal,
         "exploratory_candidates_excluded_from_decision":
@@ -1002,6 +1157,25 @@ def render_report(results, per_location):
       "model. None of it measures real-world drive time, which would require "
       "GPS traces, historical traffic data, or field sampling. Valhalla routes "
       "on posted speed limits with no live or historical traffic.\n")
+
+    if results.get("validity_failures"):
+        a("## RUN INVALID — a preregistered guardrail failed\n")
+        a("Verdicts are withheld. `BENCHMARK_PLAN.md` treats these as gates, "
+          "not annotations: results must not be interpreted until the cause "
+          "is fixed.\n")
+        a("| Location | Gate | Detail | Consequence |")
+        a("|---|---|---|---|")
+        for v in results["validity_failures"]:
+            a(f"| {v['location']} | `{v['gate']}` | {v['detail']} | "
+              f"{v['consequence']} |")
+        a("")
+    if results.get("blocked"):
+        a("## Incomplete work\n")
+        a(f"Status `{results['status']}`. The following did not complete and "
+          f"are listed rather than silently dropped:\n")
+        for b in results["blocked"]:
+            a(f"- {b}")
+        a("")
 
     a("## Verdicts against the preregistered rule\n")
     t = results["thresholds"]
