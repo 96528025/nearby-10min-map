@@ -127,7 +127,11 @@ def provenance():
         "script_sha256": sha256_file(__file__),
         "script_path": "scripts/benchmark_accuracy.py",
         "git_commit": _git("rev-parse", "HEAD"),
-        "git_worktree_dirty": bool(_git("status", "--porcelain")),
+        # Tracked modifications only. A run writes its own output directory
+        # before it finishes, so counting untracked files would report every
+        # run as dirty and make the flag meaningless.
+        "git_tracked_files_modified": bool(_git("status", "--porcelain",
+                                                "--untracked-files=no")),
         "python": sys.version.split()[0],
         "packages": {d: _ver(d) for d in
                      ("shapely", "pyproj", "PyYAML", "overturemaps")},

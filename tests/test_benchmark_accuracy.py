@@ -451,9 +451,23 @@ class TestProvenance:
     def test_records_what_is_needed_to_identify_a_run(self, bench):
         p = bench.provenance()
         for field in ("script_sha256", "git_commit", "python", "packages",
-                      "overture_release", "valhalla_host"):
+                      "overture_release", "valhalla_host",
+                      "git_tracked_files_modified"):
             assert field in p, f"missing provenance field {field}"
         assert len(p["script_sha256"]) == 64
+
+    def test_dirty_flag_ignores_untracked_run_output(self, bench):
+        """A run writes its own output directory before it finishes.
+
+        Counting untracked files would mark every run dirty and make the flag
+        useless, which is exactly what an earlier version did.
+        """
+        import subprocess
+        tracked = subprocess.check_output(
+            ["git", "-C", str(ROOT), "status", "--porcelain",
+             "--untracked-files=no"], text=True)
+        assert bench.provenance()["git_tracked_files_modified"] \
+            == bool(tracked.strip())
 
     def test_script_hash_tracks_the_actual_file(self, bench):
         expected = bench.sha256_file(
