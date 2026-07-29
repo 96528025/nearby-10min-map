@@ -1,0 +1,91 @@
+# Frozen benchmark location set — Run 1
+#
+# These coordinates are FIXED INPUTS. The benchmark never re-geocodes them.
+# Changing anything in this file changes its SHA-256, which forces a new run ID
+# and must not overwrite an existing run directory.
+#
+# Coordinates were obtained by querying Nominatim once on 2026-07-29 while
+# authoring this file, BEFORE any benchmark measurement was defined or run.
+# No accuracy metric influenced the selection: locations were chosen only to
+# span distinct road-network archetypes, which is the stated purpose of the
+# benchmark (the README's single Apple Park sample cannot generalise).
+#
+# The benchmark applies the SAME road-snapping step the production pipeline
+# applies (pipeline.snap_to_drivable), because the product's boundary is
+# always centred on the snapped point, not on the raw geocoded pin. The
+# snapped point is recorded per location in results.json.
+
+version: 1
+contour_minutes: 10
+costing: auto
+
+locations:
+  - id: apple_park
+    name: Apple Park
+    network_type: large_corporate_campus
+    lat: 37.33484
+    lon: -122.01139
+    coord_source: >-
+      Committed in this repository at map/scripts/fetch_isochrone.sh and
+      map/data/isochrone.json metadata; described there as the Apple Park ring
+      building centre, OSM relation 5281838.
+    rationale: >-
+      The only location the existing README makes any quantitative accuracy
+      claim about. Included so the benchmark can be compared directly against
+      that claim. Suburban arterial grid around a large private campus with
+      restricted internal roads.
+
+  - id: stanford_university
+    name: Stanford University
+    network_type: university_campus
+    lat: 37.4313138
+    lon: -122.1693654
+    coord_source: >-
+      Nominatim /search?q=Stanford University, first result, 2026-07-29
+      (osm way/29268613).
+    rationale: >-
+      Large campus whose interior is dominated by service roads, bike paths and
+      restricted lanes. The README itself flags campus interiors as the case
+      where a 30 m shift in the geocoded pin changed isochrone area threefold,
+      making it the archetype most likely to break an area-only summary.
+
+  - id: sjc_airport
+    name: San Jose Mineta International Airport
+    network_type: airport
+    lat: 37.3633299
+    lon: -121.9293365
+    coord_source: >-
+      Nominatim /search?q=San Jose Mineta International Airport, first result,
+      2026-07-29 (osm way/648903263).
+    rationale: >-
+      Airport access is a one-way ring road feeding directly onto freeways.
+      Reachability is extremely anisotropic — far along the freeway, very short
+      across it — which is the geometry a circle approximates worst.
+
+  - id: downtown_san_jose
+    name: San Jose City Hall (downtown core)
+    network_type: dense_urban_core
+    lat: 37.3380339
+    lon: -121.8853233
+    coord_source: >-
+      Nominatim /search?q=San Jose City Hall, first result, 2026-07-29
+      (osm relation 5325236).
+    rationale: >-
+      Dense, near-isotropic signalised grid with low speed limits. Expected to
+      be the most circle-like case, and also the highest POI density, which
+      makes it the location where POI-level rates carry the most evidential
+      weight.
+
+  - id: half_moon_bay
+    name: Half Moon Bay State Beach
+    network_type: coastal_exurban_attraction
+    lat: 37.4784919
+    lon: -122.4493970
+    coord_source: >-
+      Nominatim /search?q=Half Moon Bay State Beach, first result, 2026-07-29
+      (osm relation 12919691).
+    rationale: >-
+      Severely constrained network: essentially one coastal highway, with ocean
+      on one side. Reachable area should be a narrow ribbon. Also the sparsest
+      POI environment in the set, which is deliberately included to exercise the
+      undefined-denominator handling rather than to be quietly dropped.
