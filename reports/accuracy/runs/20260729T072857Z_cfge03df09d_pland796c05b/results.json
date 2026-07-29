@@ -1,0 +1,4353 @@
+{
+ "run_id": "20260729T072857Z_cfge03df09d_pland796c05b",
+ "started_utc": "2026-07-29T07:28:57Z",
+ "finished_utc": "2026-07-29T07:40:53Z",
+ "plan_sha256": "d796c05b7c407c008b2e965c6946c57de5f9f4a5b7135c903fbc1e11014ca2e4",
+ "config_sha256": "e03df09d999b56a33bad33c6ba0889892c65f37e41df520c40a23d82d6ab8526",
+ "reference_geometry": "Valhalla 10-minute auto isochrone (free-flow)",
+ "scope_limit": "Measures agreement with Valhalla's free-flow model. Does NOT measure real-world drive time.",
+ "requests_made": 0,
+ "cache_hits": 121,
+ "request_budget": 400,
+ "blocked": [],
+ "status": "complete",
+ "thresholds": {
+  "macro_fi": 0.1,
+  "macro_fe": 0.2,
+  "loc_fi": 0.2,
+  "loc_fe": 0.35,
+  "min_denom": 30,
+  "min_locations": 4
+ },
+ "formal_candidates": [
+  "equal_area_circle",
+  "inscribed_circle_fixed_center",
+  "true_isochrone"
+ ],
+ "exploratory_candidates_excluded_from_decision": [
+  "target_fi_radius"
+ ],
+ "aggregates": {
+  "equal_area_circle": {
+   "false_inclusion": {
+    "macro": {
+     "value": 0.09097306363094085,
+     "n": 5,
+     "locations": [
+      "apple_park",
+      "stanford_university",
+      "sjc_airport",
+      "downtown_san_jose",
+      "half_moon_bay"
+     ],
+     "status": "defined"
+    },
+    "micro": {
+     "value": 0.11045690061234102,
+     "numerator": 938,
+     "denominator": 8492,
+     "status": "defined"
+    }
+   },
+   "false_exclusion": {
+    "macro": {
+     "value": 0.24749508201827014,
+     "n": 5,
+     "locations": [
+      "apple_park",
+      "stanford_university",
+      "sjc_airport",
+      "downtown_san_jose",
+      "half_moon_bay"
+     ],
+     "status": "defined"
+    },
+    "micro": {
+     "value": 0.236661277283751,
+     "numerator": 2342,
+     "denominator": 9896,
+     "status": "defined"
+    }
+   }
+  },
+  "inscribed_circle_fixed_center": {
+   "false_inclusion": {
+    "macro": {
+     "value": 0.0,
+     "n": 5,
+     "locations": [
+      "apple_park",
+      "stanford_university",
+      "sjc_airport",
+      "downtown_san_jose",
+      "half_moon_bay"
+     ],
+     "status": "defined"
+    },
+    "micro": {
+     "value": 0.0,
+     "numerator": 0,
+     "denominator": 3274,
+     "status": "defined"
+    }
+   },
+   "false_exclusion": {
+    "macro": {
+     "value": 0.7353903489377567,
+     "n": 5,
+     "locations": [
+      "apple_park",
+      "stanford_university",
+      "sjc_airport",
+      "downtown_san_jose",
+      "half_moon_bay"
+     ],
+     "status": "defined"
+    },
+    "micro": {
+     "value": 0.6691592562651576,
+     "numerator": 6622,
+     "denominator": 9896,
+     "status": "defined"
+    }
+   }
+  },
+  "true_isochrone": {
+   "false_inclusion": {
+    "macro": {
+     "value": 0.0,
+     "n": 5,
+     "locations": [
+      "apple_park",
+      "stanford_university",
+      "sjc_airport",
+      "downtown_san_jose",
+      "half_moon_bay"
+     ],
+     "status": "defined"
+    },
+    "micro": {
+     "value": 0.0,
+     "numerator": 0,
+     "denominator": 9896,
+     "status": "defined"
+    }
+   },
+   "false_exclusion": {
+    "macro": {
+     "value": 0.0,
+     "n": 5,
+     "locations": [
+      "apple_park",
+      "stanford_university",
+      "sjc_airport",
+      "downtown_san_jose",
+      "half_moon_bay"
+     ],
+     "status": "defined"
+    },
+    "micro": {
+     "value": 0.0,
+     "numerator": 0,
+     "denominator": 9896,
+     "status": "defined"
+    }
+   }
+  }
+ },
+ "verdicts": {
+  "equal_area_circle": {
+   "verdict": "NOT FIT FOR PURPOSE",
+   "checks": {
+    "P1_macro_fi<=0.10": true,
+    "P2_macro_fe<=0.20": false,
+    "P3_per_location_caps": false,
+    "P4_evidence_sufficiency": true
+   },
+   "failed": [
+    "P2",
+    "P3"
+   ],
+   "locations_with_sufficient_poi": 5,
+   "offenders": [
+    "sjc_airport FI=0.231",
+    "sjc_airport FE=0.464"
+   ]
+  },
+  "inscribed_circle_fixed_center": {
+   "verdict": "NOT FIT FOR PURPOSE",
+   "checks": {
+    "P1_macro_fi<=0.10": true,
+    "P2_macro_fe<=0.20": false,
+    "P3_per_location_caps": false,
+    "P4_evidence_sufficiency": true
+   },
+   "failed": [
+    "P2",
+    "P3"
+   ],
+   "locations_with_sufficient_poi": 4,
+   "offenders": [
+    "apple_park FE=0.597",
+    "stanford_university FE=0.679",
+    "sjc_airport FE=0.944",
+    "downtown_san_jose FE=0.460",
+    "half_moon_bay FE=0.996"
+   ]
+  },
+  "true_isochrone": {
+   "verdict": "FIT FOR PURPOSE",
+   "checks": {
+    "P1_macro_fi<=0.10": true,
+    "P2_macro_fe<=0.20": true,
+    "P3_per_location_caps": true,
+    "P4_evidence_sufficiency": true
+   },
+   "failed": [],
+   "locations_with_sufficient_poi": 5,
+   "offenders": []
+  }
+ },
+ "locations": {
+  "apple_park": {
+   "id": "apple_park",
+   "name": "Apple Park",
+   "network_type": "large_corporate_campus",
+   "config_lat": 37.33484,
+   "config_lon": -122.01139,
+   "snapped": {
+    "lat": 37.334429,
+    "lon": -122.012181,
+    "snap_distance_m": 84
+   },
+   "isochrone_fetched_utc": "2026-07-29T07:28:57Z",
+   "crs": {
+    "projection": "Azimuthal Equidistant (AEQD), WGS84 datum",
+    "proj4": "+proj=aeqd +lat_0=37.334429 +lon_0=-122.012181 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
+    "cross_check_proj4": "+proj=laea +lat_0=37.334429 +lon_0=-122.012181 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs"
+   },
+   "guardrail_G2_projection": {
+    "aeqd_area_km2": 92.10597730713607,
+    "laea_area_km2": 92.10596974499998,
+    "relative_difference": 8.210256207799169e-08,
+    "tolerance": 0.001,
+    "pass": true
+   },
+   "isochrone": {
+    "geometry_type": "Polygon",
+    "n_components": 1,
+    "n_holes": 0,
+    "area_km2": 92.10597730713607
+   },
+   "snap_sensitivity_diagnostic": {
+    "note": "Diagnostic added during implementation. It measures the stability of the reference geometry and takes no part in the preregistered pass/fail rule.",
+    "snapped_area_km2": 92.10597730713607,
+    "snapped_equal_area_radius_m": 5414.632319325227,
+    "unsnapped_area_km2": 25.779758454843424,
+    "unsnapped_equal_area_radius_m": 2864.6032848558325,
+    "area_ratio_snapped_over_unsnapped": 3.572802183871179
+   },
+   "shipped_first_ring_bug": {
+    "full_area_km2": 92.10597730713607,
+    "first_ring_area_km2": 92.10597730713607,
+    "area_understated_pct": 0.0,
+    "full_equal_area_radius_m": 5414.632319325227,
+    "shipped_equal_area_radius_m": 5414.632319325227
+   },
+   "radii_m": {
+    "equal_area": 5414.632319325227,
+    "inscribed": 3165.7106961122245,
+    "search_cap": 12488.346447634656
+   },
+   "query_envelope": {
+    "margin": 0.1,
+    "bbox_south_west_north_east": [
+     37.199278,
+     -122.181588,
+     37.469456,
+     -121.842774
+    ],
+    "projected_bounds_m": [
+     -14986.015737161588,
+     -14986.015737161588,
+     14986.015737161588,
+     14986.015737161588
+    ],
+    "composed_of": [
+     "isochrone",
+     "equal_area_circle",
+     "inscribed_circle_fixed_center",
+     "search_cap"
+    ],
+    "note": "POI-independent by construction; the exploratory target-FI candidate took no part in defining it"
+   },
+   "poi_universe": {
+    "count": 12600,
+    "stats": {
+     "osm_raw": 6250,
+     "osm_kept": 6156,
+     "osm_dropped_dup": 57,
+     "overture_raw": 63027,
+     "overture_kept": 6444,
+     "overture_dropped_dup": 4023,
+     "overture_dropped_confidence": 9833
+    },
+    "overpass_cache_hit": true,
+    "overture_cache_hit": true,
+    "overture_release": "2026-07-22.0",
+    "overture_min_confidence": 0.6,
+    "overpass_query_sha256": "a1e7bcf6638252658e90c0625a5dbf7914964cf3419fb0f15c1b17c1d09a75db",
+    "dedup_rules": {
+     "osm_internal": "same name within 150 m, per category",
+     "cross_source": "merge_overture.same_place: exact name <300 m, name containment <150 m, or equal house-number + first street word"
+    },
+    "frozen_utc": "2026-07-29T07:39:16Z"
+   },
+   "assertion_A1_envelope_slack": {
+    "equal_area_circle": {
+     "slack_m": 9571.383417836361,
+     "pass": true
+    },
+    "inscribed_circle_fixed_center": {
+     "slack_m": 11820.305041049363,
+     "pass": true
+    },
+    "true_isochrone": {
+     "slack_m": 3274.7890572722226,
+     "pass": true
+    },
+    "search_cap": {
+     "slack_m": 2497.6692895269316,
+     "pass": true
+    }
+   },
+   "candidates": {
+    "equal_area_circle": {
+     "geometry": {
+      "candidate_area_km2": 92.10539935007937,
+      "reference_area_km2": 92.10597730713607,
+      "intersection_km2": 73.22888837658172,
+      "iou": 0.6598238110449705,
+      "false_inclusion_area_km2": 18.876510973497915,
+      "false_exclusion_area_km2": 18.877088930554535,
+      "symmetric_difference_km2": 37.75359990405247,
+      "symmetric_difference_pct_of_reference": 0.40989304937462995
+     },
+     "directional_check": [
+      {
+       "bearing_deg": 0,
+       "target_lat": 37.383216,
+       "target_lon": -122.012181,
+       "valhalla_route_estimated_free_flow_min": 10.01,
+       "route_length_km": 5.759,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 45,
+       "target_lat": 37.368919,
+       "target_lon": -121.968958,
+       "valhalla_route_estimated_free_flow_min": 13.6,
+       "route_length_km": 8.904,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 90,
+       "target_lat": 37.334413,
+       "target_lon": -121.951082,
+       "valhalla_route_estimated_free_flow_min": 12.68,
+       "route_length_km": 12.274,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 135,
+       "target_lat": 37.299923,
+       "target_lon": -121.968997,
+       "valhalla_route_estimated_free_flow_min": 10.64,
+       "route_length_km": 7.742,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 180,
+       "target_lat": 37.285641,
+       "target_lon": -122.012181,
+       "valhalla_route_estimated_free_flow_min": 13.15,
+       "route_length_km": 14.3,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 225,
+       "target_lat": 37.299923,
+       "target_lon": -122.055365,
+       "valhalla_route_estimated_free_flow_min": 12.88,
+       "route_length_km": 11.35,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 270,
+       "target_lat": 37.334413,
+       "target_lon": -122.07328,
+       "valhalla_route_estimated_free_flow_min": 8.7,
+       "route_length_km": 6.679,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 315,
+       "target_lat": 37.368919,
+       "target_lon": -122.055404,
+       "valhalla_route_estimated_free_flow_min": 10.99,
+       "route_length_km": 11.336,
+       "status": "ok"
+      }
+     ],
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.1596925704526046,
+       "numerator": 374,
+       "denominator": 2342,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.17828810020876826,
+       "numerator": 427,
+       "denominator": 2395,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.1543973941368078,
+         "numerator": 237,
+         "denominator": 1535,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.17639593908629442,
+         "numerator": 278,
+         "denominator": 1576,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.10909090909090909,
+         "numerator": 12,
+         "denominator": 110,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.2846715328467153,
+         "numerator": 39,
+         "denominator": 137,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.18269230769230768,
+         "numerator": 38,
+         "denominator": 208,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.12371134020618557,
+         "numerator": 24,
+         "denominator": 194,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.2909090909090909,
+         "numerator": 16,
+         "denominator": 55,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.30357142857142855,
+         "numerator": 17,
+         "denominator": 56,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.16847826086956522,
+         "numerator": 31,
+         "denominator": 184,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.10526315789473684,
+         "numerator": 18,
+         "denominator": 171,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.1015625,
+         "numerator": 13,
+         "denominator": 128,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.23333333333333334,
+         "numerator": 35,
+         "denominator": 150,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.21052631578947367,
+         "numerator": 4,
+         "denominator": 19,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.11764705882352941,
+         "numerator": 2,
+         "denominator": 17,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.22330097087378642,
+         "numerator": 23,
+         "denominator": 103,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.14893617021276595,
+         "numerator": 14,
+         "denominator": 94,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    },
+    "inscribed_circle_fixed_center": {
+     "geometry": {
+      "candidate_area_km2": 31.483977598605236,
+      "reference_area_km2": 92.10597730713607,
+      "intersection_km2": 31.483977598605218,
+      "iou": 0.3418233921303385,
+      "false_inclusion_area_km2": 0.0,
+      "false_exclusion_area_km2": 60.62199970853078,
+      "symmetric_difference_km2": 60.62199970853078,
+      "symmetric_difference_pct_of_reference": 0.6581766078696608
+     },
+     "directional_check": [
+      {
+       "bearing_deg": 0,
+       "target_lat": 37.362953,
+       "target_lon": -122.012181,
+       "valhalla_route_estimated_free_flow_min": 6.94,
+       "route_length_km": 3.685,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 45,
+       "target_lat": 37.354596,
+       "target_lon": -121.986915,
+       "valhalla_route_estimated_free_flow_min": 8.62,
+       "route_length_km": 4.805,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 90,
+       "target_lat": 37.334424,
+       "target_lon": -121.976459,
+       "valhalla_route_estimated_free_flow_min": 7.89,
+       "route_length_km": 4.128,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 135,
+       "target_lat": 37.314257,
+       "target_lon": -121.986928,
+       "valhalla_route_estimated_free_flow_min": 7.92,
+       "route_length_km": 6.134,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 180,
+       "target_lat": 37.305905,
+       "target_lon": -122.012181,
+       "valhalla_route_estimated_free_flow_min": 6.69,
+       "route_length_km": 3.577,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 225,
+       "target_lat": 37.314257,
+       "target_lon": -122.037434,
+       "valhalla_route_estimated_free_flow_min": 8.33,
+       "route_length_km": 4.586,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 270,
+       "target_lat": 37.334424,
+       "target_lon": -122.047903,
+       "valhalla_route_estimated_free_flow_min": 3.7,
+       "route_length_km": 3.637,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 315,
+       "target_lat": 37.354596,
+       "target_lon": -122.037447,
+       "valhalla_route_estimated_free_flow_min": 9.54,
+       "route_length_km": 4.521,
+       "status": "ok"
+      }
+     ],
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 965,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.5970772442588727,
+       "numerator": 1430,
+       "denominator": 2395,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 637,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.5958121827411168,
+         "numerator": 939,
+         "denominator": 1576,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 49,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.6423357664233577,
+         "numerator": 88,
+         "denominator": 137,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 80,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.5876288659793815,
+         "numerator": 114,
+         "denominator": 194,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 29,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.48214285714285715,
+         "numerator": 27,
+         "denominator": 56,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 73,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.5730994152046783,
+         "numerator": 98,
+         "denominator": 171,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 56,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.6266666666666667,
+         "numerator": 94,
+         "denominator": 150,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 4,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.7647058823529411,
+         "numerator": 13,
+         "denominator": 17,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 37,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.6063829787234043,
+         "numerator": 57,
+         "denominator": 94,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    },
+    "true_isochrone": {
+     "geometry": {
+      "iou": 1.0,
+      "note": "Definitional, not evidence: the true isochrone is the reference geometry being compared with itself. Its merit is only that it adds no approximation on top of the model's; it is NOT real-world accuracy.",
+      "candidate_area_km2": 92.10597730713607,
+      "reference_area_km2": 92.10597730713607,
+      "false_inclusion_area_km2": 0.0,
+      "false_exclusion_area_km2": 0.0,
+      "symmetric_difference_km2": 0.0
+     },
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 2395,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 2395,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 1576,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 1576,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 137,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 137,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 194,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 194,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 56,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 56,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 171,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 171,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 150,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 150,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 17,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 17,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 94,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 94,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    }
+   },
+   "guardrail_G1_equal_area_identity": {
+    "false_inclusion_km2": 18.876510973497915,
+    "false_exclusion_km2": 18.877088930554535,
+    "abs_difference_km2": 0.0005779570566204484,
+    "relative_to_area": 6.2749136757237376e-06,
+    "tolerance": 0.005,
+    "pass": true,
+    "note": "These two areas are identically equal by construction for an equal-area candidate -- ONE number, not two independent findings. Used only to detect projection/polygon-algebra bugs."
+   },
+   "exploratory_target_fi_radius": {
+    "radius_m": 4979.195665761972,
+    "fi": 0.09985528219971057,
+    "n_inside": 2073,
+    "status": "interior",
+    "target_fi": 0.1,
+    "cap_m": 12488.346447634656,
+    "poi": {
+     "false_inclusion": {
+      "rate": 0.09942084942084942,
+      "numerator": 206,
+      "denominator": 2072,
+      "status": "defined"
+     },
+     "false_exclusion": {
+      "rate": 0.22087682672233822,
+      "numerator": 529,
+      "denominator": 2395,
+      "status": "defined"
+     },
+     "by_category": {
+      "dining": {
+       "false_inclusion": {
+        "rate": 0.09601181683899557,
+        "numerator": 130,
+        "denominator": 1354,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.2233502538071066,
+        "numerator": 352,
+        "denominator": 1576,
+        "status": "defined"
+       }
+      },
+      "health": {
+       "false_inclusion": {
+        "rate": 0.04081632653061224,
+        "numerator": 4,
+        "denominator": 98,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.31386861313868614,
+        "numerator": 43,
+        "denominator": 137,
+        "status": "defined"
+       }
+      },
+      "education": {
+       "false_inclusion": {
+        "rate": 0.12698412698412698,
+        "numerator": 24,
+        "denominator": 189,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.14948453608247422,
+        "numerator": 29,
+        "denominator": 194,
+        "status": "defined"
+       }
+      },
+      "lodging": {
+       "false_inclusion": {
+        "rate": 0.25,
+        "numerator": 13,
+        "denominator": 52,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.30357142857142855,
+        "numerator": 17,
+        "denominator": 56,
+        "status": "defined"
+       }
+      },
+      "shopping": {
+       "false_inclusion": {
+        "rate": 0.10778443113772455,
+        "numerator": 18,
+        "denominator": 167,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.1286549707602339,
+        "numerator": 22,
+        "denominator": 171,
+        "status": "defined"
+       }
+      },
+      "fuel_ev": {
+       "false_inclusion": {
+        "rate": 0.043859649122807015,
+        "numerator": 5,
+        "denominator": 114,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.2733333333333333,
+        "numerator": 41,
+        "denominator": 150,
+        "status": "defined"
+       }
+      },
+      "culture": {
+       "false_inclusion": {
+        "rate": 0.07142857142857142,
+        "numerator": 1,
+        "denominator": 14,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.23529411764705882,
+        "numerator": 4,
+        "denominator": 17,
+        "status": "defined"
+       }
+      },
+      "parks": {
+       "false_inclusion": {
+        "rate": 0.13095238095238096,
+        "numerator": 11,
+        "denominator": 84,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.22340425531914893,
+        "numerator": 21,
+        "denominator": 94,
+        "status": "defined"
+       }
+      }
+     }
+    },
+    "geometry": {
+     "candidate_area_km2": 77.88709991094689,
+     "reference_area_km2": 92.10597730713607,
+     "intersection_km2": 68.15084442440839,
+     "iou": 0.6691805801476994,
+     "false_inclusion_area_km2": 9.736255486538589,
+     "false_exclusion_area_km2": 23.955132882727813,
+     "symmetric_difference_km2": 33.691388369266434,
+     "symmetric_difference_pct_of_reference": 0.36578938038862907
+    },
+    "envelope_slack_m": 10006.820071399616,
+    "excluded_from_decision": true,
+    "exclusion_reasons": [
+     "POI-dependent: violates the POI-independence admission rule",
+     "tuned on the same POIs it is then scored against"
+    ]
+   },
+   "status": "ok"
+  },
+  "stanford_university": {
+   "id": "stanford_university",
+   "name": "Stanford University",
+   "network_type": "university_campus",
+   "config_lat": 37.4313138,
+   "config_lon": -122.1693654,
+   "snapped": {
+    "lat": 37.431535,
+    "lon": -122.169293,
+    "snap_distance_m": 25
+   },
+   "isochrone_fetched_utc": "2026-07-29T07:39:32Z",
+   "crs": {
+    "projection": "Azimuthal Equidistant (AEQD), WGS84 datum",
+    "proj4": "+proj=aeqd +lat_0=37.431535 +lon_0=-122.169293 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
+    "cross_check_proj4": "+proj=laea +lat_0=37.431535 +lon_0=-122.169293 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs"
+   },
+   "guardrail_G2_projection": {
+    "aeqd_area_km2": 48.35027419784413,
+    "laea_area_km2": 48.350272297193655,
+    "relative_difference": 3.931002636793416e-08,
+    "tolerance": 0.001,
+    "pass": true
+   },
+   "isochrone": {
+    "geometry_type": "Polygon",
+    "n_components": 1,
+    "n_holes": 0,
+    "area_km2": 48.35027419784413
+   },
+   "snap_sensitivity_diagnostic": {
+    "note": "Diagnostic added during implementation. It measures the stability of the reference geometry and takes no part in the preregistered pass/fail rule.",
+    "snapped_area_km2": 48.35027419784413,
+    "snapped_equal_area_radius_m": 3923.056241869448,
+    "unsnapped_area_km2": 48.51313197542206,
+    "unsnapped_equal_area_radius_m": 3929.6576845211102,
+    "area_ratio_snapped_over_unsnapped": 0.9966430166236137
+   },
+   "shipped_first_ring_bug": {
+    "full_area_km2": 48.35027419784413,
+    "first_ring_area_km2": 48.35027419784413,
+    "area_understated_pct": 0.0,
+    "full_equal_area_radius_m": 3923.056241869448,
+    "shipped_equal_area_radius_m": 3923.056241869448
+   },
+   "radii_m": {
+    "equal_area": 3923.056241869448,
+    "inscribed": 1492.3778746587666,
+    "search_cap": 6176.185601427931
+   },
+   "query_envelope": {
+    "margin": 0.1,
+    "bbox_south_west_north_east": [
+     37.364727,
+     -122.253107,
+     37.498313,
+     -122.085479
+    ],
+    "projected_bounds_m": [
+     -7411.422721713518,
+     -7411.422721713518,
+     7411.422721713518,
+     7411.422721713518
+    ],
+    "composed_of": [
+     "isochrone",
+     "equal_area_circle",
+     "inscribed_circle_fixed_center",
+     "search_cap"
+    ],
+    "note": "POI-independent by construction; the exploratory target-FI candidate took no part in defining it"
+   },
+   "poi_universe": {
+    "count": 3032,
+    "stats": {
+     "osm_raw": 1442,
+     "osm_kept": 1435,
+     "osm_dropped_dup": 7,
+     "overture_raw": 15208,
+     "overture_kept": 1597,
+     "overture_dropped_dup": 941,
+     "overture_dropped_confidence": 2382
+    },
+    "overpass_cache_hit": true,
+    "overture_cache_hit": true,
+    "overture_release": "2026-07-22.0",
+    "overture_min_confidence": 0.6,
+    "overpass_query_sha256": "9962e32820c59e26673934d02fff709edbddaa46cf2bd1697b3a76f8bfdcc85d",
+    "dedup_rules": {
+     "osm_internal": "same name within 150 m, per category",
+     "cross_source": "merge_overture.same_place: exact name <300 m, name containment <150 m, or equal house-number + first street word"
+    },
+    "frozen_utc": "2026-07-29T07:39:35Z"
+   },
+   "assertion_A1_envelope_slack": {
+    "equal_area_circle": {
+     "slack_m": 3488.3664798440695,
+     "pass": true
+    },
+    "inscribed_circle_fixed_center": {
+     "slack_m": 5919.044847054751,
+     "pass": true
+    },
+    "true_isochrone": {
+     "slack_m": 1463.245210036498,
+     "pass": true
+    },
+    "search_cap": {
+     "slack_m": 1235.2371202855866,
+     "pass": true
+    }
+   },
+   "candidates": {
+    "equal_area_circle": {
+     "geometry": {
+      "candidate_area_km2": 48.349970804047466,
+      "reference_area_km2": 48.35027419784413,
+      "intersection_km2": 39.45389136098832,
+      "iou": 0.6891948369057009,
+      "false_inclusion_area_km2": 8.896079443059111,
+      "false_exclusion_area_km2": 8.89638283685583,
+      "symmetric_difference_km2": 17.792462279914943,
+      "symmetric_difference_pct_of_reference": 0.3679909281819188
+     },
+     "directional_check": [
+      {
+       "bearing_deg": 0,
+       "target_lat": 37.466882,
+       "target_lon": -122.169293,
+       "valhalla_route_estimated_free_flow_min": 11.03,
+       "route_length_km": 5.682,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 45,
+       "target_lat": 37.456525,
+       "target_lon": -122.13794,
+       "valhalla_route_estimated_free_flow_min": 9.32,
+       "route_length_km": 4.605,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 90,
+       "target_lat": 37.431527,
+       "target_lon": -122.124968,
+       "valhalla_route_estimated_free_flow_min": 9.16,
+       "route_length_km": 5.159,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 135,
+       "target_lat": 37.406536,
+       "target_lon": -122.137961,
+       "valhalla_route_estimated_free_flow_min": 12.43,
+       "route_length_km": 6.698,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 180,
+       "target_lat": 37.396188,
+       "target_lon": -122.169293,
+       "valhalla_route_estimated_free_flow_min": 11.21,
+       "route_length_km": 6.56,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 225,
+       "target_lat": 37.406536,
+       "target_lon": -122.200625,
+       "valhalla_route_estimated_free_flow_min": 14.41,
+       "route_length_km": 5.732,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 270,
+       "target_lat": 37.431527,
+       "target_lon": -122.213618,
+       "valhalla_route_estimated_free_flow_min": 10.63,
+       "route_length_km": 5.205,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 315,
+       "target_lat": 37.456525,
+       "target_lon": -122.200646,
+       "valhalla_route_estimated_free_flow_min": 9.71,
+       "route_length_km": 5.873,
+       "status": "ok"
+      }
+     ],
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.010236220472440945,
+       "numerator": 13,
+       "denominator": 1270,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.11040339702760085,
+       "numerator": 156,
+       "denominator": 1413,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.004335260115606936,
+         "numerator": 3,
+         "denominator": 692,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.1016949152542373,
+         "numerator": 78,
+         "denominator": 767,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.01098901098901099,
+         "numerator": 2,
+         "denominator": 182,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.10891089108910891,
+         "numerator": 22,
+         "denominator": 202,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.043478260869565216,
+         "numerator": 7,
+         "denominator": 161,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.08875739644970414,
+         "numerator": 15,
+         "denominator": 169,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 41,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.18,
+         "numerator": 9,
+         "denominator": 50,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 43,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.23214285714285715,
+         "numerator": 13,
+         "denominator": 56,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 32,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.23809523809523808,
+         "numerator": 10,
+         "denominator": 42,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 50,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0196078431372549,
+         "numerator": 1,
+         "denominator": 51,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.014492753623188406,
+         "numerator": 1,
+         "denominator": 69,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.10526315789473684,
+         "numerator": 8,
+         "denominator": 76,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    },
+    "inscribed_circle_fixed_center": {
+     "geometry": {
+      "candidate_area_km2": 6.996885242983851,
+      "reference_area_km2": 48.35027419784413,
+      "intersection_km2": 6.996885242983843,
+      "iou": 0.14471242116132274,
+      "false_inclusion_area_km2": 0.0,
+      "false_exclusion_area_km2": 41.35338895486018,
+      "symmetric_difference_km2": 41.35338895486018,
+      "symmetric_difference_pct_of_reference": 0.8552875788386752
+     },
+     "directional_check": [
+      {
+       "bearing_deg": 0,
+       "target_lat": 37.444982,
+       "target_lon": -122.169293,
+       "valhalla_route_estimated_free_flow_min": 3.65,
+       "route_length_km": 1.764,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 45,
+       "target_lat": 37.441043,
+       "target_lon": -122.157368,
+       "valhalla_route_estimated_free_flow_min": 4.73,
+       "route_length_km": 2.29,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 90,
+       "target_lat": 37.431534,
+       "target_lon": -122.152431,
+       "valhalla_route_estimated_free_flow_min": 5.32,
+       "route_length_km": 2.516,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 135,
+       "target_lat": 37.422026,
+       "target_lon": -122.157371,
+       "valhalla_route_estimated_free_flow_min": 5.71,
+       "route_length_km": 2.284,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 180,
+       "target_lat": 37.418088,
+       "target_lon": -122.169293,
+       "valhalla_route_estimated_free_flow_min": 7.84,
+       "route_length_km": 3.612,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 225,
+       "target_lat": 37.422026,
+       "target_lon": -122.181215,
+       "valhalla_route_estimated_free_flow_min": 4.4,
+       "route_length_km": 2.226,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 270,
+       "target_lat": 37.431534,
+       "target_lon": -122.186155,
+       "valhalla_route_estimated_free_flow_min": 4.88,
+       "route_length_km": 2.46,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 315,
+       "target_lat": 37.441043,
+       "target_lon": -122.181218,
+       "valhalla_route_estimated_free_flow_min": 8.46,
+       "route_length_km": 4.271,
+       "status": "ok"
+      }
+     ],
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 453,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.6794055201698513,
+       "numerator": 960,
+       "denominator": 1413,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 181,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.7640156453715776,
+         "numerator": 586,
+         "denominator": 767,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 136,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.32673267326732675,
+         "numerator": 66,
+         "denominator": 202,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 78,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.5384615384615384,
+         "numerator": 91,
+         "denominator": 169,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 5,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.9,
+         "numerator": 45,
+         "denominator": 50,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 13,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.7678571428571429,
+         "numerator": 43,
+         "denominator": 56,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 4,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.9047619047619048,
+         "numerator": 38,
+         "denominator": 42,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 17,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.6666666666666666,
+         "numerator": 34,
+         "denominator": 51,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 19,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.75,
+         "numerator": 57,
+         "denominator": 76,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    },
+    "true_isochrone": {
+     "geometry": {
+      "iou": 1.0,
+      "note": "Definitional, not evidence: the true isochrone is the reference geometry being compared with itself. Its merit is only that it adds no approximation on top of the model's; it is NOT real-world accuracy.",
+      "candidate_area_km2": 48.35027419784413,
+      "reference_area_km2": 48.35027419784413,
+      "false_inclusion_area_km2": 0.0,
+      "false_exclusion_area_km2": 0.0,
+      "symmetric_difference_km2": 0.0
+     },
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 1413,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 1413,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 767,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 767,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 202,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 202,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 169,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 169,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 50,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 50,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 56,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 56,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 42,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 42,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 51,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 51,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 76,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 76,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    }
+   },
+   "guardrail_G1_equal_area_identity": {
+    "false_inclusion_km2": 8.896079443059111,
+    "false_exclusion_km2": 8.89638283685583,
+    "abs_difference_km2": 0.00030339379671850963,
+    "relative_to_area": 6.274913674264903e-06,
+    "tolerance": 0.005,
+    "pass": true,
+    "note": "These two areas are identically equal by construction for an equal-area candidate -- ONE number, not two independent findings. Used only to detect projection/polygon-algebra bugs."
+   },
+   "exploratory_target_fi_radius": {
+    "radius_m": 5308.875391083039,
+    "fi": 0.09967845659163987,
+    "n_inside": 1555,
+    "status": "interior",
+    "target_fi": 0.1,
+    "cap_m": 6176.185601427931,
+    "poi": {
+     "false_inclusion": {
+      "rate": 0.0990990990990991,
+      "numerator": 154,
+      "denominator": 1554,
+      "status": "defined"
+     },
+     "false_exclusion": {
+      "rate": 0.009200283085633405,
+      "numerator": 13,
+      "denominator": 1413,
+      "status": "defined"
+     },
+     "by_category": {
+      "dining": {
+       "false_inclusion": {
+        "rate": 0.052565707133917394,
+        "numerator": 42,
+        "denominator": 799,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.01303780964797914,
+        "numerator": 10,
+        "denominator": 767,
+        "status": "defined"
+       }
+      },
+      "health": {
+       "false_inclusion": {
+        "rate": 0.05188679245283019,
+        "numerator": 11,
+        "denominator": 212,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0049504950495049506,
+        "numerator": 1,
+        "denominator": 202,
+        "status": "defined"
+       }
+      },
+      "education": {
+       "false_inclusion": {
+        "rate": 0.24553571428571427,
+        "numerator": 55,
+        "denominator": 224,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 169,
+        "status": "defined"
+       }
+      },
+      "lodging": {
+       "false_inclusion": {
+        "rate": 0.15517241379310345,
+        "numerator": 9,
+        "denominator": 58,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.02,
+        "numerator": 1,
+        "denominator": 50,
+        "status": "defined"
+       }
+      },
+      "shopping": {
+       "false_inclusion": {
+        "rate": 0.15384615384615385,
+        "numerator": 10,
+        "denominator": 65,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.017857142857142856,
+        "numerator": 1,
+        "denominator": 56,
+        "status": "defined"
+       }
+      },
+      "fuel_ev": {
+       "false_inclusion": {
+        "rate": 0.125,
+        "numerator": 6,
+        "denominator": 48,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 42,
+        "status": "defined"
+       }
+      },
+      "culture": {
+       "false_inclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 51,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 51,
+        "status": "defined"
+       }
+      },
+      "parks": {
+       "false_inclusion": {
+        "rate": 0.21649484536082475,
+        "numerator": 21,
+        "denominator": 97,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 76,
+        "status": "defined"
+       }
+      }
+     }
+    },
+    "geometry": {
+     "candidate_area_km2": 88.54258786236952,
+     "reference_area_km2": 48.35027419784413,
+     "intersection_km2": 48.08849072660176,
+     "iou": 0.5415104009457756,
+     "false_inclusion_area_km2": 40.454097135767874,
+     "false_exclusion_area_km2": 0.26178347124234813,
+     "symmetric_difference_km2": 40.71588060701023,
+     "symmetric_difference_pct_of_reference": 0.842102372375495
+    },
+    "envelope_slack_m": 2102.5473306304784,
+    "excluded_from_decision": true,
+    "exclusion_reasons": [
+     "POI-dependent: violates the POI-independence admission rule",
+     "tuned on the same POIs it is then scored against"
+    ]
+   },
+   "status": "ok"
+  },
+  "sjc_airport": {
+   "id": "sjc_airport",
+   "name": "San Jose Mineta International Airport",
+   "network_type": "airport",
+   "config_lat": 37.3633299,
+   "config_lon": -121.9293365,
+   "snapped": {
+    "lat": 37.366512,
+    "lon": -121.925343,
+    "snap_distance_m": 500
+   },
+   "isochrone_fetched_utc": "2026-07-29T07:39:36Z",
+   "crs": {
+    "projection": "Azimuthal Equidistant (AEQD), WGS84 datum",
+    "proj4": "+proj=aeqd +lat_0=37.366512 +lon_0=-121.925343 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
+    "cross_check_proj4": "+proj=laea +lat_0=37.366512 +lon_0=-121.925343 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs"
+   },
+   "guardrail_G2_projection": {
+    "aeqd_area_km2": 68.4351134034019,
+    "laea_area_km2": 68.43510860321841,
+    "relative_difference": 7.01421183934961e-08,
+    "tolerance": 0.001,
+    "pass": true
+   },
+   "isochrone": {
+    "geometry_type": "Polygon",
+    "n_components": 1,
+    "n_holes": 0,
+    "area_km2": 68.4351134034019
+   },
+   "snap_sensitivity_diagnostic": {
+    "note": "Diagnostic added during implementation. It measures the stability of the reference geometry and takes no part in the preregistered pass/fail rule.",
+    "snapped_area_km2": 68.4351134034019,
+    "snapped_equal_area_radius_m": 4667.287559001659,
+    "unsnapped_area_km2": 0.6438604065671427,
+    "unsnapped_equal_area_radius_m": 452.7108710122128,
+    "area_ratio_snapped_over_unsnapped": 106.28874318934439
+   },
+   "shipped_first_ring_bug": {
+    "full_area_km2": 68.4351134034019,
+    "first_ring_area_km2": 68.4351134034019,
+    "area_understated_pct": 0.0,
+    "full_equal_area_radius_m": 4667.287559001659,
+    "shipped_equal_area_radius_m": 4667.287559001659
+   },
+   "radii_m": {
+    "equal_area": 4667.287559001659,
+    "inscribed": 1472.0824654188434,
+    "search_cap": 9853.821960243135
+   },
+   "query_envelope": {
+    "margin": 0.1,
+    "bbox_south_west_north_east": [
+     37.259893,
+     -122.059019,
+     37.473054,
+     -121.791667
+    ],
+    "projected_bounds_m": [
+     -11824.58635229176,
+     -11824.58635229176,
+     11824.58635229176,
+     11824.58635229176
+    ],
+    "composed_of": [
+     "isochrone",
+     "equal_area_circle",
+     "inscribed_circle_fixed_center",
+     "search_cap"
+    ],
+    "note": "POI-independent by construction; the exploratory target-FI candidate took no part in defining it"
+   },
+   "poi_universe": {
+    "count": 10157,
+    "stats": {
+     "osm_raw": 5057,
+     "osm_kept": 4970,
+     "osm_dropped_dup": 50,
+     "overture_raw": 49360,
+     "overture_kept": 5187,
+     "overture_dropped_dup": 3196,
+     "overture_dropped_confidence": 7738
+    },
+    "overpass_cache_hit": true,
+    "overture_cache_hit": true,
+    "overture_release": "2026-07-22.0",
+    "overture_min_confidence": 0.6,
+    "overpass_query_sha256": "726c846b6d319ddb5b07f4b3598b80c6b0fed1fcad3bfdd1acd899aa9d9cd8ce",
+    "dedup_rules": {
+     "osm_internal": "same name within 150 m, per category",
+     "cross_source": "merge_overture.same_place: exact name <300 m, name containment <150 m, or equal house-number + first street word"
+    },
+    "frozen_utc": "2026-07-29T07:40:06Z"
+   },
+   "assertion_A1_envelope_slack": {
+    "equal_area_circle": {
+     "slack_m": 7157.2987932901015,
+     "pass": true
+    },
+    "inscribed_circle_fixed_center": {
+     "slack_m": 10352.503886872917,
+     "pass": true
+    },
+    "true_isochrone": {
+     "slack_m": 3233.3890872696193,
+     "pass": true
+    },
+    "search_cap": {
+     "slack_m": 1970.7643920486262,
+     "pass": true
+    }
+   },
+   "candidates": {
+    "equal_area_circle": {
+     "geometry": {
+      "candidate_area_km2": 68.434683978973,
+      "reference_area_km2": 68.4351134034019,
+      "intersection_km2": 47.225356583529276,
+      "iou": 0.5268074200998006,
+      "false_inclusion_area_km2": 21.209327395443704,
+      "false_exclusion_area_km2": 21.209756819872613,
+      "symmetric_difference_km2": 42.4190842153163,
+      "symmetric_difference_pct_of_reference": 0.6198438507038063
+     },
+     "directional_check": [
+      {
+       "bearing_deg": 0,
+       "target_lat": 37.408565,
+       "target_lon": -121.925343,
+       "valhalla_route_estimated_free_flow_min": 14.75,
+       "route_length_km": 8.265,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 45,
+       "target_lat": 37.396242,
+       "target_lon": -121.888072,
+       "valhalla_route_estimated_free_flow_min": 15.56,
+       "route_length_km": 11.648,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 90,
+       "target_lat": 37.3665,
+       "target_lon": -121.872654,
+       "valhalla_route_estimated_free_flow_min": 12.11,
+       "route_length_km": 8.076,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 135,
+       "target_lat": 37.33677,
+       "target_lon": -121.888101,
+       "valhalla_route_estimated_free_flow_min": 9.16,
+       "route_length_km": 7.471,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 180,
+       "target_lat": 37.324458,
+       "target_lon": -121.925343,
+       "valhalla_route_estimated_free_flow_min": 11.06,
+       "route_length_km": 6.565,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 225,
+       "target_lat": 37.33677,
+       "target_lon": -121.962585,
+       "valhalla_route_estimated_free_flow_min": 11.41,
+       "route_length_km": 7.768,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 270,
+       "target_lat": 37.3665,
+       "target_lon": -121.978032,
+       "valhalla_route_estimated_free_flow_min": 11.59,
+       "route_length_km": 9.611,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 315,
+       "target_lat": 37.396242,
+       "target_lon": -121.962614,
+       "valhalla_route_estimated_free_flow_min": 11.84,
+       "route_length_km": 8.976,
+       "status": "ok"
+      }
+     ],
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.2314764737696052,
+       "numerator": 428,
+       "denominator": 1849,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.46397585816672954,
+       "numerator": 1230,
+       "denominator": 2651,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.21251002405773858,
+         "numerator": 265,
+         "denominator": 1247,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.46132748217224356,
+         "numerator": 841,
+         "denominator": 1823,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.24050632911392406,
+         "numerator": 19,
+         "denominator": 79,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.5,
+         "numerator": 60,
+         "denominator": 120,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.25,
+         "numerator": 31,
+         "denominator": 124,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.5105263157894737,
+         "numerator": 97,
+         "denominator": 190,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.20754716981132076,
+         "numerator": 22,
+         "denominator": 106,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.29411764705882354,
+         "numerator": 35,
+         "denominator": 119,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.43902439024390244,
+         "numerator": 36,
+         "denominator": 82,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.6,
+         "numerator": 69,
+         "denominator": 115,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.26506024096385544,
+         "numerator": 22,
+         "denominator": 83,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.4649122807017544,
+         "numerator": 53,
+         "denominator": 114,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.08108108108108109,
+         "numerator": 3,
+         "denominator": 37,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.4603174603174603,
+         "numerator": 29,
+         "denominator": 63,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.32967032967032966,
+         "numerator": 30,
+         "denominator": 91,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.42990654205607476,
+         "numerator": 46,
+         "denominator": 107,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    },
+    "inscribed_circle_fixed_center": {
+     "geometry": {
+      "candidate_area_km2": 6.807872708786656,
+      "reference_area_km2": 68.4351134034019,
+      "intersection_km2": 6.807872708786653,
+      "iou": 0.09947923471181447,
+      "false_inclusion_area_km2": 0.0,
+      "false_exclusion_area_km2": 61.6272406946152,
+      "symmetric_difference_km2": 61.6272406946152,
+      "symmetric_difference_pct_of_reference": 0.9005207652881849
+     },
+     "directional_check": [
+      {
+       "bearing_deg": 0,
+       "target_lat": 37.379776,
+       "target_lon": -121.925343,
+       "valhalla_route_estimated_free_flow_min": 8.03,
+       "route_length_km": 4.094,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 45,
+       "target_lat": 37.37589,
+       "target_lon": -121.913591,
+       "valhalla_route_estimated_free_flow_min": 5.98,
+       "route_length_km": 3.444,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 90,
+       "target_lat": 37.366511,
+       "target_lon": -121.908725,
+       "valhalla_route_estimated_free_flow_min": 5.64,
+       "route_length_km": 3.411,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 135,
+       "target_lat": 37.357132,
+       "target_lon": -121.913594,
+       "valhalla_route_estimated_free_flow_min": 3.76,
+       "route_length_km": 2.413,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 180,
+       "target_lat": 37.353248,
+       "target_lon": -121.925343,
+       "valhalla_route_estimated_free_flow_min": 4.97,
+       "route_length_km": 3.226,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 225,
+       "target_lat": 37.357132,
+       "target_lon": -121.937092,
+       "valhalla_route_estimated_free_flow_min": 8.23,
+       "route_length_km": 4.563,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 270,
+       "target_lat": 37.366511,
+       "target_lon": -121.941961,
+       "valhalla_route_estimated_free_flow_min": 8.74,
+       "route_length_km": 5.632,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 315,
+       "target_lat": 37.37589,
+       "target_lon": -121.937095,
+       "valhalla_route_estimated_free_flow_min": 4.95,
+       "route_length_km": 3.751,
+       "status": "ok"
+      }
+     ],
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 149,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.943794794417201,
+       "numerator": 2502,
+       "denominator": 2651,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 100,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.9451453647833242,
+         "numerator": 1723,
+         "denominator": 1823,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 2,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.9833333333333333,
+         "numerator": 118,
+         "denominator": 120,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 8,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.9578947368421052,
+         "numerator": 182,
+         "denominator": 190,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 27,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.773109243697479,
+         "numerator": 92,
+         "denominator": 119,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": null,
+         "numerator": 0,
+         "denominator": 0,
+         "status": "undefined / insufficient POIs"
+        },
+        "false_exclusion": {
+         "rate": 1.0,
+         "numerator": 115,
+         "denominator": 115,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 7,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.9385964912280702,
+         "numerator": 107,
+         "denominator": 114,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 1,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.9841269841269841,
+         "numerator": 62,
+         "denominator": 63,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 4,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.9626168224299065,
+         "numerator": 103,
+         "denominator": 107,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    },
+    "true_isochrone": {
+     "geometry": {
+      "iou": 1.0,
+      "note": "Definitional, not evidence: the true isochrone is the reference geometry being compared with itself. Its merit is only that it adds no approximation on top of the model's; it is NOT real-world accuracy.",
+      "candidate_area_km2": 68.4351134034019,
+      "reference_area_km2": 68.4351134034019,
+      "false_inclusion_area_km2": 0.0,
+      "false_exclusion_area_km2": 0.0,
+      "symmetric_difference_km2": 0.0
+     },
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 2651,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 2651,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 1823,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 1823,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 120,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 120,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 190,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 190,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 119,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 119,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 115,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 115,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 114,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 114,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 63,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 63,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 107,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 107,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    }
+   },
+   "guardrail_G1_equal_area_identity": {
+    "false_inclusion_km2": 21.209327395443704,
+    "false_exclusion_km2": 21.209756819872613,
+    "abs_difference_km2": 0.0004294244289084759,
+    "relative_to_area": 6.27491367446363e-06,
+    "tolerance": 0.005,
+    "pass": true,
+    "note": "These two areas are identically equal by construction for an equal-area candidate -- ONE number, not two independent findings. Used only to detect projection/polygon-algebra bugs."
+   },
+   "exploratory_target_fi_radius": {
+    "radius_m": 3480.8649792500455,
+    "fi": 0.09970384995064166,
+    "n_inside": 1013,
+    "status": "interior",
+    "target_fi": 0.1,
+    "cap_m": 9853.821960243135,
+    "poi": {
+     "false_inclusion": {
+      "rate": 0.09881422924901186,
+      "numerator": 100,
+      "denominator": 1012,
+      "status": "defined"
+     },
+     "false_exclusion": {
+      "rate": 0.6559788758958883,
+      "numerator": 1739,
+      "denominator": 2651,
+      "status": "defined"
+     },
+     "by_category": {
+      "dining": {
+       "false_inclusion": {
+        "rate": 0.08005822416302766,
+        "numerator": 55,
+        "denominator": 687,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.6533187054306089,
+        "numerator": 1191,
+        "denominator": 1823,
+        "status": "defined"
+       }
+      },
+      "health": {
+       "false_inclusion": {
+        "rate": 0.2,
+        "numerator": 6,
+        "denominator": 30,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.8,
+        "numerator": 96,
+        "denominator": 120,
+        "status": "defined"
+       }
+      },
+      "education": {
+       "false_inclusion": {
+        "rate": 0.09523809523809523,
+        "numerator": 6,
+        "denominator": 63,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.7,
+        "numerator": 133,
+        "denominator": 190,
+        "status": "defined"
+       }
+      },
+      "lodging": {
+       "false_inclusion": {
+        "rate": 0.06756756756756757,
+        "numerator": 5,
+        "denominator": 74,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.42016806722689076,
+        "numerator": 50,
+        "denominator": 119,
+        "status": "defined"
+       }
+      },
+      "shopping": {
+       "false_inclusion": {
+        "rate": 0.23684210526315788,
+        "numerator": 9,
+        "denominator": 38,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.7478260869565218,
+        "numerator": 86,
+        "denominator": 115,
+        "status": "defined"
+       }
+      },
+      "fuel_ev": {
+       "false_inclusion": {
+        "rate": 0.1774193548387097,
+        "numerator": 11,
+        "denominator": 62,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.5526315789473685,
+        "numerator": 63,
+        "denominator": 114,
+        "status": "defined"
+       }
+      },
+      "culture": {
+       "false_inclusion": {
+        "rate": 0.17647058823529413,
+        "numerator": 3,
+        "denominator": 17,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.7777777777777778,
+        "numerator": 49,
+        "denominator": 63,
+        "status": "defined"
+       }
+      },
+      "parks": {
+       "false_inclusion": {
+        "rate": 0.12195121951219512,
+        "numerator": 5,
+        "denominator": 41,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.6635514018691588,
+        "numerator": 71,
+        "denominator": 107,
+        "status": "defined"
+       }
+      }
+     }
+    },
+    "geometry": {
+     "candidate_area_km2": 38.0646203595374,
+     "reference_area_km2": 68.4351134034019,
+     "intersection_km2": 32.96065189116177,
+     "iou": 0.44820592061010245,
+     "false_inclusion_area_km2": 5.103968468375678,
+     "false_exclusion_area_km2": 35.474461512240104,
+     "symmetric_difference_km2": 40.57842998061578,
+     "symmetric_difference_pct_of_reference": 0.5929475084145712
+    },
+    "envelope_slack_m": 8343.721373041715,
+    "excluded_from_decision": true,
+    "exclusion_reasons": [
+     "POI-dependent: violates the POI-independence admission rule",
+     "tuned on the same POIs it is then scored against"
+    ]
+   },
+   "status": "ok"
+  },
+  "downtown_san_jose": {
+   "id": "downtown_san_jose",
+   "name": "San Jose City Hall (downtown core)",
+   "network_type": "dense_urban_core",
+   "config_lat": 37.3380339,
+   "config_lon": -121.8853233,
+   "snapped": {
+    "lat": 37.338238,
+    "lon": -121.884902,
+    "snap_distance_m": 44
+   },
+   "isochrone_fetched_utc": "2026-07-29T07:40:12Z",
+   "crs": {
+    "projection": "Azimuthal Equidistant (AEQD), WGS84 datum",
+    "proj4": "+proj=aeqd +lat_0=37.338238 +lon_0=-121.884902 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
+    "cross_check_proj4": "+proj=laea +lat_0=37.338238 +lon_0=-121.884902 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs"
+   },
+   "guardrail_G2_projection": {
+    "aeqd_area_km2": 75.89019335604226,
+    "laea_area_km2": 75.8901890802023,
+    "relative_difference": 5.6342460157739806e-08,
+    "tolerance": 0.001,
+    "pass": true
+   },
+   "isochrone": {
+    "geometry_type": "Polygon",
+    "n_components": 1,
+    "n_holes": 0,
+    "area_km2": 75.89019335604226
+   },
+   "snap_sensitivity_diagnostic": {
+    "note": "Diagnostic added during implementation. It measures the stability of the reference geometry and takes no part in the preregistered pass/fail rule.",
+    "snapped_area_km2": 75.89019335604226,
+    "snapped_equal_area_radius_m": 4914.936297616448,
+    "unsnapped_area_km2": 75.36800822908721,
+    "unsnapped_equal_area_radius_m": 4897.997766567452,
+    "area_ratio_snapped_over_unsnapped": 1.0069284718970923
+   },
+   "shipped_first_ring_bug": {
+    "full_area_km2": 75.89019335604226,
+    "first_ring_area_km2": 75.89019335604226,
+    "area_understated_pct": 0.0,
+    "full_equal_area_radius_m": 4914.936297616448,
+    "shipped_equal_area_radius_m": 4914.936297616448
+   },
+   "radii_m": {
+    "equal_area": 4914.936297616448,
+    "inscribed": 3057.5720873919286,
+    "search_cap": 10403.701926599357
+   },
+   "query_envelope": {
+    "margin": 0.1,
+    "bbox_south_west_north_east": [
+     37.225665,
+     -122.025995,
+     37.450726,
+     -121.743809
+    ],
+    "projected_bounds_m": [
+     -12484.442311919229,
+     -12484.442311919229,
+     12484.442311919229,
+     12484.442311919229
+    ],
+    "composed_of": [
+     "isochrone",
+     "equal_area_circle",
+     "inscribed_circle_fixed_center",
+     "search_cap"
+    ],
+    "note": "POI-independent by construction; the exploratory target-FI candidate took no part in defining it"
+   },
+   "poi_universe": {
+    "count": 10364,
+    "stats": {
+     "osm_raw": 5172,
+     "osm_kept": 5095,
+     "osm_dropped_dup": 40,
+     "overture_raw": 51600,
+     "overture_kept": 5269,
+     "overture_dropped_dup": 3305,
+     "overture_dropped_confidence": 8077
+    },
+    "overpass_cache_hit": true,
+    "overture_cache_hit": true,
+    "overture_release": "2026-07-22.0",
+    "overture_min_confidence": 0.6,
+    "overpass_query_sha256": "ed8979a77eec5240e0224ff449484c0c627f96c5777f3fe200ffc2dc92b5eaa0",
+    "dedup_rules": {
+     "osm_internal": "same name within 150 m, per category",
+     "cross_source": "merge_overture.same_place: exact name <300 m, name containment <150 m, or equal house-number + first street word"
+    },
+    "frozen_utc": "2026-07-29T07:40:44Z"
+   },
+   "assertion_A1_envelope_slack": {
+    "equal_area_circle": {
+     "slack_m": 7569.50601430278,
+     "pass": true
+    },
+    "inscribed_circle_fixed_center": {
+     "slack_m": 9426.8702245273,
+     "pass": true
+    },
+    "true_isochrone": {
+     "slack_m": 3165.347481961895,
+     "pass": true
+    },
+    "search_cap": {
+     "slack_m": 2080.740385319872,
+     "pass": true
+    }
+   },
+   "candidates": {
+    "equal_area_circle": {
+     "geometry": {
+      "candidate_area_km2": 75.88971715163032,
+      "reference_area_km2": 75.89019335604226,
+      "intersection_km2": 64.68550096917693,
+      "iou": 0.7427055457627973,
+      "false_inclusion_area_km2": 11.204216182453212,
+      "false_exclusion_area_km2": 11.204692386865295,
+      "symmetric_difference_km2": 22.408908569318495,
+      "symmetric_difference_pct_of_reference": 0.29528068882610553
+     },
+     "directional_check": [
+      {
+       "bearing_deg": 0,
+       "target_lat": 37.382523,
+       "target_lon": -121.884902,
+       "valhalla_route_estimated_free_flow_min": 12.35,
+       "route_length_km": 7.0,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 45,
+       "target_lat": 37.369546,
+       "target_lon": -121.845667,
+       "valhalla_route_estimated_free_flow_min": 10.74,
+       "route_length_km": 8.307,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 90,
+       "target_lat": 37.338225,
+       "target_lon": -121.829439,
+       "valhalla_route_estimated_free_flow_min": 10.79,
+       "route_length_km": 7.234,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 135,
+       "target_lat": 37.306917,
+       "target_lon": -121.8457,
+       "valhalla_route_estimated_free_flow_min": 12.68,
+       "route_length_km": 9.145,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 180,
+       "target_lat": 37.293953,
+       "target_lon": -121.884902,
+       "valhalla_route_estimated_free_flow_min": 10.35,
+       "route_length_km": 7.968,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 225,
+       "target_lat": 37.306917,
+       "target_lon": -121.924104,
+       "valhalla_route_estimated_free_flow_min": 12.48,
+       "route_length_km": 6.719,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 270,
+       "target_lat": 37.338225,
+       "target_lon": -121.940365,
+       "valhalla_route_estimated_free_flow_min": 10.67,
+       "route_length_km": 7.108,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 315,
+       "target_lat": 37.369546,
+       "target_lon": -121.924137,
+       "valhalla_route_estimated_free_flow_min": 10.03,
+       "route_length_km": 6.609,
+       "status": "ok"
+      }
+     ],
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.04247104247104247,
+       "numerator": 121,
+       "denominator": 2849,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.13698196773173046,
+       "numerator": 433,
+       "denominator": 3161,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.03120042305658382,
+         "numerator": 59,
+         "denominator": 1891,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.14111579934364746,
+         "numerator": 301,
+         "denominator": 2133,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.04285714285714286,
+         "numerator": 6,
+         "denominator": 140,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.20238095238095238,
+         "numerator": 34,
+         "denominator": 168,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.11946902654867257,
+         "numerator": 27,
+         "denominator": 226,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.05238095238095238,
+         "numerator": 11,
+         "denominator": 210,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.030303030303030304,
+         "numerator": 3,
+         "denominator": 99,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.16521739130434782,
+         "numerator": 19,
+         "denominator": 115,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.04054054054054054,
+         "numerator": 6,
+         "denominator": 148,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.16470588235294117,
+         "numerator": 28,
+         "denominator": 170,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.017699115044247787,
+         "numerator": 2,
+         "denominator": 113,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.24489795918367346,
+         "numerator": 36,
+         "denominator": 147,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.04395604395604396,
+         "numerator": 4,
+         "denominator": 91,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 87,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.09929078014184398,
+         "numerator": 14,
+         "denominator": 141,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.030534351145038167,
+         "numerator": 4,
+         "denominator": 131,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    },
+    "inscribed_circle_fixed_center": {
+     "geometry": {
+      "candidate_area_km2": 29.36977082018596,
+      "reference_area_km2": 75.89019335604226,
+      "intersection_km2": 29.369770820185927,
+      "iou": 0.3870035049508479,
+      "false_inclusion_area_km2": 0.0,
+      "false_exclusion_area_km2": 46.52042253585638,
+      "symmetric_difference_km2": 46.52042253585638,
+      "symmetric_difference_pct_of_reference": 0.6129964950491524
+     },
+     "directional_check": [
+      {
+       "bearing_deg": 0,
+       "target_lat": 37.365788,
+       "target_lon": -121.884902,
+       "valhalla_route_estimated_free_flow_min": 8.15,
+       "route_length_km": 4.128,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 45,
+       "target_lat": 37.357716,
+       "target_lon": -121.860498,
+       "valhalla_route_estimated_free_flow_min": 6.76,
+       "route_length_km": 3.841,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 90,
+       "target_lat": 37.338233,
+       "target_lon": -121.850398,
+       "valhalla_route_estimated_free_flow_min": 10.86,
+       "route_length_km": 10.11,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 135,
+       "target_lat": 37.318755,
+       "target_lon": -121.860511,
+       "valhalla_route_estimated_free_flow_min": 7.93,
+       "route_length_km": 3.971,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 180,
+       "target_lat": 37.310688,
+       "target_lon": -121.884902,
+       "valhalla_route_estimated_free_flow_min": 7.02,
+       "route_length_km": 4.365,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 225,
+       "target_lat": 37.318755,
+       "target_lon": -121.909293,
+       "valhalla_route_estimated_free_flow_min": 7.34,
+       "route_length_km": 3.82,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 270,
+       "target_lat": 37.338233,
+       "target_lon": -121.919406,
+       "valhalla_route_estimated_free_flow_min": 6.42,
+       "route_length_km": 3.638,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 315,
+       "target_lat": 37.357716,
+       "target_lon": -121.909306,
+       "valhalla_route_estimated_free_flow_min": 7.94,
+       "route_length_km": 4.062,
+       "status": "ok"
+      }
+     ],
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 1706,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.46029737424865547,
+       "numerator": 1455,
+       "denominator": 3161,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 1195,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.43975621190811065,
+         "numerator": 938,
+         "denominator": 2133,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 51,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.6964285714285714,
+         "numerator": 117,
+         "denominator": 168,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 120,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.42857142857142855,
+         "numerator": 90,
+         "denominator": 210,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 48,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.5826086956521739,
+         "numerator": 67,
+         "denominator": 115,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 80,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.5294117647058824,
+         "numerator": 90,
+         "denominator": 170,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 58,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.6054421768707483,
+         "numerator": 89,
+         "denominator": 147,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 70,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.19540229885057472,
+         "numerator": 17,
+         "denominator": 87,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 84,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.35877862595419846,
+         "numerator": 47,
+         "denominator": 131,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    },
+    "true_isochrone": {
+     "geometry": {
+      "iou": 1.0,
+      "note": "Definitional, not evidence: the true isochrone is the reference geometry being compared with itself. Its merit is only that it adds no approximation on top of the model's; it is NOT real-world accuracy.",
+      "candidate_area_km2": 75.89019335604226,
+      "reference_area_km2": 75.89019335604226,
+      "false_inclusion_area_km2": 0.0,
+      "false_exclusion_area_km2": 0.0,
+      "symmetric_difference_km2": 0.0
+     },
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 3161,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 3161,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 2133,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 2133,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 168,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 168,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 210,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 210,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 115,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 115,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 170,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 170,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 147,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 147,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 87,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 87,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 131,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 131,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    }
+   },
+   "guardrail_G1_equal_area_identity": {
+    "false_inclusion_km2": 11.204216182453212,
+    "false_exclusion_km2": 11.204692386865295,
+    "abs_difference_km2": 0.0004762044120827369,
+    "relative_to_area": 6.2749136749277e-06,
+    "tolerance": 0.005,
+    "pass": true,
+    "note": "These two areas are identically equal by construction for an equal-area candidate -- ONE number, not two independent findings. Used only to detect projection/polygon-algebra bugs."
+   },
+   "exploratory_target_fi_radius": {
+    "radius_m": 5433.4326138025845,
+    "fi": 0.09987929993964997,
+    "n_inside": 3314,
+    "status": "interior",
+    "target_fi": 0.1,
+    "cap_m": 10403.701926599357,
+    "poi": {
+     "false_inclusion": {
+      "rate": 0.09960760639903411,
+      "numerator": 330,
+      "denominator": 3313,
+      "status": "defined"
+     },
+     "false_exclusion": {
+      "rate": 0.056311293894337235,
+      "numerator": 178,
+      "denominator": 3161,
+      "status": "defined"
+     },
+     "by_category": {
+      "dining": {
+       "false_inclusion": {
+        "rate": 0.07258437355524734,
+        "numerator": 157,
+        "denominator": 2163,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.059540553211439286,
+        "numerator": 127,
+        "denominator": 2133,
+        "status": "defined"
+       }
+      },
+      "health": {
+       "false_inclusion": {
+        "rate": 0.15508021390374332,
+        "numerator": 29,
+        "denominator": 187,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.05952380952380952,
+        "numerator": 10,
+        "denominator": 168,
+        "status": "defined"
+       }
+      },
+      "education": {
+       "false_inclusion": {
+        "rate": 0.2196969696969697,
+        "numerator": 58,
+        "denominator": 264,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.01904761904761905,
+        "numerator": 4,
+        "denominator": 210,
+        "status": "defined"
+       }
+      },
+      "lodging": {
+       "false_inclusion": {
+        "rate": 0.07692307692307693,
+        "numerator": 9,
+        "denominator": 117,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.06086956521739131,
+        "numerator": 7,
+        "denominator": 115,
+        "status": "defined"
+       }
+      },
+      "shopping": {
+       "false_inclusion": {
+        "rate": 0.15508021390374332,
+        "numerator": 29,
+        "denominator": 187,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.07058823529411765,
+        "numerator": 12,
+        "denominator": 170,
+        "status": "defined"
+       }
+      },
+      "fuel_ev": {
+       "false_inclusion": {
+        "rate": 0.05755395683453238,
+        "numerator": 8,
+        "denominator": 139,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.10884353741496598,
+        "numerator": 16,
+        "denominator": 147,
+        "status": "defined"
+       }
+      },
+      "culture": {
+       "false_inclusion": {
+        "rate": 0.07446808510638298,
+        "numerator": 7,
+        "denominator": 94,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 87,
+        "status": "defined"
+       }
+      },
+      "parks": {
+       "false_inclusion": {
+        "rate": 0.2037037037037037,
+        "numerator": 33,
+        "denominator": 162,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.015267175572519083,
+        "numerator": 2,
+        "denominator": 131,
+        "status": "defined"
+       }
+      }
+     }
+    },
+    "geometry": {
+     "candidate_area_km2": 92.74611314615007,
+     "reference_area_km2": 75.89019335604226,
+     "intersection_km2": 69.79940768236526,
+     "iou": 0.7062079902932269,
+     "false_inclusion_area_km2": 22.94670546378493,
+     "false_exclusion_area_km2": 6.090785673677008,
+     "symmetric_difference_km2": 29.037491137461938,
+     "symmetric_difference_pct_of_reference": 0.3826250778046017
+    },
+    "envelope_slack_m": 7051.009698116644,
+    "excluded_from_decision": true,
+    "exclusion_reasons": [
+     "POI-dependent: violates the POI-independence admission rule",
+     "tuned on the same POIs it is then scored against"
+    ]
+   },
+   "status": "ok"
+  },
+  "half_moon_bay": {
+   "id": "half_moon_bay",
+   "name": "Half Moon Bay State Beach",
+   "network_type": "coastal_exurban_attraction",
+   "config_lat": 37.4784919,
+   "config_lon": -122.449397,
+   "snapped": {
+    "lat": 37.478382,
+    "lon": -122.443643,
+    "snap_distance_m": 508
+   },
+   "isochrone_fetched_utc": "2026-07-29T07:40:50Z",
+   "crs": {
+    "projection": "Azimuthal Equidistant (AEQD), WGS84 datum",
+    "proj4": "+proj=aeqd +lat_0=37.478382 +lon_0=-122.443643 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
+    "cross_check_proj4": "+proj=laea +lat_0=37.478382 +lon_0=-122.443643 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs"
+   },
+   "guardrail_G2_projection": {
+    "aeqd_area_km2": 28.579077925764093,
+    "laea_area_km2": 28.579074256199956,
+    "relative_difference": 1.284003849276735e-07,
+    "tolerance": 0.001,
+    "pass": true
+   },
+   "isochrone": {
+    "geometry_type": "Polygon",
+    "n_components": 1,
+    "n_holes": 0,
+    "area_km2": 28.579077925764093
+   },
+   "snap_sensitivity_diagnostic": {
+    "note": "Diagnostic added during implementation. It measures the stability of the reference geometry and takes no part in the preregistered pass/fail rule.",
+    "snapped_area_km2": 28.579077925764093,
+    "snapped_equal_area_radius_m": 3016.1238439075496,
+    "unsnapped_area_km2": 13.049922677340714,
+    "unsnapped_equal_area_radius_m": 2038.1166311405223,
+    "area_ratio_snapped_over_unsnapped": 2.189980633018423
+   },
+   "shipped_first_ring_bug": {
+    "full_area_km2": 28.579077925764093,
+    "first_ring_area_km2": 28.579077925764093,
+    "area_understated_pct": 0.0,
+    "full_equal_area_radius_m": 3016.1238439075496,
+    "shipped_equal_area_radius_m": 3016.1238439075496
+   },
+   "radii_m": {
+    "equal_area": 3016.1238439075496,
+    "inscribed": 256.8615016377301,
+    "search_cap": 13030.633691017385
+   },
+   "query_envelope": {
+    "margin": 0.1,
+    "bbox_south_west_north_east": [
+     37.33736,
+     -122.62076,
+     37.619269,
+     -122.266526
+    ],
+    "projected_bounds_m": [
+     -15636.760429220862,
+     -15636.760429220862,
+     15636.760429220862,
+     15636.760429220862
+    ],
+    "composed_of": [
+     "isochrone",
+     "equal_area_circle",
+     "inscribed_circle_fixed_center",
+     "search_cap"
+    ],
+    "note": "POI-independent by construction; the exploratory target-FI candidate took no part in defining it"
+   },
+   "poi_universe": {
+    "count": 2682,
+    "stats": {
+     "osm_raw": 1173,
+     "osm_kept": 1147,
+     "osm_dropped_dup": 26,
+     "overture_raw": 12731,
+     "overture_kept": 1535,
+     "overture_dropped_dup": 755,
+     "overture_dropped_confidence": 1757
+    },
+    "overpass_cache_hit": true,
+    "overture_cache_hit": true,
+    "overture_release": "2026-07-22.0",
+    "overture_min_confidence": 0.6,
+    "overpass_query_sha256": "3bfd9ec724bdf9a50c347de86245d8c41c6ab3b1eb21e5a5f36ba53d3e261771",
+    "dedup_rules": {
+     "osm_internal": "same name within 150 m, per category",
+     "cross_source": "merge_overture.same_place: exact name <300 m, name containment <150 m, or equal house-number + first street word"
+    },
+    "frozen_utc": "2026-07-29T07:40:52Z"
+   },
+   "assertion_A1_envelope_slack": {
+    "equal_area_circle": {
+     "slack_m": 12620.636585313312,
+     "pass": true
+    },
+    "inscribed_circle_fixed_center": {
+     "slack_m": 15379.898927583132,
+     "pass": true
+    },
+    "true_isochrone": {
+     "slack_m": 3091.332410287667,
+     "pass": true
+    },
+    "search_cap": {
+     "slack_m": 2606.1267382034766,
+     "pass": true
+    }
+   },
+   "candidates": {
+    "equal_area_circle": {
+     "geometry": {
+      "candidate_area_km2": 28.57889859451718,
+      "reference_area_km2": 28.579077925764093,
+      "intersection_km2": 9.685925381402235,
+      "iou": 0.2040342717247701,
+      "false_inclusion_area_km2": 18.892973213114992,
+      "false_exclusion_area_km2": 18.893152544361882,
+      "symmetric_difference_km2": 37.78612575747687,
+      "symmetric_difference_pct_of_reference": 1.3221604229369697
+     },
+     "directional_check": [
+      {
+       "bearing_deg": 0,
+       "target_lat": 37.505557,
+       "target_lon": -122.443643,
+       "valhalla_route_estimated_free_flow_min": 14.01,
+       "route_length_km": 3.271,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 45,
+       "target_lat": 37.497596,
+       "target_lon": -122.419525,
+       "valhalla_route_estimated_free_flow_min": 11.22,
+       "route_length_km": 6.76,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 90,
+       "target_lat": 37.478377,
+       "target_lon": -122.409544,
+       "valhalla_route_estimated_free_flow_min": 5.91,
+       "route_length_km": 4.906,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 135,
+       "target_lat": 37.459163,
+       "target_lon": -122.419537,
+       "valhalla_route_estimated_free_flow_min": 5.94,
+       "route_length_km": 3.842,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 180,
+       "target_lat": 37.451206,
+       "target_lon": -122.443643,
+       "valhalla_route_estimated_free_flow_min": 4.66,
+       "route_length_km": 4.306,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 225,
+       "target_lat": 37.459163,
+       "target_lon": -122.467749,
+       "valhalla_route_estimated_free_flow_min": 7.93,
+       "route_length_km": 3.93,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 270,
+       "target_lat": 37.478377,
+       "target_lon": -122.477742,
+       "valhalla_route_estimated_free_flow_min": 4.22,
+       "route_length_km": 2.394,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 315,
+       "target_lat": 37.497596,
+       "target_lon": -122.467761,
+       "valhalla_route_estimated_free_flow_min": 3.08,
+       "route_length_km": 3.364,
+       "status": "ok"
+      }
+     ],
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.01098901098901099,
+       "numerator": 2,
+       "denominator": 182,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.34782608695652173,
+       "numerator": 96,
+       "denominator": 276,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 103,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.31788079470198677,
+         "numerator": 48,
+         "denominator": 151,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 4,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.5,
+         "numerator": 4,
+         "denominator": 8,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 10,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.09090909090909091,
+         "numerator": 1,
+         "denominator": 11,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 16,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.4838709677419355,
+         "numerator": 15,
+         "denominator": 31,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 10,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.2857142857142857,
+         "numerator": 4,
+         "denominator": 14,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 11,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.15384615384615385,
+         "numerator": 2,
+         "denominator": 13,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 13,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.35,
+         "numerator": 7,
+         "denominator": 20,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.13333333333333333,
+         "numerator": 2,
+         "denominator": 15,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.5357142857142857,
+         "numerator": 15,
+         "denominator": 28,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    },
+    "inscribed_circle_fixed_center": {
+     "geometry": {
+      "candidate_area_km2": 0.20727416860782177,
+      "reference_area_km2": 28.579077925764093,
+      "intersection_km2": 0.20727416860782147,
+      "iou": 0.007252654167017877,
+      "false_inclusion_area_km2": 0.0,
+      "false_exclusion_area_km2": 28.371803757156258,
+      "symmetric_difference_km2": 28.371803757156258,
+      "symmetric_difference_pct_of_reference": 0.9927473458329816
+     },
+     "directional_check": [
+      {
+       "bearing_deg": 0,
+       "target_lat": 37.480696,
+       "target_lon": -122.443643,
+       "valhalla_route_estimated_free_flow_min": 1.1,
+       "route_length_km": 0.335,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 45,
+       "target_lat": 37.480018,
+       "target_lon": -122.44159,
+       "valhalla_route_estimated_free_flow_min": 1.81,
+       "route_length_km": 0.689,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 90,
+       "target_lat": 37.478382,
+       "target_lon": -122.440739,
+       "valhalla_route_estimated_free_flow_min": 1.29,
+       "route_length_km": 0.67,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 135,
+       "target_lat": 37.476745,
+       "target_lon": -122.44159,
+       "valhalla_route_estimated_free_flow_min": 2.16,
+       "route_length_km": 0.719,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 180,
+       "target_lat": 37.476068,
+       "target_lon": -122.443643,
+       "valhalla_route_estimated_free_flow_min": 1.92,
+       "route_length_km": 0.609,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 225,
+       "target_lat": 37.476745,
+       "target_lon": -122.445696,
+       "valhalla_route_estimated_free_flow_min": 0.98,
+       "route_length_km": 0.313,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 270,
+       "target_lat": 37.478382,
+       "target_lon": -122.446547,
+       "valhalla_route_estimated_free_flow_min": 1.23,
+       "route_length_km": 0.404,
+       "status": "ok"
+      },
+      {
+       "bearing_deg": 315,
+       "target_lat": 37.480018,
+       "target_lon": -122.445696,
+       "valhalla_route_estimated_free_flow_min": 2.43,
+       "route_length_km": 0.608,
+       "status": "ok"
+      }
+     ],
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 1,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.9963768115942029,
+       "numerator": 275,
+       "denominator": 276,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": null,
+         "numerator": 0,
+         "denominator": 0,
+         "status": "undefined / insufficient POIs"
+        },
+        "false_exclusion": {
+         "rate": 1.0,
+         "numerator": 151,
+         "denominator": 151,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": null,
+         "numerator": 0,
+         "denominator": 0,
+         "status": "undefined / insufficient POIs"
+        },
+        "false_exclusion": {
+         "rate": 1.0,
+         "numerator": 8,
+         "denominator": 8,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": null,
+         "numerator": 0,
+         "denominator": 0,
+         "status": "undefined / insufficient POIs"
+        },
+        "false_exclusion": {
+         "rate": 1.0,
+         "numerator": 11,
+         "denominator": 11,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": null,
+         "numerator": 0,
+         "denominator": 0,
+         "status": "undefined / insufficient POIs"
+        },
+        "false_exclusion": {
+         "rate": 1.0,
+         "numerator": 31,
+         "denominator": 31,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": null,
+         "numerator": 0,
+         "denominator": 0,
+         "status": "undefined / insufficient POIs"
+        },
+        "false_exclusion": {
+         "rate": 1.0,
+         "numerator": 14,
+         "denominator": 14,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": null,
+         "numerator": 0,
+         "denominator": 0,
+         "status": "undefined / insufficient POIs"
+        },
+        "false_exclusion": {
+         "rate": 1.0,
+         "numerator": 13,
+         "denominator": 13,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": null,
+         "numerator": 0,
+         "denominator": 0,
+         "status": "undefined / insufficient POIs"
+        },
+        "false_exclusion": {
+         "rate": 1.0,
+         "numerator": 20,
+         "denominator": 20,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 1,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.9642857142857143,
+         "numerator": 27,
+         "denominator": 28,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    },
+    "true_isochrone": {
+     "geometry": {
+      "iou": 1.0,
+      "note": "Definitional, not evidence: the true isochrone is the reference geometry being compared with itself. Its merit is only that it adds no approximation on top of the model's; it is NOT real-world accuracy.",
+      "candidate_area_km2": 28.579077925764093,
+      "reference_area_km2": 28.579077925764093,
+      "false_inclusion_area_km2": 0.0,
+      "false_exclusion_area_km2": 0.0,
+      "symmetric_difference_km2": 0.0
+     },
+     "poi": {
+      "false_inclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 276,
+       "status": "defined"
+      },
+      "false_exclusion": {
+       "rate": 0.0,
+       "numerator": 0,
+       "denominator": 276,
+       "status": "defined"
+      },
+      "by_category": {
+       "dining": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 151,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 151,
+         "status": "defined"
+        }
+       },
+       "health": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 8,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 8,
+         "status": "defined"
+        }
+       },
+       "education": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 11,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 11,
+         "status": "defined"
+        }
+       },
+       "lodging": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 31,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 31,
+         "status": "defined"
+        }
+       },
+       "shopping": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 14,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 14,
+         "status": "defined"
+        }
+       },
+       "fuel_ev": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 13,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 13,
+         "status": "defined"
+        }
+       },
+       "culture": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 20,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 20,
+         "status": "defined"
+        }
+       },
+       "parks": {
+        "false_inclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 28,
+         "status": "defined"
+        },
+        "false_exclusion": {
+         "rate": 0.0,
+         "numerator": 0,
+         "denominator": 28,
+         "status": "defined"
+        }
+       }
+      }
+     }
+    }
+   },
+   "guardrail_G1_equal_area_identity": {
+    "false_inclusion_km2": 18.892973213114992,
+    "false_exclusion_km2": 18.893152544361882,
+    "abs_difference_km2": 0.00017933124689051283,
+    "relative_to_area": 6.274913674833623e-06,
+    "tolerance": 0.005,
+    "pass": true,
+    "note": "These two areas are identically equal by construction for an equal-area candidate -- ONE number, not two independent findings. Used only to detect projection/polygon-algebra bugs."
+   },
+   "exploratory_target_fi_radius": {
+    "radius_m": 10336.084621267251,
+    "fi": 0.09933774834437085,
+    "n_inside": 302,
+    "status": "interior",
+    "target_fi": 0.1,
+    "cap_m": 13030.633691017385,
+    "poi": {
+     "false_inclusion": {
+      "rate": 0.09634551495016612,
+      "numerator": 29,
+      "denominator": 301,
+      "status": "defined"
+     },
+     "false_exclusion": {
+      "rate": 0.014492753623188406,
+      "numerator": 4,
+      "denominator": 276,
+      "status": "defined"
+     },
+     "by_category": {
+      "dining": {
+       "false_inclusion": {
+        "rate": 0.01948051948051948,
+        "numerator": 3,
+        "denominator": 154,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 151,
+        "status": "defined"
+       }
+      },
+      "health": {
+       "false_inclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 8,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 8,
+        "status": "defined"
+       }
+      },
+      "education": {
+       "false_inclusion": {
+        "rate": 0.3125,
+        "numerator": 5,
+        "denominator": 16,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 11,
+        "status": "defined"
+       }
+      },
+      "lodging": {
+       "false_inclusion": {
+        "rate": 0.06060606060606061,
+        "numerator": 2,
+        "denominator": 33,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 31,
+        "status": "defined"
+       }
+      },
+      "shopping": {
+       "false_inclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 14,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 14,
+        "status": "defined"
+       }
+      },
+      "fuel_ev": {
+       "false_inclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 13,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.0,
+        "numerator": 0,
+        "denominator": 13,
+        "status": "defined"
+       }
+      },
+      "culture": {
+       "false_inclusion": {
+        "rate": 0.05263157894736842,
+        "numerator": 1,
+        "denominator": 19,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.1,
+        "numerator": 2,
+        "denominator": 20,
+        "status": "defined"
+       }
+      },
+      "parks": {
+       "false_inclusion": {
+        "rate": 0.4090909090909091,
+        "numerator": 18,
+        "denominator": 44,
+        "status": "defined"
+       },
+       "false_exclusion": {
+        "rate": 0.07142857142857142,
+        "numerator": 2,
+        "denominator": 28,
+        "status": "defined"
+       }
+      }
+     }
+    },
+    "geometry": {
+     "candidate_area_km2": 335.6288307619049,
+     "reference_area_km2": 28.579077925764093,
+     "intersection_km2": 27.72930004950677,
+     "iou": 0.0824102909891842,
+     "false_inclusion_area_km2": 307.89953071239785,
+     "false_exclusion_area_km2": 0.8497778762572495,
+     "symmetric_difference_km2": 308.7493085886552,
+     "symmetric_difference_pct_of_reference": 10.803333452207607
+    },
+    "envelope_slack_m": 5300.67580795361,
+    "excluded_from_decision": true,
+    "exclusion_reasons": [
+     "POI-dependent: violates the POI-independence admission rule",
+     "tuned on the same POIs it is then scored against"
+    ]
+   },
+   "status": "ok"
+  }
+ }
+}

@@ -3,5 +3,8 @@ __pycache__/
 *.pyc
 map/cache/
 map/data/isochrone_raw.json
+# Raw cached Overpass/Overture/Valhalla responses for benchmark reruns.
+# Large and regenerable; the frozen POI universe is committed with each run.
+reports/accuracy/.request_cache/
 .DS_Store
 .claude/settings.local.json
