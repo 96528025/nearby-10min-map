@@ -54,9 +54,9 @@ def main():
             failures.append(lm["name_en"])
 
     if failures:
-        print(f"\n{len(failures)} landmark(s) outside the isochrone: {failures}")
+        print(f"\n{len(failures)} landmark(s) outside the circular boundary: {failures}")
         sys.exit(1)
-    print(f"\nAll {len(landmarks)} landmarks are inside the 10-minute isochrone.")
+    print(f"\nAll {len(landmarks)} landmarks are inside the circular boundary.")
 
 
 if __name__ == "__main__":

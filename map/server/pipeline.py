@@ -262,7 +262,11 @@ def osm_facilities(geometry):
 
     out = {"metadata": {"generated_utc": _now(),
                         "source": "OpenStreetMap via Overpass API",
-                        "filter": "named facilities inside the boundary"},
+                        "filter": (
+                            "named facilities inside the displayed equal-area circle "
+                            "derived from the routed 10-minute drive isochrone, not the "
+                            "isochrone geometry itself"
+                        )},
            "categories": {}}
     for key, cfg in CATEGORIES.items():
         items = sorted(buckets[key], key=lambda x: x["name"])
