@@ -13,6 +13,11 @@ free-flow road costs and does not include real-time traffic.
 
 **Public app:** [nearby-10min-map.onrender.com](https://nearby-10min-map.onrender.com)
 
+> **Cold-start note:** [Render's free tier](https://render.com/docs/free) may
+> take about a minute to wake after 15 minutes without inbound traffic and
+> shows a loading page while it starts. One wake-up observed on 2026-08-31
+> took 21.9 seconds; that single observation is not an SLA.
+
 ## Product walkthrough
 
 | Wake / slow-request notice | Phase-one map available | Enrichment complete |
@@ -289,8 +294,9 @@ Referer and browser caching behavior, and no prefetch or bulk download. A
 commercial deployment should replace community endpoints with infrastructure
 that provides an appropriate SLA and usage agreement.
 
-Code is MIT licensed. Map data is © OpenStreetMap contributors under ODbL.
-POI results can include modified Overture Maps Foundation and Foursquare Places
-data. Required notices and the Apache-2.0 text are retained in
+Code is available under the [`MIT License`](LICENSE). Map data is ©
+OpenStreetMap contributors under ODbL. POI results can include modified
+Overture Maps Foundation and Foursquare Places data. Required notices and the
+Apache-2.0 text are retained in
 [`NOTICE`](NOTICE) and
 [`LICENSES/Apache-2.0.txt`](LICENSES/Apache-2.0.txt).
