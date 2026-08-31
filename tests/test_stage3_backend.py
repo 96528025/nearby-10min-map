@@ -94,6 +94,58 @@ def test_nominal_circle_has_fixed_radius_and_closed_geometry():
     )
 
 
+def test_overpass_failure_returns_boundary_and_explicit_empty_facilities(
+        monkeypatch):
+    monkeypatch.setattr(server_app, "OVERTURE_ENRICHMENT_ENABLED", False)
+    monkeypatch.setattr(
+        pipeline,
+        "snap_to_drivable",
+        lambda lat, lon: (lat, lon, 0),
+    )
+    ring = [[
+        [LON - 0.01, LAT - 0.01],
+        [LON + 0.01, LAT - 0.01],
+        [LON + 0.01, LAT + 0.01],
+        [LON - 0.01, LAT + 0.01],
+        [LON - 0.01, LAT - 0.01],
+    ]]
+    monkeypatch.setattr(
+        pipeline,
+        "fetch_isochrone",
+        lambda lat, lon: {
+            "features": [{"geometry": {"coordinates": ring}}]
+        },
+    )
+    monkeypatch.setattr(
+        pipeline,
+        "osm_facilities",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            urllib.error.URLError("Overpass unavailable")
+        ),
+    )
+
+    result = server_app.api_area(LAT, LON, "Apple Park")
+
+    assert result["boundary_mode"] == pipeline.ROUTED_BOUNDARY_MODE
+    assert result["status"] == "osm_only"
+    assert result["total"] == 0
+    assert server_app.OSM_LOOKUP_WARNING in result["warnings"]
+    assert result["facilities"]["metadata"]["osm_lookup_error"] is True
+    assert "unavailable for this response" in result["facilities"][
+        "metadata"
+    ]["source"]
+    assert result["facilities"]["metadata"]["filter"] == (
+        pipeline.ROUTED_FACILITY_FILTER
+    )
+    assert set(result["facilities"]["categories"]) == set(
+        pipeline.CATEGORIES
+    )
+    assert all(
+        category["count"] == 0 and category["items"] == []
+        for category in result["facilities"]["categories"].values()
+    )
+
+
 def test_runtime_and_generator_provenance_stay_in_lockstep():
     assert pipeline.ROUTED_FACILITY_FILTER == (
         fetch_facilities.ROUTED_FACILITY_FILTER
@@ -249,6 +301,28 @@ def test_overture_command_is_pinned_bounded_and_records_provenance(
         "overture_modifications"
     ]
     assert "Foursquare" in result["metadata"]["overture_attribution"]
+
+
+def test_overture_metadata_does_not_claim_osm_merge_when_osm_failed(
+        monkeypatch, square):
+    def fake_run(command, **_kwargs):
+        output = Path(command[command.index("-o") + 1])
+        output.write_text(json.dumps({"features": []}))
+
+    monkeypatch.setattr(pipeline.subprocess, "run", fake_run)
+    facilities = pipeline.empty_osm_facilities(
+        pipeline.NOMINAL_BOUNDARY_MODE
+    )
+
+    result = pipeline.merge_overture(facilities, square)
+
+    assert result["metadata"]["source"] == (
+        "Overture Maps places (OSM Overpass unavailable for this response)"
+    )
+    assert "OSM deduplication" not in result["metadata"][
+        "overture_modifications"
+    ]
+    assert result["metadata"]["filter"] == pipeline.NOMINAL_FACILITY_FILTER
 
 
 def test_health_check_has_no_upstream_dependency():

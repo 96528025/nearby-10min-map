@@ -41,6 +41,10 @@ OVERTURE_DISABLED_WARNING = (
 OVERTURE_FAILED_WARNING = (
     "Overture enrichment failed; current OSM-only results remain usable."
 )
+OSM_LOOKUP_WARNING = (
+    "OSM facility lookup is currently unavailable; the boundary is usable, "
+    "but facility coverage is incomplete."
+)
 
 
 def _env_enabled(name: str, default: bool) -> bool:
@@ -224,9 +228,14 @@ def api_area(lat: float, lon: float, name: str = ""):
             warnings.append(NOMINAL_BOUNDARY_WARNING)
 
         geometry = boundary["features"][0]["geometry"]
-        facilities = pipeline.osm_facilities(
-            geometry, boundary_mode=boundary_mode
-        )
+        try:
+            facilities = pipeline.osm_facilities(
+                geometry, boundary_mode=boundary_mode
+            )
+        except Exception:
+            traceback.print_exc()
+            facilities = pipeline.empty_osm_facilities(boundary_mode)
+            warnings.append(OSM_LOOKUP_WARNING)
         total = pipeline.verify_inside(facilities, geometry)
     except AssertionError as error:
         raise HTTPException(

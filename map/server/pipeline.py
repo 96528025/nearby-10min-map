@@ -298,6 +298,31 @@ def facility_filter_for(boundary_mode):
     raise ValueError(f"unknown boundary mode: {boundary_mode}")
 
 
+def empty_osm_facilities(boundary_mode=ROUTED_BOUNDARY_MODE):
+    """Return an honest, schema-complete result when Overpass is unavailable."""
+    return {
+        "metadata": {
+            "generated_utc": _now(),
+            "source": (
+                "OpenStreetMap via Overpass API "
+                "(unavailable for this response)"
+            ),
+            "filter": facility_filter_for(boundary_mode),
+            "osm_lookup_error": True,
+        },
+        "categories": {
+            key: {
+                "label_zh": config["zh"],
+                "label_en": config["en"],
+                "color": config["color"],
+                "count": 0,
+                "items": [],
+            }
+            for key, config in CATEGORIES.items()
+        },
+    }
+
+
 def osm_facilities(geometry, boundary_mode=ROUTED_BOUNDARY_MODE):
     """Phase 1: named OSM facilities inside the boundary, deduped."""
     elements = overpass_query_all(_bbox(geometry))
@@ -407,8 +432,16 @@ def merge_overture(fac, geometry):
     for cat in fac["categories"].values():
         cat["items"].sort(key=lambda x: x["name"])
         cat["count"] = len(cat["items"])
-    fac["metadata"]["source"] = ("OpenStreetMap (Overpass API) + "
-                                 "Overture Maps places")
+    osm_lookup_failed = fac["metadata"].get("osm_lookup_error") is True
+    if osm_lookup_failed:
+        fac["metadata"]["source"] = (
+            "Overture Maps places "
+            "(OSM Overpass unavailable for this response)"
+        )
+    else:
+        fac["metadata"]["source"] = (
+            "OpenStreetMap (Overpass API) + Overture Maps places"
+        )
     fac["metadata"]["overture_min_confidence"] = MIN_CONFIDENCE
     fac["metadata"]["overture_release"] = OVERTURE_RELEASE
     generated_utc = _now()
@@ -417,10 +450,18 @@ def merge_overture(fac, geometry):
         "Overture Maps Foundation, overturemaps.org; includes Foursquare "
         "Places data © 2024 Foursquare Labs, Inc. under Apache-2.0"
     )
+    transformations = (
+        "confidence/category filtering, boundary subsetting, and coordinate "
+        "rounding"
+        if osm_lookup_failed
+        else (
+            "confidence/category filtering, boundary subsetting, OSM "
+            "deduplication, and coordinate rounding"
+        )
+    )
     fac["metadata"]["overture_modifications"] = (
         f"Modified from Overture Places release {OVERTURE_RELEASE} on "
-        f"{generated_utc} by confidence/category filtering, boundary "
-        "subsetting, OSM deduplication, and coordinate rounding"
+        f"{generated_utc} by {transformations}"
     )
     return fac
 
