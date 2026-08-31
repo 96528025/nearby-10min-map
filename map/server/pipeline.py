@@ -33,7 +33,7 @@ NOMINATIM = "https://nominatim.openstreetmap.org"
 USER_AGENT = os.getenv(
     "UPSTREAM_USER_AGENT",
     "nearby-10min-map/1.0 "
-    "(+https://github.com/96528025/96528025)",
+    "(+https://github.com/96528025/nearby-10min-map)",
 )
 OVERTURE_CLI = Path(sys.executable).parent / "overturemaps"
 OVERTURE_RELEASE = os.getenv("OVERTURE_RELEASE", "2026-08-19.0")

@@ -133,7 +133,7 @@ def test_http_client_sends_contact_user_agent_and_timeout(monkeypatch):
         "user_agent": pipeline.USER_AGENT,
         "timeout": 7,
     }
-    assert "github.com/96528025/96528025" in pipeline.USER_AGENT
+    assert "github.com/96528025/nearby-10min-map" in pipeline.USER_AGENT
 
 
 def test_geocode_raises_only_when_both_sources_fail(monkeypatch):

@@ -25,7 +25,7 @@ OVERPASS = "https://overpass-api.de/api/interpreter"
 USER_AGENT = os.getenv(
     "UPSTREAM_USER_AGENT",
     "nearby-10min-map/1.0 "
-    "(+https://github.com/96528025/96528025)",
+    "(+https://github.com/96528025/nearby-10min-map)",
 )
 OVERPASS_QUERY_TIMEOUT_SECONDS = int(
     os.getenv("OVERPASS_QUERY_TIMEOUT_SECONDS", "120")
