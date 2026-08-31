@@ -11,6 +11,9 @@ queried — the tool is for visitors, not residents.
 import json
 import re
 import datetime
+import argparse
+import os
+import urllib.error
 import urllib.request
 import urllib.parse
 from pathlib import Path
@@ -19,6 +22,28 @@ from verify import point_in_polygon
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 OVERPASS = "https://overpass-api.de/api/interpreter"
+USER_AGENT = os.getenv(
+    "UPSTREAM_USER_AGENT",
+    "nearby-10min-map/1.0 "
+    "(+https://github.com/96528025/96528025)",
+)
+OVERPASS_QUERY_TIMEOUT_SECONDS = int(
+    os.getenv("OVERPASS_QUERY_TIMEOUT_SECONDS", "120")
+)
+OVERPASS_HTTP_TIMEOUT_SECONDS = float(
+    os.getenv("OVERPASS_HTTP_TIMEOUT_SECONDS", "180")
+)
+
+ROUTED_BOUNDARY_MODE = "routed_equal_area_circle"
+NOMINAL_BOUNDARY_MODE = "nominal_radius_circle"
+ROUTED_FACILITY_FILTER = (
+    "named facilities inside the displayed equal-area circle derived from "
+    "the routed 10-minute drive isochrone, not the isochrone geometry itself"
+)
+NOMINAL_FACILITY_FILTER = (
+    "named facilities inside the displayed fixed nominal-radius circle; "
+    "no road-network input was used to derive this boundary"
+)
 
 # category -> (bilingual labels, marker color, list of OSM tag selectors)
 CATEGORIES = {
@@ -68,15 +93,20 @@ def overpass_query_all(bbox):
         for sel in cfg["selectors"]:
             for kind in ("node", "way", "relation"):
                 parts.append(f'{kind}[{sel}][name]({s},{w},{n},{e});')
-    q = f"[out:json][timeout:120];({''.join(parts)});out center tags;"
+    q = (
+        f"[out:json][timeout:{OVERPASS_QUERY_TIMEOUT_SECONDS}];"
+        f"({''.join(parts)});out center tags;"
+    )
     req = urllib.request.Request(
         OVERPASS,
         data=urllib.parse.urlencode({"data": q}).encode(),
-        headers={"User-Agent": "apple-park-visitor-map (educational project)"},
+        headers={"User-Agent": USER_AGENT},
     )
     for attempt in range(4):
         try:
-            with urllib.request.urlopen(req, timeout=180) as r:
+            with urllib.request.urlopen(
+                req, timeout=OVERPASS_HTTP_TIMEOUT_SECONDS
+            ) as r:
                 return json.load(r)["elements"]
         except urllib.error.HTTPError as err:
             if err.code in (429, 504) and attempt < 3:
@@ -117,7 +147,15 @@ def element_coords(el):
     return (c["lat"], c["lon"]) if c else (None, None)
 
 
-def main():
+def facility_filter_for(boundary_mode):
+    if boundary_mode == ROUTED_BOUNDARY_MODE:
+        return ROUTED_FACILITY_FILTER
+    if boundary_mode == NOMINAL_BOUNDARY_MODE:
+        return NOMINAL_FACILITY_FILTER
+    raise ValueError(f"unknown boundary mode: {boundary_mode}")
+
+
+def main(boundary_mode=ROUTED_BOUNDARY_MODE):
     iso = json.loads((DATA / "boundary.json").read_text())
     geometry = iso["features"][0]["geometry"]
     ring = geometry["coordinates"][0]
@@ -130,11 +168,7 @@ def main():
             "generated_utc": datetime.datetime.now(datetime.timezone.utc)
                 .strftime("%Y-%m-%d %H:%M UTC"),
             "source": "OpenStreetMap via Overpass API",
-            "filter": (
-                "named facilities inside the displayed equal-area circle "
-                "derived from the routed 10-minute drive isochrone, not the "
-                "isochrone geometry itself"
-            ),
+            "filter": facility_filter_for(boundary_mode),
         },
         "categories": {},
     }
@@ -209,4 +243,12 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--boundary-mode",
+        choices=(ROUTED_BOUNDARY_MODE, NOMINAL_BOUNDARY_MODE),
+        default=ROUTED_BOUNDARY_MODE,
+        help="Provenance of the displayed circular boundary being filtered",
+    )
+    args = parser.parse_args()
+    main(args.boundary_mode)

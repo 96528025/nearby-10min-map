@@ -9,6 +9,7 @@ verified against the boundary before it is returned.
 """
 import json
 import math
+import os
 import re
 import sys
 import datetime
@@ -29,9 +30,42 @@ from merge_overture import (map_category, same_place,   # noqa: E402
 
 VALHALLA = "https://valhalla1.openstreetmap.de"
 NOMINATIM = "https://nominatim.openstreetmap.org"
-USER_AGENT = "visitor-area-map (educational project)"
+USER_AGENT = os.getenv(
+    "UPSTREAM_USER_AGENT",
+    "nearby-10min-map/1.0 "
+    "(+https://github.com/96528025/96528025)",
+)
 OVERTURE_CLI = Path(sys.executable).parent / "overturemaps"
+OVERTURE_RELEASE = os.getenv("OVERTURE_RELEASE", "2026-08-19.0")
+GEOCODE_TIMEOUT_SECONDS = float(os.getenv("GEOCODE_TIMEOUT_SECONDS", "15"))
+VALHALLA_LOCATE_TIMEOUT_SECONDS = float(
+    os.getenv("VALHALLA_LOCATE_TIMEOUT_SECONDS", "20")
+)
+VALHALLA_ISOCHRONE_TIMEOUT_SECONDS = float(
+    os.getenv("VALHALLA_ISOCHRONE_TIMEOUT_SECONDS", "60")
+)
+OVERTURE_CONNECT_TIMEOUT_SECONDS = int(
+    os.getenv("OVERTURE_CONNECT_TIMEOUT_SECONDS", "15")
+)
+OVERTURE_REQUEST_TIMEOUT_SECONDS = int(
+    os.getenv("OVERTURE_REQUEST_TIMEOUT_SECONDS", "120")
+)
+OVERTURE_PROCESS_TIMEOUT_SECONDS = float(
+    os.getenv("OVERTURE_PROCESS_TIMEOUT_SECONDS", "600")
+)
+NOMINAL_RADIUS_M = float(os.getenv("NOMINAL_RADIUS_M", "3000"))
 M_PER_DEG_LAT = 111000.0
+
+ROUTED_BOUNDARY_MODE = "routed_equal_area_circle"
+NOMINAL_BOUNDARY_MODE = "nominal_radius_circle"
+ROUTED_FACILITY_FILTER = (
+    "named facilities inside the displayed equal-area circle derived from "
+    "the routed 10-minute drive isochrone, not the isochrone geometry itself"
+)
+NOMINAL_FACILITY_FILTER = (
+    "named facilities inside the displayed fixed nominal-radius circle; "
+    "no road-network input was used to derive this boundary"
+)
 
 
 def m_per_deg_lon(lat):
@@ -53,12 +87,18 @@ def geocode(query, limit=6, bias_lat=None, bias_lon=None):
     Google Visitor Experience when searched near the Bay Area."""
     q = urllib.parse.quote(query)
     candidates = []
+    successful_sources = 0
 
     # Nominatim's exact matches lead (it finds "sjc airport" itself);
     # Photon's fuzzy, view-biased matches fill in the rest (it finds
     # "google visitor center" -> Google Visitor Experience).
     try:
-        for r in http_json(f"{NOMINATIM}/search?format=json&limit={limit}&q={q}"):
+        nominatim_results = http_json(
+            f"{NOMINATIM}/search?format=json&limit={limit}&q={q}",
+            timeout=GEOCODE_TIMEOUT_SECONDS,
+        )
+        successful_sources += 1
+        for r in nominatim_results:
             candidates.append({
                 "name": r.get("name") or r["display_name"].split(",")[0],
                 "display_name": r["display_name"],
@@ -72,7 +112,11 @@ def geocode(query, limit=6, bias_lat=None, bias_lon=None):
     if bias_lat is not None and bias_lon is not None:
         photon_url += f"&lat={bias_lat}&lon={bias_lon}"
     try:
-        for f in http_json(photon_url).get("features", []):
+        photon_results = http_json(
+            photon_url, timeout=GEOCODE_TIMEOUT_SECONDS
+        )
+        successful_sources += 1
+        for f in photon_results.get("features", []):
             p = f["properties"]
             lon, lat = f["geometry"]["coordinates"][:2]
             name = p.get("name") or query
@@ -86,6 +130,9 @@ def geocode(query, limit=6, bias_lat=None, bias_lon=None):
             })
     except Exception:
         pass
+
+    if successful_sources == 0:
+        raise RuntimeError("Nominatim and Photon were both unavailable")
 
     seen, out = set(), []
     for c in candidates:
@@ -111,7 +158,9 @@ def _locate_good_edge(lat, lon):
            "costing": "auto", "verbose": True}
     url = f"{VALHALLA}/locate?json=" + urllib.parse.quote(json.dumps(req))
     try:
-        edges = http_json(url, timeout=30)[0].get("edges") or []
+        edges = http_json(
+            url, timeout=VALHALLA_LOCATE_TIMEOUT_SECONDS
+        )[0].get("edges") or []
     except Exception:
         return None
     best = None
@@ -161,7 +210,7 @@ def fetch_isochrone(lat, lon, minutes=10):
     req = {"locations": [{"lat": lat, "lon": lon}], "costing": "auto",
            "contours": [{"time": minutes}], "polygons": True, "denoise": 0.3}
     url = f"{VALHALLA}/isochrone?json=" + urllib.parse.quote(json.dumps(req))
-    iso = http_json(url, timeout=60)
+    iso = http_json(url, timeout=VALHALLA_ISOCHRONE_TIMEOUT_SECONDS)
     if not iso.get("features"):
         raise RuntimeError("Valhalla returned no isochrone")
     return iso
@@ -178,11 +227,6 @@ def boundary_from_isochrone(iso, lat, lon, name):
     area = abs(area) / 2
     radius = math.sqrt(area / math.pi)
 
-    circle = []
-    for i in range(129):
-        b = 2 * math.pi * i / 128
-        circle.append([round(lon + radius * math.sin(b) / m_lon, 6),
-                       round(lat + radius * math.cos(b) / M_PER_DEG_LAT, 6)])
     return {
         "type": "FeatureCollection",
         "metadata": {
@@ -196,7 +240,40 @@ def boundary_from_isochrone(iso, lat, lon, name):
         "features": [{
             "type": "Feature",
             "properties": {"contour": "approx 10 min drive"},
-            "geometry": {"type": "Polygon", "coordinates": [circle]},
+            "geometry": _circle_geometry(lat, lon, radius),
+        }],
+    }
+
+
+def _circle_geometry(lat, lon, radius_m):
+    m_lon = m_per_deg_lon(lat)
+    circle = []
+    for i in range(129):
+        bearing = 2 * math.pi * i / 128
+        circle.append([
+            round(lon + radius_m * math.sin(bearing) / m_lon, 6),
+            round(lat + radius_m * math.cos(bearing) / M_PER_DEG_LAT, 6),
+        ])
+    return {"type": "Polygon", "coordinates": [circle]}
+
+
+def boundary_from_nominal_radius(lat, lon, name, radius_m=NOMINAL_RADIUS_M):
+    """Return an explicitly non-routed fixed-radius fallback boundary."""
+    return {
+        "type": "FeatureCollection",
+        "metadata": {
+            "generated_utc": _now(),
+            "method": (
+                "fixed nominal-radius circle; Valhalla routing was "
+                "unavailable and no road-network input was used"
+            ),
+            "center": {"lat": lat, "lon": lon, "name": name},
+            "radius_m": round(radius_m),
+        },
+        "features": [{
+            "type": "Feature",
+            "properties": {"contour": "fixed-radius approximation"},
+            "geometry": _circle_geometry(lat, lon, radius_m),
         }],
     }
 
@@ -213,7 +290,15 @@ def _bbox(geometry):
     return (min(lats), min(lons), max(lats), max(lons))   # s, w, n, e
 
 
-def osm_facilities(geometry):
+def facility_filter_for(boundary_mode):
+    if boundary_mode == ROUTED_BOUNDARY_MODE:
+        return ROUTED_FACILITY_FILTER
+    if boundary_mode == NOMINAL_BOUNDARY_MODE:
+        return NOMINAL_FACILITY_FILTER
+    raise ValueError(f"unknown boundary mode: {boundary_mode}")
+
+
+def osm_facilities(geometry, boundary_mode=ROUTED_BOUNDARY_MODE):
     """Phase 1: named OSM facilities inside the boundary, deduped."""
     elements = overpass_query_all(_bbox(geometry))
     DEDUP_METERS = 150
@@ -262,11 +347,7 @@ def osm_facilities(geometry):
 
     out = {"metadata": {"generated_utc": _now(),
                         "source": "OpenStreetMap via Overpass API",
-                        "filter": (
-                            "named facilities inside the displayed equal-area circle "
-                            "derived from the routed 10-minute drive isochrone, not the "
-                            "isochrone geometry itself"
-                        )},
+                        "filter": facility_filter_for(boundary_mode)},
            "categories": {}}
     for key, cfg in CATEGORIES.items():
         items = sorted(buckets[key], key=lambda x: x["name"])
@@ -285,8 +366,12 @@ def merge_overture(fac, geometry):
     try:
         subprocess.run(
             [str(OVERTURE_CLI), "download", f"--bbox={w},{s},{e},{n}",
-             "-f", "geojson", "--type=place", "-o", tmp],
-            check=True, capture_output=True, timeout=600)
+             "-f", "geojson", "--type=place", "-r", OVERTURE_RELEASE,
+             "--connect_timeout", str(OVERTURE_CONNECT_TIMEOUT_SECONDS),
+             "--request_timeout", str(OVERTURE_REQUEST_TIMEOUT_SECONDS),
+             "-o", tmp],
+            check=True, capture_output=True,
+            timeout=OVERTURE_PROCESS_TIMEOUT_SECONDS)
         places = json.loads(Path(tmp).read_text())["features"]
     finally:
         Path(tmp).unlink(missing_ok=True)
@@ -325,7 +410,18 @@ def merge_overture(fac, geometry):
     fac["metadata"]["source"] = ("OpenStreetMap (Overpass API) + "
                                  "Overture Maps places")
     fac["metadata"]["overture_min_confidence"] = MIN_CONFIDENCE
-    fac["metadata"]["generated_utc"] = _now()
+    fac["metadata"]["overture_release"] = OVERTURE_RELEASE
+    generated_utc = _now()
+    fac["metadata"]["generated_utc"] = generated_utc
+    fac["metadata"]["overture_attribution"] = (
+        "Overture Maps Foundation, overturemaps.org; includes Foursquare "
+        "Places data © 2024 Foursquare Labs, Inc. under Apache-2.0"
+    )
+    fac["metadata"]["overture_modifications"] = (
+        f"Modified from Overture Places release {OVERTURE_RELEASE} on "
+        f"{generated_utc} by confidence/category filtering, boundary "
+        "subsetting, OSM deduplication, and coordinate rounding"
+    )
     return fac
 
 
