@@ -2,7 +2,7 @@
  "metadata": {
   "generated_utc": "2026-07-12 22:58 UTC",
   "source": "OpenStreetMap (Overpass API) + Overture Maps places",
-  "filter": "named facilities inside the 10-min drive isochrone",
+  "filter": "named facilities inside the displayed equal-area circle derived from the routed 10-minute drive isochrone, not the isochrone geometry itself",
   "overture_min_confidence": 0.6
  },
  "categories": {

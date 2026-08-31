@@ -130,7 +130,11 @@ def main():
             "generated_utc": datetime.datetime.now(datetime.timezone.utc)
                 .strftime("%Y-%m-%d %H:%M UTC"),
             "source": "OpenStreetMap via Overpass API",
-            "filter": "named facilities inside the 10-min drive isochrone",
+            "filter": (
+                "named facilities inside the displayed equal-area circle "
+                "derived from the routed 10-minute drive isochrone, not the "
+                "isochrone geometry itself"
+            ),
         },
         "categories": {},
     }
