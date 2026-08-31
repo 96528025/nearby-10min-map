@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://json.schemastore.org/render.json
+
+services:
+  - type: web
+    name: nearby-10min-map
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    envVars:
+      # Keep the full two-stage path enabled for the initial live smoke test.
+      # Set to "false" if the Overture CLI exceeds the free plan's memory.
+      - key: ENABLE_OVERTURE
+        value: "true"
+      - key: OVERTURE_RELEASE
+        value: "2026-08-19.0"
