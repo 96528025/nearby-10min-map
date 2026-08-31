@@ -212,6 +212,20 @@ def test_geocode_raises_only_when_both_sources_fail(monkeypatch):
     assert calls == 2
 
 
+def test_snap_stops_probing_when_valhalla_locate_is_unavailable(monkeypatch):
+    calls = []
+
+    def unavailable(url, timeout):
+        calls.append((url, timeout))
+        raise TimeoutError("locate unavailable")
+
+    monkeypatch.setattr(pipeline, "http_json", unavailable)
+
+    assert pipeline.snap_to_drivable(LAT, LON) == (LAT, LON, None)
+    assert len(calls) == 1
+    assert calls[0][1] <= pipeline.VALHALLA_LOCATE_TIMEOUT_SECONDS
+
+
 def test_overpass_client_sends_same_contact_and_has_timeout(monkeypatch):
     captured = {}
 

@@ -36,10 +36,10 @@ USER_AGENT = os.getenv(
     "(+https://github.com/96528025/nearby-10min-map)",
 )
 OVERPASS_QUERY_TIMEOUT_SECONDS = int(
-    os.getenv("OVERPASS_QUERY_TIMEOUT_SECONDS", "120")
+    os.getenv("OVERPASS_QUERY_TIMEOUT_SECONDS", "25")
 )
 OVERPASS_HTTP_TIMEOUT_SECONDS = float(
-    os.getenv("OVERPASS_HTTP_TIMEOUT_SECONDS", "180")
+    os.getenv("OVERPASS_HTTP_TIMEOUT_SECONDS", "30")
 )
 
 ROUTED_BOUNDARY_MODE = "routed_equal_area_circle"

@@ -16,3 +16,13 @@ services:
         value: "true"
       - key: OVERTURE_RELEASE
         value: "2026-08-19.0"
+      - key: VALHALLA_LOCATE_TIMEOUT_SECONDS
+        value: "5"
+      - key: SNAP_TOTAL_TIMEOUT_SECONDS
+        value: "20"
+      - key: VALHALLA_ISOCHRONE_TIMEOUT_SECONDS
+        value: "30"
+      - key: OVERPASS_QUERY_TIMEOUT_SECONDS
+        value: "25"
+      - key: OVERPASS_HTTP_TIMEOUT_SECONDS
+        value: "30"

@@ -12,6 +12,7 @@ import math
 import os
 import re
 import sys
+import time
 import datetime
 import subprocess
 import tempfile
@@ -39,10 +40,13 @@ OVERTURE_CLI = Path(sys.executable).parent / "overturemaps"
 OVERTURE_RELEASE = os.getenv("OVERTURE_RELEASE", "2026-08-19.0")
 GEOCODE_TIMEOUT_SECONDS = float(os.getenv("GEOCODE_TIMEOUT_SECONDS", "15"))
 VALHALLA_LOCATE_TIMEOUT_SECONDS = float(
-    os.getenv("VALHALLA_LOCATE_TIMEOUT_SECONDS", "20")
+    os.getenv("VALHALLA_LOCATE_TIMEOUT_SECONDS", "5")
+)
+SNAP_TOTAL_TIMEOUT_SECONDS = float(
+    os.getenv("SNAP_TOTAL_TIMEOUT_SECONDS", "20")
 )
 VALHALLA_ISOCHRONE_TIMEOUT_SECONDS = float(
-    os.getenv("VALHALLA_ISOCHRONE_TIMEOUT_SECONDS", "60")
+    os.getenv("VALHALLA_ISOCHRONE_TIMEOUT_SECONDS", "30")
 )
 OVERTURE_CONNECT_TIMEOUT_SECONDS = int(
     os.getenv("OVERTURE_CONNECT_TIMEOUT_SECONDS", "15")
@@ -151,7 +155,11 @@ GOOD_ROAD_CLASSES = {"motorway", "trunk", "primary", "secondary",
                      "tertiary", "unclassified", "residential"}
 
 
-def _locate_good_edge(lat, lon):
+class LocateUnavailable(RuntimeError):
+    """Valhalla /locate could not be reached within the request budget."""
+
+
+def _locate_good_edge(lat, lon, timeout=VALHALLA_LOCATE_TIMEOUT_SECONDS):
     """Nearest GOOD_ROAD_CLASSES edge around a point, or None."""
     req = {"locations": [{"lat": lat, "lon": lon, "radius": 400,
                           "search_cutoff": 400}],
@@ -159,10 +167,10 @@ def _locate_good_edge(lat, lon):
     url = f"{VALHALLA}/locate?json=" + urllib.parse.quote(json.dumps(req))
     try:
         edges = http_json(
-            url, timeout=VALHALLA_LOCATE_TIMEOUT_SECONDS
+            url, timeout=timeout
         )[0].get("edges") or []
-    except Exception:
-        return None
+    except Exception as error:
+        raise LocateUnavailable("Valhalla locate unavailable") from error
     best = None
     for e in edges:
         cls = (e.get("edge", {}).get("classification", {})
@@ -187,20 +195,35 @@ def snap_to_drivable(lat, lon):
     def dist_m(clat, clon):
         return math.hypot((clon - lon) * m_lon, (clat - lat) * M_PER_DEG_LAT)
 
-    best = _locate_good_edge(lat, lon)
-    if best is None:
-        for ring_m in (500, 1000, 1500, 2000):
-            hits = []
-            for i in range(8):
-                b = 2 * math.pi * i / 8
-                plat = lat + ring_m * math.cos(b) / M_PER_DEG_LAT
-                plon = lon + ring_m * math.sin(b) / m_lon
-                hit = _locate_good_edge(plat, plon)
-                if hit:
-                    hits.append(hit)
-            if hits:
-                best = min(hits, key=lambda h: dist_m(h[1], h[2]))
-                break
+    deadline = time.monotonic() + SNAP_TOTAL_TIMEOUT_SECONDS
+
+    def locate(probe_lat, probe_lon):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise LocateUnavailable("Valhalla locate budget exhausted")
+        return _locate_good_edge(
+            probe_lat,
+            probe_lon,
+            timeout=min(VALHALLA_LOCATE_TIMEOUT_SECONDS, remaining),
+        )
+
+    try:
+        best = locate(lat, lon)
+        if best is None:
+            for ring_m in (500, 1000, 1500, 2000):
+                hits = []
+                for i in range(8):
+                    b = 2 * math.pi * i / 8
+                    plat = lat + ring_m * math.cos(b) / M_PER_DEG_LAT
+                    plon = lon + ring_m * math.sin(b) / m_lon
+                    hit = locate(plat, plon)
+                    if hit:
+                        hits.append(hit)
+                if hits:
+                    best = min(hits, key=lambda h: dist_m(h[1], h[2]))
+                    break
+    except LocateUnavailable:
+        return lat, lon, None
     if best is None:
         return lat, lon, None
     return best[1], best[2], round(dist_m(best[1], best[2]))
