@@ -3,6 +3,14 @@
 **Date:** 2026-07-29 · **Scope:** Run 1 — audit and record only. No vendor
 switching, no tile prefetching, no UI changes are made in this round.
 
+**Remediation update, 2026-08-31:** the repository-level Overture/Foursquare
+licensing work identified below is now implemented in `NOTICE` and
+`LICENSES/Apache-2.0.txt`. The production release decision is
+`2026-08-19.0`; the older `2026-07-22.0` release remains only the frozen input
+to the Run 1 audit sample and benchmark. The committed static facilities
+snapshot does not record which Overture release produced it, so its release is
+reported as **unknown**, not inferred retroactively.
+
 This is an audit, not a from-scratch build: `map/index.html:116` already
 attributes OpenStreetMap, Valhalla (FOSSGIS) and Overture Maps in the Leaflet
 attribution control. The questions are whether that attribution is always
@@ -59,18 +67,26 @@ the same layout defect family.
 |---|---|---|---|---|
 | `map/data/isochrone.json` | yes | yes (Valhalla FOSSGIS, costing, contour, free-flow disclosed) | no engine/graph version | Good, minor gap |
 | `map/data/boundary.json` | yes | method string | n/a | OK |
-| `map/data/facilities.json` | yes | "OpenStreetMap (Overpass API) + Overture Maps places" | **no Overture release** | **Gap** |
-| `/api/area` responses | yes | same string | **no Overture release** | **Gap** |
+| `map/data/facilities.json` | yes | "OpenStreetMap (Overpass API) + Overture Maps places" | **unknown; not recorded when generated** | Historical gap; do not guess |
+| `/api/area` responses | yes | boundary-mode-specific filter and source metadata | `2026-08-19.0` for newly enriched results | **Remediated 2026-08-31** |
 
-**The Overture release is recorded nowhere in the shipped product.**
-`pipeline.merge_overture` (pipeline.py:282) invokes the CLI without `-r`, so it
-silently takes whatever "latest" was at run time. Two runs a month apart are
-not comparable and neither can be reproduced, and the release is exactly what
-determines which NOTICE applies (§3).
+At the time of the original audit, **the Overture release was recorded nowhere
+in the shipped product.** `pipeline.merge_overture` (then at pipeline.py:282)
+invoked the CLI without `-r`, so it silently took whatever "latest" was at run
+time. Two runs a month apart were not comparable, and the release helps
+determine which source notices apply (§3).
 
-The Run 1 benchmark does this correctly: it pins `-r 2026-07-22.0` and records
-the release in `results.json` and `poi_universe.json`. The production pipeline
-should adopt the same in a later round.
+The Run 1 benchmark pins `-r 2026-07-22.0` and records that release in
+`results.json` and `poi_universe.json`; that remains a valid frozen audit
+sample, not the production release decision. For production, this project
+selects **`2026-08-19.0`** because Overture's official release calendar lists
+it as the current release on 2026-08-31, its release notes identify schema
+`v1.18.0`, and a fixed release prevents silent month-to-month drift. Overture
+retains public data buckets for only the two most recent monthly releases, so
+"latest" is neither a durable provenance value nor a reproducibility plan.
+
+This decision does not rewrite history: `map/data/facilities.json` was generated
+without a recorded release, and its Overture release remains unknown.
 
 ---
 
@@ -80,8 +96,9 @@ The generic line "Data from Overture" in `README.md:64` is **not sufficient**.
 Overture licences by theme, and within the Places theme by the source dataset
 of each individual record.
 
-Theme in use: **Places only** (`--type=place`, pipeline.py:283). Release used
-by the benchmark: **`2026-07-22.0`**.
+Theme in use: **Places only** (`--type=place`). Production release selected on
+2026-08-31: **`2026-08-19.0`**. Release used by the original audit sample and
+benchmark: **`2026-07-22.0`**.
 
 ### This is not hypothetical — Foursquare records are actually ingested
 
@@ -105,17 +122,23 @@ GeoJSON feature carries a `sources[]` array with a per-entry `license` field,
 which is how the table above was produced — it is a property of the data, not
 an assumption.)
 
-So the Places theme delivers **three different licences at once**, and the
-Apache-2.0 subset is live in this project's output.
+So the sampled Places data delivered **three different licences at once**, and
+the Apache-2.0 subset was live in this project's filtered sample. Overture's
+current first-party Places documentation independently confirms that
+Foursquare-derived Places records are Apache-2.0 data; the table remains a
+measurement of the frozen July sample, not a claimed August source count.
 
 ### What Apache-2.0 requires here
 
 For the Foursquare-sourced subset the project must:
 
 1. Include a copy of the **Apache License 2.0**.
-2. Retain the Foursquare **NOTICE** — `Copyright 2024 Foursquare Labs, Inc.`
-   Upstream publishes it at
-   <https://opensource.foursquare.com/places-notice-txt/>.
+2. Retain the Foursquare **NOTICE**. Overture's attribution page currently
+   carries `Copyright 2024 Foursquare Labs, Inc.` for its Foursquare-derived
+   Places records, while Foursquare's linked NOTICE currently begins
+   `© 2026 Foursquare Labs, Inc.`. `NOTICE` preserves both the Overture
+   attribution and the full current Foursquare notice rather than silently
+   choosing one year over the other.
 3. **State that files were changed, and when.** This project unambiguously
    modifies the data: it filters by confidence, drops unmappable categories,
    deduplicates against OSM, subsets to a boundary, and rounds coordinates.
@@ -131,19 +154,30 @@ existing citation, but the required citation itself is
 | Requirement | Status |
 |---|---|
 | Overture named in UI attribution | **Met** (`index.html:116`) |
-| Citation "Overture Maps Foundation, overturemaps.org" | Partially — UI links overturemaps.org but does not use the citation string |
+| Citation "Overture Maps Foundation, overturemaps.org" | **Met at repository level** (`NOTICE`); legacy UI still uses a shorter linked label |
 | Overture release recorded in outputs | **Not met** (§2) |
-| Apache-2.0 licence copy included | **Not met** |
-| Foursquare NOTICE retained | **Not met** |
-| Statement that the data was modified + date | **Not met** ("when" only) |
-| Per-source licence breakdown documented | **Not met before this audit**; the table above is the first record of it |
+| Apache-2.0 licence copy included | **Met** (`LICENSES/Apache-2.0.txt`, copied from Apache's canonical text) |
+| Foursquare NOTICE retained | **Met** (`NOTICE`) |
+| Repository-level statement that the data was modified + date | **Met** (`NOTICE`, 2026-08-31) |
+| Per-output/API modification and release metadata | **Met for newly enriched API results**; the protected historical snapshot remains unknown |
+| Per-source licence breakdown documented | **Met by this audit**; the table above is the first repository record of it |
 
-**To do in a later round** (no files added in Run 1 beyond this audit):
-add `NOTICE` and `LICENSES/Apache-2.0.txt` at the repository root; record
-`overture_release` in `facilities.json` and in `/api/area` responses; pin `-r`
-in `pipeline.merge_overture`; add a one-line "modified from Overture Places
-release X on DATE by filtering, deduplication and boundary subsetting" to the
-data metadata and the page footer.
+**Completed in the 2026-08-31 licensing-file remediation:** `NOTICE` retains
+the Foursquare notice and identifies Overture Maps Foundation; the canonical
+Apache-2.0 text is included; and the project modification notice records that
+Overture Places data is filtered, category-mapped, deduplicated against OSM,
+clipped to the displayed boundary, and coordinate-rounded. The notice date is
+2026-08-31, while generated results retain their own generation timestamps.
+
+**Completed in the paired runtime implementation:** production enrichment is
+pinned to `2026-08-19.0`; new enriched API results record the release,
+attribution, transformation description and generation time; and the React
+page exposes Overture/Foursquare attribution. The boundary filter description
+also follows `boundary_mode`, so a fixed nominal-radius fallback never claims
+to have been derived from a routed isochrone. The protected historical static
+snapshot remains unchanged and its release remains unknown.
+In other words, the historical snapshot's **release is unknown**; the new
+production pin is never assigned to it retroactively.
 
 ---
 
@@ -219,16 +253,20 @@ pre-seeding, bulk download, proxy archiving or offline packaging.**
 | # | Item | Severity |
 |---|---|---|
 | 1 | Info panel occludes tile attribution at short viewports | **High** (explicit policy requirement) |
-| 2 | Foursquare NOTICE + Apache-2.0 copy + "modified" statement absent, while Foursquare records are demonstrably ingested | **High** (licence obligation) |
-| 3 | Overture release not pinned and not recorded in product outputs | Medium (reproducibility + determines which NOTICE applies) |
-| 4 | Overture citation string not used verbatim | Low |
+| 2 | Foursquare NOTICE + Apache-2.0 copy + repository-level modification statement | **Completed 2026-08-31** |
+| 3 | Production release `2026-08-19.0` pinned and recorded in new enriched outputs; historical static snapshot stays unknown | **Completed 2026-08-31** |
+| 4 | Overture citation string | **Completed in `NOTICE` and the React UI** |
 | 5 | markercluster assets lack SRI | Low |
 | 6 | Tile URL not configurable; no fallback provider | Medium (risk, not a violation) |
 | 7 | Stale User-Agent in `fetch_facilities.py` | Low |
 
-None of these are fixed in Run 1 by design; this round records them.
+Run 1 intentionally fixed none of these items. The dated remediation update
+above records later work without rewriting the original audit evidence.
 
 **Sources:**
 [Overture attribution & licensing](https://docs.overturemaps.org/attribution/) ·
+[Overture release calendar](https://docs.overturemaps.org/release-calendar/) ·
+[Overture 2026-08-19 release notes](https://docs.overturemaps.org/blog/2026/08/19/release-notes/) ·
 [Foursquare places NOTICE](https://opensource.foursquare.com/places-notice-txt/) ·
+[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt) ·
 [OSMF tile usage policy](https://operations.osmfoundation.org/policies/tiles/)
