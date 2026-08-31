@@ -19,6 +19,7 @@ import { AreaMap } from "./components/AreaMap";
 
 const APPLE_PARK = { lat: 37.33484, lon: -122.01139 };
 const POLL_INTERVAL_MS = 6_000;
+const MAX_CONSECUTIVE_POLL_FAILURES = 3;
 
 type NoticeTone = "info" | "loading" | "success" | "warning" | "error";
 
@@ -211,6 +212,7 @@ export default function App() {
         lon: candidate.lon,
         name: candidate.name,
       });
+    let consecutivePollFailures = 0;
 
     const applyResponse = (response: AreaResponse) => {
       setDisplayArea(displayAreaFromResponse(response, candidate));
@@ -221,11 +223,22 @@ export default function App() {
       pollTimer.current = window.setTimeout(async () => {
         try {
           const response = await requestArea();
+          consecutivePollFailures = 0;
           applyResponse(response);
           if (response.status === "enriching") schedulePoll();
           else pollTimer.current = null;
         } catch {
-          schedulePoll();
+          consecutivePollFailures += 1;
+          if (consecutivePollFailures >= MAX_CONSECUTIVE_POLL_FAILURES) {
+            stopPolling();
+            setNotice({
+              tone: "error",
+              message:
+                "Area enrichment polling failed repeatedly. Check the backend and try again.",
+            });
+          } else {
+            schedulePoll();
+          }
         }
       }, POLL_INTERVAL_MS);
     };
