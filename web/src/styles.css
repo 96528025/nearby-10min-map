@@ -409,10 +409,25 @@ input {
 }
 
 .app-footer {
+  display: grid;
+  gap: 5px;
   padding: 16px 4px 4px;
   color: var(--muted);
   font-size: 0.72rem;
   text-align: center;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+.app-footer a {
+  color: #1748b4;
+  font-weight: 650;
+}
+
+.data-attribution {
+  line-height: 1.5;
 }
 
 .sr-only {

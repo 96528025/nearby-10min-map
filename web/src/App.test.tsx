@@ -9,7 +9,11 @@ import {
   loadDefaultData,
 } from "./api/client";
 import type { GeocodeResponse } from "./api/types";
-import { POLL_MAX_DURATION_MS } from "./state/polling";
+import {
+  AREA_REQUEST_TIMEOUT_MS,
+  AREA_WAKE_NOTICE_DELAY_MS,
+  POLL_MAX_DURATION_MS,
+} from "./state/polling";
 import {
   areaResponse,
   candidate,
@@ -88,6 +92,25 @@ describe("App workflow", () => {
     expect(screen.getByRole("heading", { name: "Apple Park" })).toBeInTheDocument();
     expect(geocodeMock).not.toHaveBeenCalled();
     expect(areaMock).not.toHaveBeenCalled();
+  });
+
+  it("exposes OSM, Overture, and Foursquare attribution as page links", async () => {
+    await renderReadyApp();
+
+    expect(
+      screen.getByRole("link", { name: "OpenStreetMap contributors" }),
+    ).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
+    expect(
+      screen.getByRole("link", {
+        name: "Overture Maps Foundation, overturemaps.org",
+      }),
+    ).toHaveAttribute("href", "https://overturemaps.org/");
+    expect(
+      screen.getByRole("link", { name: "Foursquare Places" }),
+    ).toHaveAttribute(
+      "href",
+      "https://opensource.foursquare.com/places-notice-txt/",
+    );
   });
 
   it("renders candidates and the distinct empty terminal state", async () => {
@@ -174,7 +197,199 @@ describe("App workflow", () => {
     expect(await screen.findByText(/当前为 OSM-only 结果/)).toBeInTheDocument();
     expect(workflowRoot()).toHaveAttribute("data-workflow-state", "osmOnly");
     expect(screen.getByText("OSM-only")).toBeInTheDocument();
+    expect(screen.getByText(/enrichment failed/)).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("distinguishes configured OSM-only mode from an enrichment failure", async () => {
+    const stanford = candidate("Stanford University");
+    geocodeMock.mockResolvedValue({ candidates: [stanford] });
+    areaMock.mockResolvedValue(
+      areaResponse("osm_only", stanford, 12, { enrichError: false }),
+    );
+    await renderReadyApp();
+    submitSearch("Stanford");
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: /Stanford University/ }),
+    );
+
+    expect(
+      await screen.findByText(/enrichment is disabled for this deployment/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/enrichment failed/)).not.toBeInTheDocument();
+    expect(workflowRoot()).toHaveAttribute("data-workflow-state", "osmOnly");
+  });
+
+  it("shows the routed provenance label only when boundary_mode says routed", async () => {
+    const stanford = candidate("Stanford University");
+    geocodeMock.mockResolvedValue({ candidates: [stanford] });
+    areaMock.mockResolvedValue(
+      areaResponse("complete", stanford, 42, {
+        boundaryMode: "routed_equal_area_circle",
+      }),
+    );
+    await renderReadyApp();
+    submitSearch("Stanford");
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: /Stanford University/ }),
+    );
+
+    expect(
+      await screen.findByText("Routed equal-area circle"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Road-network derived")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Fixed nominal-radius circle"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("uses nominal boundary_mode despite routed-looking metadata and warns honestly", async () => {
+    const stanford = candidate("Stanford University");
+    geocodeMock.mockResolvedValue({ candidates: [stanford] });
+    areaMock.mockResolvedValue(
+      areaResponse("complete", stanford, 42, {
+        boundaryMode: "nominal_radius_circle",
+        warnings: ["Valhalla was unavailable."],
+      }),
+    );
+    await renderReadyApp();
+    submitSearch("Stanford");
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: /Stanford University/ }),
+    );
+
+    expect(
+      await screen.findByText("Fixed nominal-radius circle"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Fixed radius · no routing")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "当前显示的是固定半径的近似范围，不是基于真实路网计算的约 10 分钟驾车可达范围。",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Valhalla was unavailable.")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Routed equal-area circle"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not infer provenance when boundary_mode is absent", async () => {
+    const stanford = candidate("Stanford University");
+    const legacyResponse = areaResponse("complete", stanford, 42);
+    delete legacyResponse.boundary_mode;
+    geocodeMock.mockResolvedValue({ candidates: [stanford] });
+    areaMock.mockResolvedValue(legacyResponse);
+    await renderReadyApp();
+    submitSearch("Stanford");
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: /Stanford University/ }),
+    );
+
+    expect(
+      await screen.findByText("Boundary mode not reported"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("circle with the same area as the routed test isochrone"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows a delayed wake-up notice while the first area request is pending", async () => {
+    const stanford = candidate("Stanford University");
+    const firstArea = deferred<ReturnType<typeof areaResponse>>();
+    geocodeMock.mockResolvedValue({ candidates: [stanford] });
+    areaMock.mockReturnValue(firstArea.promise);
+    await renderReadyApp();
+    submitSearch("Stanford");
+    const choice = await screen.findByRole("button", {
+      name: /Stanford University/,
+    });
+
+    vi.useFakeTimers();
+    fireEvent.click(choice);
+    expect(screen.getByText(/Computing the approximate/)).toBeInTheDocument();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(AREA_WAKE_NOTICE_DELAY_MS - 1);
+    });
+    expect(screen.queryByText(/service may be waking/)).not.toBeInTheDocument();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
+    });
+    expect(screen.getByText(/service may be waking/)).toBeInTheDocument();
+
+    await act(async () => {
+      firstArea.resolve(areaResponse("complete", stanford, 42));
+      await Promise.resolve();
+    });
+    expect(screen.getByText(/Facilities complete/)).toBeInTheDocument();
+    expect(screen.queryByText(/service may be waking/)).not.toBeInTheDocument();
+  });
+
+  it("aborts a first area request at its hard timeout and ignores a late response", async () => {
+    const stanford = candidate("Stanford University");
+    const firstArea = deferred<ReturnType<typeof areaResponse>>();
+    geocodeMock.mockResolvedValue({ candidates: [stanford] });
+    areaMock.mockReturnValue(firstArea.promise);
+    await renderReadyApp();
+    submitSearch("Stanford");
+    const choice = await screen.findByRole("button", {
+      name: /Stanford University/,
+    });
+
+    vi.useFakeTimers();
+    fireEvent.click(choice);
+    const signal = areaMock.mock.calls[0]?.[1];
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(AREA_REQUEST_TIMEOUT_MS);
+    });
+
+    expect(signal?.aborted).toBe(true);
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      /may still be waking after an idle period/,
+    );
+    expect(workflowRoot()).toHaveAttribute("data-workflow-state", "error");
+
+    await act(async () => {
+      firstArea.resolve(areaResponse("complete", stanford, 99));
+      await Promise.resolve();
+    });
+    expect(workflowRoot()).toHaveAttribute("data-workflow-state", "error");
+    expect(screen.queryByText(/Facilities complete \(99\)/)).not.toBeInTheDocument();
+  });
+
+  it("cancels first-area wake and deadline timers on unmount", async () => {
+    const stanford = candidate("Stanford University");
+    const firstArea = deferred<ReturnType<typeof areaResponse>>();
+    geocodeMock.mockResolvedValue({ candidates: [stanford] });
+    areaMock.mockReturnValue(firstArea.promise);
+    const rendered = await renderReadyApp();
+    submitSearch("Stanford");
+    const choice = await screen.findByRole("button", {
+      name: /Stanford University/,
+    });
+
+    vi.useFakeTimers();
+    fireEvent.click(choice);
+    const signal = areaMock.mock.calls[0]?.[1];
+
+    rendered.unmount();
+    expect(signal?.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(
+        Math.max(AREA_REQUEST_TIMEOUT_MS, AREA_WAKE_NOTICE_DELAY_MS),
+      );
+      firstArea.resolve(areaResponse("complete", stanford, 99));
+      await Promise.resolve();
+    });
+    expect(areaMock).toHaveBeenCalledTimes(1);
   });
 
   it("stops after repeated poll failures, keeps OSM data, and can retry", async () => {
@@ -250,10 +465,53 @@ describe("App workflow", () => {
       await vi.advanceTimersByTimeAsync(POLL_MAX_DURATION_MS - 2_000);
     });
 
-    expect(screen.getByRole("alert")).toHaveTextContent(/two-minute limit/);
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      /configured time limit/,
+    );
     expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
     expect(workflowRoot()).toHaveAttribute("data-workflow-state", "error");
     expect(hangingSignal?.aborted).toBe(true);
+  });
+
+  it("starts the polling budget only after the first area response", async () => {
+    const stanford = candidate("Stanford University");
+    const firstArea = deferred<ReturnType<typeof areaResponse>>();
+    const hangingPoll = deferred<ReturnType<typeof areaResponse>>();
+    geocodeMock.mockResolvedValue({ candidates: [stanford] });
+    areaMock
+      .mockReturnValueOnce(firstArea.promise)
+      .mockReturnValueOnce(hangingPoll.promise);
+    await renderReadyApp();
+    submitSearch("Stanford");
+    const choice = await screen.findByRole("button", {
+      name: /Stanford University/,
+    });
+
+    vi.useFakeTimers();
+    fireEvent.click(choice);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(100_000);
+      firstArea.resolve(areaResponse("enriching", stanford, 12));
+      await Promise.resolve();
+    });
+    expect(workflowRoot()).toHaveAttribute("data-workflow-state", "enriching");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2_000);
+    });
+    expect(areaMock).toHaveBeenCalledTimes(2);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(POLL_MAX_DURATION_MS - 2_001);
+    });
+    expect(workflowRoot()).toHaveAttribute("data-workflow-state", "enriching");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
+    });
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      /configured time limit/,
+    );
   });
 
   it("does not reschedule a poll that was aborted by a new search", async () => {

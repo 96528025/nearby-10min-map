@@ -17,6 +17,8 @@ import type {
 } from "./api/types";
 import { AreaMap } from "./components/AreaMap";
 import {
+  AREA_REQUEST_TIMEOUT_MS,
+  AREA_WAKE_NOTICE_DELAY_MS,
   MAX_CONSECUTIVE_POLL_FAILURES,
   POLL_MAX_DURATION_MS,
   pollDelayMs,
@@ -28,6 +30,8 @@ import {
 } from "./state/workflow";
 
 const APPLE_PARK = { lat: 37.33484, lon: -122.01139 };
+const NOMINAL_BOUNDARY_WARNING =
+  "当前显示的是固定半径的近似范围，不是基于真实路网计算的约 10 分钟驾车可达范围。";
 
 type NoticeTone = "info" | "loading" | "success" | "warning" | "error";
 
@@ -54,6 +58,12 @@ interface RequestContext {
   generation: number;
 }
 
+interface BoundaryProvenance {
+  label: string;
+  description: string;
+  calculation: string;
+}
+
 function facilityTotal(facilities: FacilitiesCollection) {
   return Object.values(facilities.categories).reduce(
     (total, category) => total + category.count,
@@ -76,9 +86,46 @@ function statusLabel(status?: AreaStatus) {
   return "Bundled snapshot";
 }
 
+function boundaryProvenance(
+  mode: BoundaryMode | undefined,
+): BoundaryProvenance {
+  switch (mode) {
+    case "routed_equal_area_circle":
+      return {
+        label: "Routed equal-area circle",
+        description:
+          "The radius comes from the area of a routed, free-flow 10-minute drive isochrone; the displayed geometry is an equal-area circle.",
+        calculation: "Road-network derived",
+      };
+    case "nominal_radius_circle":
+      return {
+        label: "Fixed nominal-radius circle",
+        description:
+          "The radius is a fixed nominal value. No road-network input was used to derive this boundary.",
+        calculation: "Fixed radius · no routing",
+      };
+    default:
+      return {
+        label: "Boundary mode not reported",
+        description:
+          "This bundled or legacy response does not include boundary_mode, so the client does not infer routed or nominal provenance.",
+        calculation: "Mode not reported",
+      };
+  }
+}
+
+function displayedWarnings(area: DisplayArea): string[] {
+  const warnings =
+    area.boundaryMode === "nominal_radius_circle"
+      ? [NOMINAL_BOUNDARY_WARNING, ...area.warnings]
+      : area.warnings;
+  return [...new Set(warnings)];
+}
+
 function noticeForWorkflow(
   workflow: WorkflowState,
   defaultLoading: boolean,
+  areaWakeNotice: boolean,
 ): Notice {
   switch (workflow.status) {
     case "idle":
@@ -108,10 +155,16 @@ function noticeForWorkflow(
         message: "没有找到该地点 · No matching places found.",
       };
     case "loadingArea":
-      return {
-        tone: "loading",
-        message: `Computing the approximate 10-minute drive area for ${workflow.selectedCandidate?.name ?? "the selected place"}…`,
-      };
+      return areaWakeNotice
+        ? {
+            tone: "loading",
+            message:
+              "The service may be waking from its free-tier idle state. The first result can take about a minute…",
+          }
+        : {
+            tone: "loading",
+            message: `Computing the approximate 10-minute drive area for ${workflow.selectedCandidate?.name ?? "the selected place"}…`,
+          };
     case "enriching":
       if (workflow.pollFailureCount > 0) {
         return {
@@ -130,11 +183,17 @@ function noticeForWorkflow(
         message: `设施补全完成 · Facilities complete (${workflow.latestArea?.total ?? 0})`,
       };
     case "osmOnly":
-      return {
-        tone: "warning",
-        message:
-          "当前为 OSM-only 结果 · Overture enrichment failed; the map data remains usable.",
-      };
+      return workflow.latestArea?.enrich_error === true
+        ? {
+            tone: "warning",
+            message:
+              "当前为 OSM-only 结果 · Overture enrichment failed; the map data remains usable.",
+          }
+        : {
+            tone: "warning",
+            message:
+              "当前为 OSM-only 结果 · Overture enrichment is disabled for this deployment; the map data remains usable.",
+          };
     case "error": {
       const prefix = {
         default: "Default data failed to load",
@@ -175,9 +234,12 @@ export default function App() {
   );
   const [defaultArea, setDefaultArea] = useState<DisplayArea | null>(null);
   const [defaultLoading, setDefaultLoading] = useState(true);
+  const [areaWakeNotice, setAreaWakeNotice] = useState(false);
   const [query, setQuery] = useState("");
   const pollTimer = useRef<number | null>(null);
   const pollDeadlineTimer = useRef<number | null>(null);
+  const areaWakeTimer = useRef<number | null>(null);
+  const areaRequestDeadlineTimer = useRef<number | null>(null);
   const activeController = useRef<AbortController | null>(null);
   const generation = useRef(0);
   const mounted = useRef(false);
@@ -193,15 +255,28 @@ export default function App() {
     }
   }, []);
 
+  const stopAreaRequestTimers = useCallback(() => {
+    if (areaWakeTimer.current !== null) {
+      window.clearTimeout(areaWakeTimer.current);
+      areaWakeTimer.current = null;
+    }
+    if (areaRequestDeadlineTimer.current !== null) {
+      window.clearTimeout(areaRequestDeadlineTimer.current);
+      areaRequestDeadlineTimer.current = null;
+    }
+  }, []);
+
   const beginRequest = useCallback((): RequestContext => {
     stopPolling();
+    stopAreaRequestTimers();
+    setAreaWakeNotice(false);
     generation.current += 1;
     activeController.current?.abort();
 
     const controller = new AbortController();
     activeController.current = controller;
     return { controller, generation: generation.current };
-  }, [stopPolling]);
+  }, [stopAreaRequestTimers, stopPolling]);
 
   const isCurrentRequest = useCallback(
     (requestGeneration: number) =>
@@ -257,9 +332,10 @@ export default function App() {
       generation.current += 1;
       activeController.current?.abort();
       activeController.current = null;
+      stopAreaRequestTimers();
       stopPolling();
     };
-  }, [loadBundledDefault, stopPolling]);
+  }, [loadBundledDefault, stopAreaRequestTimers, stopPolling]);
 
   const dynamicArea =
     workflow.latestArea && workflow.selectedCandidate
@@ -294,7 +370,13 @@ export default function App() {
           candidates: response.candidates,
         });
       } catch (error: unknown) {
-        if (isAbortError(error) || !isCurrentRequest(request.generation)) return;
+        if (
+          isAbortError(error) ||
+          request.controller.signal.aborted ||
+          !isCurrentRequest(request.generation)
+        ) {
+          return;
+        }
         dispatch({
           type: "GEOCODE_FAILURE",
           query: submittedQuery,
@@ -325,6 +407,28 @@ export default function App() {
           request.controller.signal,
         );
 
+      areaWakeTimer.current = window.setTimeout(() => {
+        if (
+          isCurrentRequest(request.generation) &&
+          !request.controller.signal.aborted
+        ) {
+          setAreaWakeNotice(true);
+        }
+      }, AREA_WAKE_NOTICE_DELAY_MS);
+
+      areaRequestDeadlineTimer.current = window.setTimeout(() => {
+        if (!isCurrentRequest(request.generation)) return;
+        request.controller.abort();
+        stopAreaRequestTimers();
+        setAreaWakeNotice(false);
+        releaseRequest(request.controller);
+        dispatch({
+          type: "AREA_FAILURE",
+          candidate,
+          error: `The service did not respond within ${Math.ceil(AREA_REQUEST_TIMEOUT_MS / 1_000)} seconds. It may still be waking after an idle period; retry to reconnect.`,
+        });
+      }, AREA_REQUEST_TIMEOUT_MS);
+
       const finishPollingWithError = (message: string) => {
         if (!isCurrentRequest(request.generation)) return;
         stopPolling();
@@ -336,9 +440,9 @@ export default function App() {
         });
       };
 
-      const pollStartedAt = Date.now();
+      let pollStartedAt = 0;
       const timeoutMessage =
-        "Polling reached its two-minute limit. The current map remains available; retry to continue.";
+        "Polling reached its configured time limit. The current map remains available; retry to continue.";
       const pollingIsActive = () =>
         isCurrentRequest(request.generation) &&
         !request.controller.signal.aborted;
@@ -398,7 +502,11 @@ export default function App() {
             releaseRequest(request.controller);
           }
         } catch (error: unknown) {
-          if (isAbortError(error) || !isCurrentRequest(request.generation)) {
+          if (
+            isAbortError(error) ||
+            request.controller.signal.aborted ||
+            !isCurrentRequest(request.generation)
+          ) {
             return;
           }
 
@@ -421,10 +529,19 @@ export default function App() {
 
       try {
         const response = await requestArea();
-        if (!isCurrentRequest(request.generation)) return;
+        if (
+          !isCurrentRequest(request.generation) ||
+          request.controller.signal.aborted
+        ) {
+          return;
+        }
+
+        stopAreaRequestTimers();
+        setAreaWakeNotice(false);
 
         dispatch({ type: "AREA_RESPONSE", candidate, response });
         if (response.status === "enriching") {
+          pollStartedAt = Date.now();
           schedulePollingDeadline();
           schedulePoll(0, 0);
         } else {
@@ -432,7 +549,15 @@ export default function App() {
           releaseRequest(request.controller);
         }
       } catch (error: unknown) {
-        if (isAbortError(error) || !isCurrentRequest(request.generation)) return;
+        if (
+          isAbortError(error) ||
+          request.controller.signal.aborted ||
+          !isCurrentRequest(request.generation)
+        ) {
+          return;
+        }
+        stopAreaRequestTimers();
+        setAreaWakeNotice(false);
         releaseRequest(request.controller);
         dispatch({
           type: "AREA_FAILURE",
@@ -441,7 +566,13 @@ export default function App() {
         });
       }
     },
-    [beginRequest, isCurrentRequest, releaseRequest, stopPolling],
+    [
+      beginRequest,
+      isCurrentRequest,
+      releaseRequest,
+      stopAreaRequestTimers,
+      stopPolling,
+    ],
   );
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -467,10 +598,18 @@ export default function App() {
     }
   };
 
-  const notice = noticeForWorkflow(workflow, defaultLoading);
+  const notice = noticeForWorkflow(
+    workflow,
+    defaultLoading,
+    areaWakeNotice,
+  );
   const radiusKm = displayArea
     ? (displayArea.boundary.metadata.radius_m / 1_000).toFixed(1)
     : "—";
+  const provenance = displayArea
+    ? boundaryProvenance(displayArea.boundaryMode)
+    : null;
+  const warnings = displayArea ? displayedWarnings(displayArea) : [];
   const busy =
     workflow.status === "geocoding" || workflow.status === "loadingArea";
 
@@ -567,12 +706,12 @@ export default function App() {
               </div>
               <div>
                 <dt>Calculation</dt>
-                <dd>Free-flow driving</dd>
+                <dd>{provenance?.calculation ?? "—"}</dd>
               </div>
             </dl>
           </section>
 
-          {displayArea.warnings.map((warning) => (
+          {warnings.map((warning) => (
             <div className="status-card status-card--warning" key={warning}>
               {warning}
             </div>
@@ -591,11 +730,22 @@ export default function App() {
           <section className="provenance-card" aria-label="Data provenance">
             <div>
               <span>Boundary</span>
-              <p>{displayArea.boundary.metadata.method}</p>
+              <p>
+                <strong>{provenance?.label}</strong>
+                <br />
+                {provenance?.description}
+              </p>
             </div>
             <div>
-              <span>Facility filter</span>
-              <p>{displayArea.facilities.metadata.filter}</p>
+              <span>Facilities</span>
+              <p>
+                {displayArea.facilities.metadata.source}
+                {displayArea.facilities.metadata.overture_release
+                  ? ` · Overture release ${displayArea.facilities.metadata.overture_release}`
+                  : ""}
+                <br />
+                {displayArea.facilities.metadata.filter}
+              </p>
             </div>
             <div>
               <span>Generated</span>
@@ -620,8 +770,26 @@ export default function App() {
       )}
 
       <footer className="app-footer">
-        Approximate 10-minute drive, free-flow conditions; no real-time traffic.
-        Facility coverage may be incomplete.
+        <p>
+          Approximate 10-minute drive, free-flow conditions; no real-time
+          traffic. Facility coverage may be incomplete.
+        </p>
+        <p className="data-attribution">
+          Data: ©{" "}
+          <a href="https://www.openstreetmap.org/copyright">
+            OpenStreetMap contributors
+          </a>{" "}
+          · enriched Places data from{" "}
+          <a href="https://overturemaps.org/">
+            Overture Maps Foundation, overturemaps.org
+          </a>
+          ,
+          including{" "}
+          <a href="https://opensource.foursquare.com/places-notice-txt/">
+            Foursquare Places
+          </a>{" "}
+          © 2024 Foursquare Labs, Inc. (Apache-2.0 / NOTICE).
+        </p>
       </footer>
     </main>
   );

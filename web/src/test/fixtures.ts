@@ -1,11 +1,18 @@
 import type {
   AreaResponse,
   AreaStatus,
+  BoundaryMode,
   DefaultViewData,
   FacilitiesCollection,
   FacilityCategoryKey,
   GeocodeCandidate,
 } from "../api/types";
+
+interface AreaResponseOptions {
+  boundaryMode?: BoundaryMode;
+  enrichError?: boolean;
+  warnings?: string[];
+}
 
 const categoryKeys: FacilityCategoryKey[] = [
   "dining",
@@ -58,6 +65,7 @@ export function areaResponse(
   status: AreaStatus,
   place: GeocodeCandidate,
   total = status === "complete" ? 42 : 12,
+  options: AreaResponseOptions = {},
 ): AreaResponse {
   return {
     status,
@@ -93,7 +101,11 @@ export function areaResponse(
     },
     facilities: facilities(total),
     total,
-    enrich_error: status === "osm_only" ? true : undefined,
+    enrich_error:
+      options.enrichError ?? (status === "osm_only" ? true : undefined),
+    boundary_mode:
+      options.boundaryMode ?? "routed_equal_area_circle",
+    warnings: options.warnings,
   };
 }
 

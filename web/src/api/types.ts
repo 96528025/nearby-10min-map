@@ -90,6 +90,9 @@ export interface FacilitiesMetadata {
   source: string;
   filter: string;
   overture_min_confidence?: number;
+  overture_release?: string;
+  overture_attribution?: string;
+  overture_modifications?: string;
   [key: string]: unknown;
 }
 
