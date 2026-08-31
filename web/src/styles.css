@@ -214,6 +214,27 @@ input {
   border-radius: 10px;
 }
 
+.status-card__message {
+  flex: 1 1 auto;
+}
+
+.retry-button {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 4px 11px;
+  color: inherit;
+  font-size: 0.76rem;
+  font-weight: 750;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.retry-button:hover {
+  background: #ffffff;
+}
+
 .status-card--error {
   color: #912018;
   background: #fff4f2;
