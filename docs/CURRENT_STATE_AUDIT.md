@@ -1,10 +1,16 @@
 # Current-State Audit
 
 **Audit date:** 2026-07-29
-**Commit audited:** `pre-rewrite initial SHA intentionally omitted` (single commit; repository has no other history)
+**Snapshot audited:** the initial repository state before history cleanup (the
+repository had no other history at audit time)
 **Method:** every statement below was checked against source code or against a
 live run of the application on this machine. Where a claim could not be
 reproduced, it is marked as such rather than repeated.
+
+**Maintenance note (2026-08-30):** before Phase 0, a one-time history cleanup
+removed an editor-specific local launch configuration. Commit IDs therefore
+changed. The benchmark provenance mapping is recorded in `DECISIONS.md`;
+immutable benchmark run artifacts were not edited.
 
 This document records *what is*, not what should be. It deliberately does not
 fix the README — README changes are out of scope for Run 1. Discrepancies are
@@ -271,7 +277,7 @@ proper projected CRS and reports the difference.
 | 7 | Architecture diagram step 5: "OSM Overpass（同步，先出图）+ Overture Maps（后台补全，~1 分钟）" | Correct, but Overture took **longer than the stated ~1 min** for Stanford in the live run | Low |
 | 8 | Data-source table lists Overture as "开放数据，含 Meta/Microsoft/Foursquare 贡献" | No Overture **release version** is recorded anywhere in code or in any data artifact, and no NOTICE requirement is captured. See `ATTRIBUTION_AUDIT.md` | Medium (licensing) |
 | 9 | `facilities.json.metadata.filter` = `"named facilities inside the 10-min drive isochrone"` (also fetch_facilities.py:133) | The filter is the **circle**, not the isochrone. The shipped data artifact mislabels its own provenance | **High** — this is the isochrone/circle conflation baked into the data itself |
-| 10 | README Quick Start creates `.venv` in the project root | `.claude/launch.json:6` hardcodes an absolute interpreter path of the form `/Users/<username>/<unrelated-project>/.venv/bin/python` (redacted here deliberately; read the file to see it). It points outside this repository, discloses the author's local username and directory layout in a public repo, and is broken for every other user | Medium (leak + broken for anyone else) |
+| 10 | README Quick Start creates `.venv` in the project root | The original repository included a non-portable editor launch configuration. Before Phase 0, it was removed from the project history rather than retained as repository configuration. The cleanup changed commit IDs; the benchmark provenance mapping is recorded in `DECISIONS.md` | **Resolved before Phase 0** |
 
 Additionally, `fetch_facilities.py`'s own docstring says "inside the circular
 boundary" while the metadata string it writes says "inside the 10-min drive
@@ -331,7 +337,9 @@ normalisation), `near_duplicate` — are entirely uncovered.
 (`app.py:64`) and as HTTP 502.
 
 **Deployment:** none. Running the app requires a local venv and a local port.
-`.claude/launch.json` is machine-specific and broken for any other user.
+At audit time, an editor-specific launch configuration was machine-specific
+and broken for any other user; it was removed from the project history before
+Phase 0.
 
 ---
 

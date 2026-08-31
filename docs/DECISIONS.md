@@ -444,17 +444,31 @@ whatever tree it was launched from. The field is now
 `git_tracked_files_modified` (tracked modifications only), with a test pinning
 the semantics against git.
 
-Run of record `20260729T082833Z` now closes the chain: it records code commit
-**`e6979db`** — which was `HEAD` at run start, and is a reachable commit whose
-`scripts/benchmark_accuracy.py` hashes to the recorded `script_sha256` —
-`git_tracked_files_modified` is `false`, 0 network requests, 161 cache hits.
-Verdicts and aggregates remain byte-identical to every earlier run.
+Run of record `20260729T082833Z` closes the chain: its immutable artifacts
+record the pre-rewrite code commit **`e6979db`**, which was `HEAD` at run start.
+Before Phase 0, a one-time history cleanup removed an editor-specific local
+launch configuration. That rewrite changed commit IDs but did not change the
+benchmark script, configuration, data, or run artifacts. In the current
+history, `e6979db` maps to **`41b3e2d`**;
+`scripts/benchmark_accuracy.py` still hashes to the `script_sha256` recorded
+by the run, `git_tracked_files_modified` is `false`, and the run used 0 network
+requests with 161 cache hits. Verdicts and aggregates remain byte-identical to
+every earlier run.
 
-`HEAD` necessarily advances past `e6979db` once the run artifacts are
-themselves committed, so provenance is deliberately phrased against the
-recorded commit rather than against whatever `HEAD` happens to be at reading
-time. To re-derive the code that produced this run, check out `e6979db`; do
-not assume it is the tip.
+The benchmark-specific pre-rewrite to current-history mappings are:
+
+| Benchmark evidence | Pre-rewrite commit | Current commit |
+|---|---|---|
+| Superseded run | `4caaa6ac8c399d3479efc2130cfee17ed6f96c92` | `c100f850b5f0f4d8dc6dfadde60acd9e14d270c0` |
+| Run of record | `e6979db4303b4efd7261f907923f4e87cecc9363` | `41b3e2dd8632d8fc1f742c03027fa9e334213780` |
+
+`HEAD` necessarily advances past the recorded code commit once the run
+artifacts are themselves committed, so provenance is deliberately phrased
+against that commit rather than against whatever `HEAD` happens to be at
+reading time. To re-derive the code that produced the run from the current
+history, check out `41b3e2d`; do not assume it is the tip. The immutable JSON
+continues to retain the original `e6979db` value so the evidence is not
+retroactively edited.
 
 ### Run directories now present
 
