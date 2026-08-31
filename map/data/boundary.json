@@ -10,7 +10,7 @@
   },
   "radius_m": 2855,
   "isochrone_area_km2": 25.61,
-  "calibration": "driving times to the circle edge measured 9.5-12.0 min across 8 bearings (Valhalla route API, 2026-07-12)"
+  "calibration": "one-off, unrecorded Valhalla model self-check reportedly found 9.5-12.0 min across 8 bearings; not reproducible from this repository and not real-world drive-time validation"
  },
  "features": [
   {

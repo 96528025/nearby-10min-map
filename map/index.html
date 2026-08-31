@@ -283,7 +283,7 @@ function setTitle(name) {
   document.getElementById('origin-label').textContent = `${name}（中心 · Center）`;
 }
 
-// ---- default view: Apple Park (pre-verified static data) -----------------
+// ---- default view: Apple Park (bundled static data) ----------------------
 function loadApplePark() {
   Promise.all([
     fetch('data/boundary.json').then(r => r.json()),
@@ -297,8 +297,8 @@ function loadApplePark() {
     renderFacilities(facilities, true);
     renderLandmarks(landmarks);
     renderMeta(boundary.metadata || {}, facilities.metadata,
-      '实测本圆边界各方向车程约 9.5–12 分钟（Valhalla 路由，8 方向抽查）。<br>' +
-      'Measured drive times to this circle\'s edge: ~9.5–12 min across 8 bearings.<br>');
+      '曾有一次未留存记录的 Valhalla 模型内抽查，当时报告 8 个方向约 9.5–12 分钟；本仓库无法复现，且这不是真实世界车程验证。<br>' +
+      'A one-off, unrecorded Valhalla model self-check reportedly found ~9.5–12 min across 8 bearings; it is not reproducible from this repository and is not real-world drive-time validation.<br>');
   }).catch(err => {
     document.getElementById('meta').textContent = '数据加载失败 Data failed to load: ' + err;
   });

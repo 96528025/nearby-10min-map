@@ -38,7 +38,7 @@ FastAPI  map/server/app.py        ── 磁盘缓存 map/cache/
    6. 边界过滤复查 设施先按 point-in-polygon 过滤，再以相同几何和谓词断言；这不是独立的数据质量或车程准确性校验
 ```
 
-`map/scripts/` 下是同一套逻辑的命令行版本（Apple Park 静态数据的生成与复现）：
+`map/scripts/` 下是用于生成 Apple Park 静态快照的旧命令行流程，并非服务器管线的同一套逻辑：它硬编码 Apple Park 中心、不做道路吸附，且面积与距离计算使用了审计 §7.2 记录的错误经度换算常数：
 `fetch_isochrone.sh → make_boundary.py → fetch_facilities.py → merge_overture.py → verify.py`
 
 ## 准确性方法论 Accuracy Methodology
@@ -48,7 +48,7 @@ FastAPI  map/server/app.py        ── 磁盘缓存 map/cache/
 1. **用户确认定位**：地理编码返回候选列表，由用户点选确认，杜绝"搜错地方"。
 2. **道路吸附**：地理编码的点常落在校园/机场内部（Stanford 的点偏移 30 米曾让等时圈面积差 3 倍；机场中心点落在停机坪）。计算前先吸附到最近的正规公共道路——游客开车离开景点本来就从公共道路出发。
 3. **真实路网等时圈**：Valhalla 路由引擎按道路限速计算，不是画圆近似。
-4. **等面积圆**：产品需要规整的圆形边界，半径取与真实等时圈等面积的圆。Apple Park 实测圆边界 8 个方向车程 9.5–12.0 分钟。页面所有文案用"约 10 分钟 / ~10 min"。
+4. **等面积圆**：产品需要规整的圆形边界，半径取与真实等时圈等面积的圆。Apple Park 曾做过一次未留存记录的 Valhalla 路由/等时圈模型内抽查，当时报告 8 个方向为 9.5–12.0 分钟；该结果无法从本仓库复现，也不构成对真实世界车程的验证。页面所有文案用"约 10 分钟 / ~10 min"。
 5. **双源 POI + 三重去重**：OSM 与 Overture 合并；同名 300 米内 / 名称包含 150 米内 / 门牌地址相同视为同一家店（按名称全局去重是错的——会把连锁分店合并成一个点，这个 bug 我们踩过）。
 6. **置信度门槛**：Overture 数据取 confidence ≥ 0.6，宁可少收录也不显示可能已关闭的店。
 7. **边界过滤复查**：设施进入结果前已按边界做 point-in-polygon 过滤，后续以相同几何和谓词进行断言只能确认过滤结果自洽；它不能独立发现数据问题，也不构成设施质量或 10 分钟车程准确性的证据。
@@ -69,10 +69,10 @@ FastAPI  map/server/app.py        ── 磁盘缓存 map/cache/
 
 ## Sprint 历史 Sprint History
 
-- **Sprint 1**：Apple Park 10 分钟真实等时圈地图；6 个精选地标逐个用路由引擎实测车程（13.3 分钟的 De Anza College 等 5 个候选被验证淘汰）。
+- **Sprint 1**：Apple Park 10 分钟真实等时圈地图；提交的 6 个精选地标带有路由车程数据，但候选筛选与淘汰过程没有留存记录，无法从本仓库复现。
 - **Sprint 2**：等时圈内设施自动发现（Overpass），8 类分层展示，居民区不标注；修复 OSM 把医院内部科室标为诊所的数据噪音。
 - **Sprint 2.5（完整性修复）**：修复按名称去重合并连锁分店的 bug（Starbucks 1→15 家）；接入 Overture。当前提交的 `map/data/facilities.json` 共 833 个设施（八类计数：547/50/60/29/61/54/2/30）。
-- **Sprint 2.6（圆形边界）**：等时圈改为等面积圆（半径 2.9 km），8 方向实测校准 9.5–12 分钟。
+- **Sprint 2.6（圆形边界）**：等时圈改为等面积圆（半径 2.9 km）；曾有一次未留存记录的 Valhalla 模型内抽查，当时报告 8 个方向为 9.5–12 分钟，但仓库无法复现，且这不是真实世界车程验证。
 - **Sprint 3**：任意景点搜索（FastAPI 后端 + 双地理编码 + 道路吸附 + 两段式加载 + 缓存）。验收：Stanford University、Google Visitor Experience、SJC Airport 全部通过，Apple Park 回归无变化。
 
 ## Roadmap
