@@ -22,6 +22,14 @@ from verify import point_in_polygon
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 OVERPASS = "https://overpass-api.de/api/interpreter"
+OVERPASS_FALLBACK = "https://overpass.private.coffee/api/interpreter"
+OVERPASS_ENDPOINTS = tuple(
+    endpoint.strip()
+    for endpoint in os.getenv(
+        "OVERPASS_ENDPOINTS", f"{OVERPASS},{OVERPASS_FALLBACK}"
+    ).split(",")
+    if endpoint.strip()
+)
 USER_AGENT = os.getenv(
     "UPSTREAM_USER_AGENT",
     "nearby-10min-map/1.0 "
@@ -86,7 +94,6 @@ CATEGORIES = {
 
 def overpass_query_all(bbox):
     """One combined request for every category, to stay under rate limits."""
-    import time
     s, w, n, e = bbox
     parts = []
     for cfg in CATEGORIES.values():
@@ -97,24 +104,29 @@ def overpass_query_all(bbox):
         f"[out:json][timeout:{OVERPASS_QUERY_TIMEOUT_SECONDS}];"
         f"({''.join(parts)});out center tags;"
     )
-    req = urllib.request.Request(
-        OVERPASS,
-        data=urllib.parse.urlencode({"data": q}).encode(),
-        headers={"User-Agent": USER_AGENT},
-    )
-    for attempt in range(4):
+    body = urllib.parse.urlencode({"data": q}).encode()
+    last_error = None
+    for endpoint in OVERPASS_ENDPOINTS:
+        req = urllib.request.Request(
+            endpoint,
+            data=body,
+            headers={"User-Agent": USER_AGENT},
+        )
         try:
             with urllib.request.urlopen(
                 req, timeout=OVERPASS_HTTP_TIMEOUT_SECONDS
             ) as r:
                 return json.load(r)["elements"]
         except urllib.error.HTTPError as err:
-            if err.code in (429, 504) and attempt < 3:
-                wait = 30 * (attempt + 1)
-                print(f"Overpass busy ({err.code}), retrying in {wait}s…")
-                time.sleep(wait)
-            else:
+            if err.code not in (429, 500, 502, 503, 504):
                 raise
+            last_error = err
+        except (urllib.error.URLError, TimeoutError, OSError) as err:
+            last_error = err
+
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError("no Overpass endpoints configured")
 
 
 def categorize(tags):

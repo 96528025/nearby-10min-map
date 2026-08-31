@@ -2,6 +2,7 @@
 
 import io
 import json
+import urllib.error
 from pathlib import Path
 
 import pytest
@@ -184,6 +185,40 @@ def test_overpass_client_sends_same_contact_and_has_timeout(monkeypatch):
     assert captured["timeout"] == (
         fetch_facilities.OVERPASS_HTTP_TIMEOUT_SECONDS
     )
+
+
+def test_overpass_uses_documented_fallback_after_network_failure(monkeypatch):
+    attempted = []
+
+    class Response(io.StringIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            self.close()
+
+    def first_unreachable_then_success(request, timeout):
+        attempted.append((request.full_url, timeout))
+        if len(attempted) == 1:
+            raise urllib.error.URLError(OSError(101, "unreachable"))
+        return Response('{"elements": []}')
+
+    monkeypatch.setattr(
+        fetch_facilities,
+        "OVERPASS_ENDPOINTS",
+        ("https://primary.invalid", "https://fallback.invalid"),
+    )
+    monkeypatch.setattr(
+        fetch_facilities.urllib.request,
+        "urlopen",
+        first_unreachable_then_success,
+    )
+
+    assert fetch_facilities.overpass_query_all((0, 0, 1, 1)) == []
+    assert [url for url, _timeout in attempted] == [
+        "https://primary.invalid",
+        "https://fallback.invalid",
+    ]
 
 
 def test_overture_command_is_pinned_bounded_and_records_provenance(
