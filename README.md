@@ -15,8 +15,8 @@ python3 -m venv .venv
 # 打开 open http://localhost:8642
 ```
 
-默认显示 Apple Park（预置的、经人工核实的数据）；搜索框输入任意景点即可切换。
-The default view is Apple Park (pre-verified static data); search any attraction to switch.
+默认显示仓库随附的 Apple Park 静态数据；现有校验仅检查 6 个地标是否位于边界内，仓库没有 833 条设施的人工核实记录。搜索框输入任意景点即可切换。
+The default view uses bundled Apple Park static data. The existing check only confirms that six landmarks fall inside the boundary; the repository contains no record of manual verification for the 833 facilities. Search any attraction to switch.
 
 ## 它和 Google Maps 的区别 Why not just Google Maps?
 
@@ -35,7 +35,7 @@ FastAPI  map/server/app.py        ── 磁盘缓存 map/cache/
    3. 等时圈       Valhalla /isochrone（10 分钟驾车，正常路况）
    4. 圆形边界     与等时圈等面积的圆（产品选择：规整形状 > 精确形状）
    5. 设施抓取     OSM Overpass（同步，先出图） + Overture Maps（后台补全，~1 分钟）
-   6. 强制校验     每个设施 point-in-polygon —— 校验不过直接报错，不出图
+   6. 边界过滤复查 设施先按 point-in-polygon 过滤，再以相同几何和谓词断言；这不是独立的数据质量或车程准确性校验
 ```
 
 `map/scripts/` 下是同一套逻辑的命令行版本（Apple Park 静态数据的生成与复现）：
@@ -51,7 +51,7 @@ FastAPI  map/server/app.py        ── 磁盘缓存 map/cache/
 4. **等面积圆**：产品需要规整的圆形边界，半径取与真实等时圈等面积的圆。Apple Park 实测圆边界 8 个方向车程 9.5–12.0 分钟。页面所有文案用"约 10 分钟 / ~10 min"。
 5. **双源 POI + 三重去重**：OSM 与 Overture 合并；同名 300 米内 / 名称包含 150 米内 / 门牌地址相同视为同一家店（按名称全局去重是错的——会把连锁分店合并成一个点，这个 bug 我们踩过）。
 6. **置信度门槛**：Overture 数据取 confidence ≥ 0.6，宁可少收录也不显示可能已关闭的店。
-7. **强制边界校验**：任何设施出界即整体报错。
+7. **边界过滤复查**：设施进入结果前已按边界做 point-in-polygon 过滤，后续以相同几何和谓词进行断言只能确认过滤结果自洽；它不能独立发现数据问题，也不构成设施质量或 10 分钟车程准确性的证据。
 8. **如实标注**：数据来源、生成时间、"正常路况不含实时交通"、"设施清单可能不完整"都印在页面上。
 
 **已知且承认的局限**：POI 完整度介于 OSM 与 Google 之间（Overture 大幅缩小差距但 Google Places 是闭源的）；免费公共 API 有速率限制（见下）；等时圈无实时交通，高峰期实际范围更小。
@@ -71,7 +71,7 @@ FastAPI  map/server/app.py        ── 磁盘缓存 map/cache/
 
 - **Sprint 1**：Apple Park 10 分钟真实等时圈地图；6 个精选地标逐个用路由引擎实测车程（13.3 分钟的 De Anza College 等 5 个候选被验证淘汰）。
 - **Sprint 2**：等时圈内设施自动发现（Overpass），8 类分层展示，居民区不标注；修复 OSM 把医院内部科室标为诊所的数据噪音。
-- **Sprint 2.5（完整性修复）**：修复按名称去重合并连锁分店的 bug（Starbucks 1→15 家）；接入 Overture（366→942 设施）。
+- **Sprint 2.5（完整性修复）**：修复按名称去重合并连锁分店的 bug（Starbucks 1→15 家）；接入 Overture。当前提交的 `map/data/facilities.json` 共 833 个设施（八类计数：547/50/60/29/61/54/2/30）。
 - **Sprint 2.6（圆形边界）**：等时圈改为等面积圆（半径 2.9 km），8 方向实测校准 9.5–12 分钟。
 - **Sprint 3**：任意景点搜索（FastAPI 后端 + 双地理编码 + 道路吸附 + 两段式加载 + 缓存）。验收：Stanford University、Google Visitor Experience、SJC Airport 全部通过，Apple Park 回归无变化。
 
