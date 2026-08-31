@@ -22,7 +22,7 @@ free-flow road costs and does not include real-time traffic.
 
 | Wake / slow-request notice | Phase-one map available | Enrichment complete |
 |---|---|---|
-| ![The public app explaining that its free Render instance might be waking](docs/assets/public-query-waking.png) | ![A routed equal-area circle and OSM facilities shown while enrichment runs](docs/assets/public-query-enriching.png) | ![The selected destination after facility enrichment completes](docs/assets/public-query-complete.png) |
+| ![The public app explaining that its free Render instance might be waking](docs/assets/public-query-waking.webp) | ![A routed equal-area circle and OSM facilities shown while enrichment runs](docs/assets/public-query-enriching.webp) | ![The selected destination after facility enrichment completes](docs/assets/public-query-complete.webp) |
 
 Once the app is served, the bundled Apple Park view loads from `/data/*.json`
 without calling a public geocoding, routing, or POI upstream API. A submitted
