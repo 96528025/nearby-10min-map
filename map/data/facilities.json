@@ -1,17 +1,57 @@
 {
  "metadata": {
-  "generated_utc": "2026-07-12 22:58 UTC",
+  "generated_utc": "2026-09-02 19:29 UTC",
   "source": "OpenStreetMap (Overpass API) + Overture Maps places",
-  "filter": "named facilities inside the displayed equal-area circle derived from the routed 10-minute drive isochrone, not the isochrone geometry itself",
-  "overture_min_confidence": 0.6
+  "filter": "named facilities inside the displayed routed 10-minute drive isochrone (Valhalla, free-flow); the displayed geometry itself is the filter",
+  "overture_min_confidence": 0.6,
+  "overture_release": "2026-07-22.0",
+  "overture_attribution": "Overture Maps Foundation, overturemaps.org; includes Foursquare Places data © 2024 Foursquare Labs, Inc. under Apache-2.0",
+  "overture_modifications": "Modified from Overture Places release 2026-07-22.0 on 2026-09-02 19:29 UTC by confidence/category filtering, boundary subsetting, OSM deduplication, and coordinate rounding",
+  "provenance": {
+   "method": "offline rebuild: the benchmark's frozen POI universe filtered with the shared boundary predicate (map/scripts/facilities_from_frozen_universe.py); no network request was made",
+   "benchmark_run_id": "20260729T082833Z_cfge03df09d_pland796c05b",
+   "poi_universe_file": "reports/accuracy/runs/20260729T082833Z_cfge03df09d_pland796c05b/poi_universe.json",
+   "location": "apple_park",
+   "universe_points": 12600,
+   "universe_points_sha256": "6666938b78b4f5b0401e1598fc1474e69cb17a7faab224b19720f7edb927e3fb",
+   "universe_frozen_utc": "2026-07-29T08:29:17Z",
+   "overpass_query_sha256": "a1e7bcf6638252658e90c0625a5dbf7914964cf3419fb0f15c1b17c1d09a75db",
+   "dedup_rules": {
+    "osm_internal": "same name within 150 m, per category",
+    "cross_source": "merge_overture.same_place: exact name <300 m, name containment <150 m, or equal house-number + first street word"
+   },
+   "query_envelope_south_west_north_east": [
+    37.199278,
+    -122.181588,
+    37.469456,
+    -121.842774
+   ],
+   "boundary_bbox_south_west_north_east": [
+    37.305119,
+    -122.088294,
+    37.371154,
+    -121.957385
+   ],
+   "boundary_mode": "routed_isochrone",
+   "attribute_carry_over": "kind, addr and osm id copied from the previous committed snapshot when the same named place of the same category lies within 150 m; null otherwise",
+   "note": "Facility membership is dataset-to-display-boundary consistency only; it does not validate ten-minute drive-time accuracy."
+  }
  },
  "categories": {
   "dining": {
    "label_zh": "餐饮",
    "label_en": "Dining",
    "color": "#e0322c",
-   "count": 547,
+   "count": 633,
    "items": [
+    {
+     "name": "10 Butchers Korean BBQ",
+     "lat": 37.362833,
+     "lon": -122.025483,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
     {
      "name": "1000 Degrees Neapolitan Pizzeria",
      "lat": 37.336722,
@@ -26,6 +66,7 @@
      "lon": -121.997725,
      "kind": "cafe",
      "addr": null,
+     "src": "osm",
      "osm": "node/6110253200"
     },
     {
@@ -34,6 +75,7 @@
      "lon": -122.022699,
      "kind": "restaurant",
      "addr": "19998 East Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/7159581008"
     },
     {
@@ -42,6 +84,7 @@
      "lon": -122.014727,
      "kind": "cafe",
      "addr": "11111 Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/2760019613"
     },
     {
@@ -50,6 +93,7 @@
      "lon": -122.011187,
      "kind": "cafe",
      "addr": "19459 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "way/1535108936"
     },
     {
@@ -66,6 +110,7 @@
      "lon": -122.014602,
      "kind": "restaurant",
      "addr": "893 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/13131573963"
     },
     {
@@ -90,6 +135,7 @@
      "lon": -122.009853,
      "kind": "restaurant",
      "addr": "19379 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/4283857364"
     },
     {
@@ -106,15 +152,8 @@
      "lon": -122.005994,
      "kind": "restaurant",
      "addr": "19068 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/5783052391"
-    },
-    {
-     "name": "Amici's East Coast Pizzeria",
-     "lat": 37.318253,
-     "lon": -122.031961,
-     "kind": "pizza_restaurant",
-     "addr": "10310 S De Anza Blvd Cupertino",
-     "src": "overture"
     },
     {
      "name": "Amma Meals",
@@ -122,6 +161,14 @@
      "lon": -122.031837,
      "kind": "indian_restaurant",
      "addr": "103 E Fremont Ave Sunnyvale",
+     "src": "overture"
+    },
+    {
+     "name": "Amruta Vilas",
+     "lat": 37.366084,
+     "lon": -122.015413,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -133,12 +180,29 @@
      "src": "overture"
     },
     {
+     "name": "Andhra Bhavan",
+     "lat": 37.365748,
+     "lon": -122.028925,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Anjappar Chettinad Indian Restaurant",
      "lat": 37.336446,
      "lon": -121.994827,
      "kind": "restaurant",
      "addr": "777 Homestead Road",
+     "src": "osm",
      "osm": "node/13191690701"
+    },
+    {
+     "name": "Annapoorna",
+     "lat": 37.363389,
+     "lon": -122.025927,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Apple Green Bistro",
@@ -146,6 +210,7 @@
      "lon": -122.015763,
      "kind": "restaurant",
      "addr": "10885 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/9654972046"
     },
     {
@@ -157,27 +222,19 @@
      "src": "overture"
     },
     {
+     "name": "Applebee's",
+     "lat": 37.316732,
+     "lon": -121.975962,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Ariake Express",
      "lat": 37.322816,
      "lon": -121.994818,
      "kind": "sushi_restaurant",
      "addr": "5190 Stevens Creek Blvd San Jose",
-     "src": "overture"
-    },
-    {
-     "name": "Ariake Sushi Boat",
-     "lat": 37.358055,
-     "lon": -122.019302,
-     "kind": "restaurant",
-     "addr": null,
-     "osm": "node/5621056925"
-    },
-    {
-     "name": "Arirang Tofu & BBQ",
-     "lat": 37.318195,
-     "lon": -122.032028,
-     "kind": "korean_restaurant",
-     "addr": "10310 S De Anza Blvd Cupertino",
      "src": "overture"
     },
     {
@@ -189,11 +246,36 @@
      "src": "overture"
     },
     {
+     "name": "Armadillo Willy's",
+     "lat": 37.365973,
+     "lon": -122.028755,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Armadillo Willy's BBQ",
+     "lat": 37.338932,
+     "lon": -121.97283,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Arusuvai Indian Restaurant",
+     "lat": 37.339672,
+     "lon": -121.972769,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Arya",
      "lat": 37.32258,
      "lon": -122.022137,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/1977415218"
     },
     {
@@ -205,12 +287,28 @@
      "src": "overture"
     },
     {
+     "name": "Asia Village",
+     "lat": 37.365466,
+     "lon": -122.015063,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Asian Momo House",
      "lat": 37.352686,
      "lon": -122.031379,
      "kind": "food_truck",
      "addr": "153 E Fremont Ave Sunnyvale",
      "src": "overture"
+    },
+    {
+     "name": "Athidhi Indian Cuisine",
+     "lat": 37.366268,
+     "lon": -122.015713,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Atulya Bharat",
@@ -221,27 +319,12 @@
      "src": "overture"
     },
     {
-     "name": "Avachi Biryani House",
-     "lat": 37.319234,
-     "lon": -122.032965,
-     "kind": "indian_restaurant",
-     "addr": "10251 S De Anza Blvd Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Avachi Biryani Restaurant",
-     "lat": 37.319153,
-     "lon": -122.03315,
-     "kind": "restaurant",
-     "addr": "10251 South De Anza Boulevard",
-     "osm": "node/3814942137"
-    },
-    {
      "name": "Azuma Japanese Cuisine",
      "lat": 37.323814,
      "lon": -122.017587,
      "kind": "restaurant",
      "addr": "19645 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/1296634936"
     },
     {
@@ -250,6 +333,7 @@
      "lon": -121.999636,
      "kind": "fast_food",
      "addr": null,
+     "src": "osm",
      "osm": "node/6138652423"
     },
     {
@@ -258,6 +342,7 @@
      "lon": -122.01543,
      "kind": "restaurant",
      "addr": "10831 North Wolfe Road",
+     "src": "osm",
      "osm": "node/3815032257"
     },
     {
@@ -266,6 +351,7 @@
      "lon": -122.014669,
      "kind": "restaurant",
      "addr": "10815 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/9654980386"
     },
     {
@@ -282,15 +368,8 @@
      "lon": -122.031739,
      "kind": "restaurant",
      "addr": "10690 North De Anza Boulevard Cupertino",
+     "src": "osm",
      "osm": "way/157283293"
-    },
-    {
-     "name": "Babo Boba Cafe",
-     "lat": 37.336786,
-     "lon": -122.022465,
-     "kind": "bubble_tea",
-     "addr": "19960 E Homestead Rd Cupertino",
-     "src": "overture"
     },
     {
      "name": "Bagel Street Cafe",
@@ -317,12 +396,37 @@
      "src": "overture"
     },
     {
+     "name": "Baskin-Robbins",
+     "lat": 37.31508,
+     "lon": -121.976778,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Bawarchi",
+     "lat": 37.361101,
+     "lon": -122.026013,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Bawarchi Biryanis",
      "lat": 37.351925,
      "lon": -122.011367,
      "kind": "restaurant",
      "addr": "954 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "way/207269884"
+    },
+    {
+     "name": "Bay Area Pizza",
+     "lat": 37.337671,
+     "lon": -121.978897,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Bay Sushi",
@@ -330,6 +434,7 @@
      "lon": -122.042435,
      "kind": "restaurant",
      "addr": "1647 Hollenbeck Avenue Sunnyvale",
+     "src": "osm",
      "osm": "node/5023139771"
     },
     {
@@ -338,6 +443,7 @@
      "lon": -122.01818,
      "kind": "bakery",
      "addr": "19748 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/1801225051"
     },
     {
@@ -346,6 +452,7 @@
      "lon": -122.017892,
      "kind": "cafe",
      "addr": "19622 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/2629332047"
     },
     {
@@ -354,12 +461,13 @@
      "lon": -121.99994,
      "kind": "restaurant",
      "addr": "1460 Halford Avenue Santa Clara",
+     "src": "osm",
      "osm": "node/5125483284"
     },
     {
      "name": "Bel Cool Tasty Pot",
-     "lat": 37.335811,
-     "lon": -122.015104,
+     "lat": 37.335851,
+     "lon": -122.015238,
      "kind": "chinese_restaurant",
      "addr": "10851 N Wolfe Rd Cupertino",
      "src": "overture"
@@ -378,6 +486,7 @@
      "lon": -122.042886,
      "kind": "fast_food",
      "addr": "1677 Hollenbeck Avenue",
+     "src": "osm",
      "osm": "node/13062425401"
     },
     {
@@ -386,6 +495,7 @@
      "lon": -121.994178,
      "kind": "cafe",
      "addr": "3568 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "node/2635929495"
     },
     {
@@ -397,11 +507,20 @@
      "src": "overture"
     },
     {
+     "name": "Best Chiropractic Center Joshua Park A Professional Corporat",
+     "lat": 37.324087,
+     "lon": -121.995143,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Bhavika's Chatpat",
      "lat": 37.352994,
      "lon": -122.004577,
      "kind": "fast_food",
      "addr": null,
+     "src": "osm",
      "osm": "node/266630160"
     },
     {
@@ -410,14 +529,15 @@
      "lon": -122.042518,
      "kind": "restaurant",
      "addr": "1625 Hollenbeck Avenue Sunnyvale",
+     "src": "osm",
      "osm": "node/12608794378"
     },
     {
-     "name": "Bikanos Indian Restaurant",
-     "lat": 37.340076,
-     "lon": -122.042579,
-     "kind": "indian_restaurant",
-     "addr": "1635 Hollenbeck Ave Sunnyvale",
+     "name": "Bikanos",
+     "lat": 37.33928,
+     "lon": -122.04254,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -426,6 +546,7 @@
      "lon": -121.992547,
      "kind": "restaurant",
      "addr": "5124 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "node/9847452175"
     },
     {
@@ -434,6 +555,7 @@
      "lon": -122.014477,
      "kind": "fast_food",
      "addr": "897 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/2663431804"
     },
     {
@@ -445,12 +567,20 @@
      "src": "overture"
     },
     {
-     "name": "Bitter + Sweet",
-     "lat": 37.31823,
-     "lon": -122.031439,
-     "kind": "cafe",
-     "addr": "20560 Town Center Lane Cupertino",
-     "osm": "node/2814548826"
+     "name": "Black Bear Diner",
+     "lat": 37.364467,
+     "lon": -122.02771,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Blackbird Lab, Inc.",
+     "lat": 37.323638,
+     "lon": -122.013527,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Blue Mango",
@@ -469,12 +599,28 @@
      "src": "overture"
     },
     {
+     "name": "BoOf's Tavern ReLoaDed",
+     "lat": 37.340499,
+     "lon": -121.977813,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Boba & Pizza Corner",
      "lat": 37.35296,
      "lon": -122.031586,
      "kind": "pizza_restaurant",
      "addr": "109 E Fremont Ave Sunnyvale",
      "src": "overture"
+    },
+    {
+     "name": "Boba Pup",
+     "lat": 37.345974,
+     "lon": -121.979071,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Bombay Express",
@@ -493,12 +639,20 @@
      "src": "overture"
     },
     {
-     "name": "Bombay Oven Inc",
-     "lat": 37.323318,
-     "lon": -122.037538,
-     "kind": "indian_restaurant",
-     "addr": "20803 Stevens Creek Blvd Cupertino",
+     "name": "Bombay To Goa",
+     "lat": 37.36578,
+     "lon": -122.028706,
+     "kind": null,
+     "addr": null,
      "src": "overture"
+    },
+    {
+     "name": "Bonchon Chicken",
+     "lat": 37.362364,
+     "lon": -122.027228,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Boudin SF Cupertino",
@@ -514,6 +668,7 @@
      "lon": -122.042631,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/2307952042"
     },
     {
@@ -525,28 +680,21 @@
      "src": "overture"
     },
     {
+     "name": "Browned Butter Babe",
+     "lat": 37.308648,
+     "lon": -122.013604,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Burger King",
      "lat": 37.351863,
      "lon": -121.999749,
      "kind": "fast_food",
      "addr": "3750 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "way/260372972"
-    },
-    {
-     "name": "By-Th-Bucket Bar and Grill",
-     "lat": 37.323118,
-     "lon": -121.98283,
-     "kind": "seafood_restaurant",
-     "addr": "4565 Stevens Creek Blvd Santa Clara",
-     "src": "overture"
-    },
-    {
-     "name": "Bytes Cafe & Bar",
-     "lat": 37.352737,
-     "lon": -122.001969,
-     "kind": "american_restaurant",
-     "addr": "1085 E El Camino Real Sunnyvale",
-     "src": "overture"
     },
     {
      "name": "CBI Boiling Fish",
@@ -554,6 +702,7 @@
      "lon": -122.017674,
      "kind": "restaurant",
      "addr": "19634 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/3812900180"
     },
     {
@@ -562,6 +711,7 @@
      "lon": -122.012133,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/5612665654"
     },
     {
@@ -570,6 +720,7 @@
      "lon": -122.012314,
      "kind": "cafe",
      "addr": "19501 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/5233334640"
     },
     {
@@ -578,6 +729,7 @@
      "lon": -122.032703,
      "kind": "bakery",
      "addr": "1323 Sunnyvale-Saratoga Road Sunnyvale",
+     "src": "osm",
      "osm": "way/293332538"
     },
     {
@@ -597,11 +749,28 @@
      "src": "overture"
     },
     {
+     "name": "Caffe Macs -Stevens Creek 9",
+     "lat": 37.322205,
+     "lon": -121.996697,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Caffino Drive-Thru Espresso",
+     "lat": 37.338224,
+     "lon": -121.976396,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Caffè Macs",
      "lat": 37.332367,
      "lon": -122.02924,
      "kind": "restaurant",
      "addr": "4 Infinite Loop Cupertino",
+     "src": "osm",
      "osm": "node/2180877691"
     },
     {
@@ -610,12 +779,13 @@
      "lon": -122.006996,
      "kind": "fast_food",
      "addr": null,
+     "src": "osm",
      "osm": "node/8666490737"
     },
     {
      "name": "Caffè Macs - Cc2",
-     "lat": 37.321845,
-     "lon": -122.028294,
+     "lat": 37.321714,
+     "lon": -122.028287,
      "kind": "coffee_shop",
      "addr": "20330 Stevens Creek Blvd Cupertino",
      "src": "overture"
@@ -626,7 +796,24 @@
      "lon": -122.033947,
      "kind": "fast_food",
      "addr": "10250 Bandley Drive Cupertino",
+     "src": "osm",
      "osm": "way/377469425"
+    },
+    {
+     "name": "Cakes & Bakes",
+     "lat": 37.365626,
+     "lon": -122.028768,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Cam Hung Sandwich and Coffee",
+     "lat": 37.36701,
+     "lon": -122.013428,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Canton Delights Seafood Restaurant",
@@ -642,6 +829,7 @@
      "lon": -122.012396,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/12359860091"
     },
     {
@@ -650,7 +838,16 @@
      "lon": -122.004756,
      "kind": "fast_food",
      "addr": "1051 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "way/37892700"
+    },
+    {
+     "name": "Carrows",
+     "lat": 37.36286,
+     "lon": -122.025541,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Chaat Bhavan",
@@ -658,6 +855,7 @@
      "lon": -122.009482,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "way/207269880"
     },
     {
@@ -666,6 +864,7 @@
      "lon": -122.01485,
      "kind": "restaurant",
      "addr": "889 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/2024202790"
     },
     {
@@ -677,11 +876,20 @@
      "src": "overture"
     },
     {
+     "name": "Changsha Rice Noddles",
+     "lat": 37.336172,
+     "lon": -122.015897,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Chatpata India",
      "lat": 37.352413,
      "lon": -122.030983,
      "kind": "fast_food",
      "addr": null,
+     "src": "osm",
      "osm": "node/12621367811"
     },
     {
@@ -693,11 +901,20 @@
      "src": "overture"
     },
     {
+     "name": "Chef Yang's Bbq",
+     "lat": 37.335652,
+     "lon": -122.015259,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Chelokababi",
      "lat": 37.353693,
      "lon": -122.013481,
      "kind": "restaurant",
      "addr": "1236 South Wolfe Road Sunnyvale",
+     "src": "osm",
      "osm": "node/2760022874"
     },
     {
@@ -714,6 +931,7 @@
      "lon": -121.993248,
      "kind": "restaurant",
      "addr": "3519 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/13624172329"
     },
     {
@@ -722,15 +940,16 @@
      "lon": -122.034774,
      "kind": "cafe",
      "addr": "20688 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/12882766241"
     },
     {
-     "name": "Chicken Meets Rice",
-     "lat": 37.31666,
-     "lon": -122.033788,
-     "kind": "restaurant",
-     "addr": "10445 South De Anza Boulevard Cupertino",
-     "osm": "node/9461788926"
+     "name": "Chick & Tea Sunnyvale",
+     "lat": 37.363386,
+     "lon": -122.026188,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Chikara Japanese Yakiniku",
@@ -746,14 +965,23 @@
      "lon": -121.995289,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "way/37892623"
     },
     {
-     "name": "Chimek - Korean Fried Chicken & Beer",
-     "lat": 37.338892,
-     "lon": -121.995188,
-     "kind": "chicken_restaurant",
-     "addr": "3597 Homestead Rd Santa Clara",
+     "name": "Chimek",
+     "lat": 37.338928,
+     "lon": -121.994995,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "China Delight Restaurant - San Jose",
+     "lat": 37.339597,
+     "lon": -121.972174,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -770,15 +998,8 @@
      "lon": -122.036459,
      "kind": "fast_food",
      "addr": "20688 Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/3807526201"
-    },
-    {
-     "name": "Chipotle",
-     "lat": 37.317283,
-     "lon": -122.032795,
-     "kind": "fast_food",
-     "addr": "10385 South De Anza Boulevard Cupertino",
-     "osm": "way/39199972"
     },
     {
      "name": "Chuck E. Cheese",
@@ -786,22 +1007,15 @@
      "lon": -122.01904,
      "kind": "restaurant",
      "addr": "19805 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/2629332085"
     },
     {
      "name": "Chutneys",
      "lat": 37.351931,
-     "lon": -122.011489,
+     "lon": -122.011373,
      "kind": "indian_restaurant",
      "addr": "954 E El Camino Real Sunnyvale",
-     "src": "overture"
-    },
-    {
-     "name": "Cicero's Pizza",
-     "lat": 37.309168,
-     "lon": -122.01216,
-     "kind": "pizza_restaurant",
-     "addr": "6138 Bollinger Rd San Jose",
      "src": "overture"
     },
     {
@@ -821,12 +1035,20 @@
      "src": "overture"
     },
     {
-     "name": "Coffee Society",
-     "lat": 37.318095,
-     "lon": -122.028978,
-     "kind": "cafe",
+     "name": "Coffee & Water Lab",
+     "lat": 37.315533,
+     "lon": -121.976572,
+     "kind": null,
      "addr": null,
-     "osm": "node/7188286616"
+     "src": "overture"
+    },
+    {
+     "name": "Coffee and Water Lab",
+     "lat": 37.315535,
+     "lon": -121.976682,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Cold Stone Creamery",
@@ -834,7 +1056,16 @@
      "lon": -122.019411,
      "kind": "ice_cream",
      "addr": "757 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/767478534"
+    },
+    {
+     "name": "Cooking Cooking",
+     "lat": 37.337909,
+     "lon": -121.977711,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Crab House",
@@ -854,18 +1085,10 @@
     },
     {
      "name": "Cup N Cone",
-     "lat": 37.352776,
-     "lon": -122.031221,
+     "lat": 37.35279,
+     "lon": -122.03139,
      "kind": "ice_cream_shop",
      "addr": "153 E Fremont Ave Sunnyvale",
-     "src": "overture"
-    },
-    {
-     "name": "Cupertino",
-     "lat": 37.32325,
-     "lon": -122.01995,
-     "kind": "fast_food_restaurant",
-     "addr": "19825 Stevens Creek Blvd Cupertino",
      "src": "overture"
     },
     {
@@ -882,15 +1105,8 @@
      "lon": -122.013853,
      "kind": "restaurant",
      "addr": "10080 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/11454603284"
-    },
-    {
-     "name": "Cupertino Taproom",
-     "lat": 37.323498,
-     "lon": -122.039662,
-     "kind": "pub",
-     "addr": "20955 Stevens Creek Blvd Cupertino",
-     "src": "overture"
     },
     {
      "name": "Curriz",
@@ -901,19 +1117,12 @@
      "src": "overture"
     },
     {
-     "name": "Curry House",
-     "lat": 37.317948,
-     "lon": -122.032157,
-     "kind": "japanese_restaurant",
-     "addr": "10350 S De Anza Blvd Cupertino",
-     "src": "overture"
-    },
-    {
      "name": "Curry Hyuga",
      "lat": 37.321996,
      "lon": -122.01708,
      "kind": "restaurant",
      "addr": "19650 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/2722527718"
     },
     {
@@ -930,22 +1139,31 @@
      "lon": -122.024552,
      "kind": "restaurant",
      "addr": "20080 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/3812729167"
     },
     {
-     "name": "Cyber Racoon Pc Cafe",
-     "lat": 37.351736,
-     "lon": -121.992263,
-     "kind": "cafe",
-     "addr": "3464 El Camino Real Santa Clara",
-     "src": "overture"
+     "name": "Cẩm Hưng Sandwich & Coffee",
+     "lat": 37.366995,
+     "lon": -122.013253,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
-     "name": "Dainty Cuisine",
-     "lat": 37.316825,
-     "lon": -122.033826,
-     "kind": "chinese_restaurant",
-     "addr": "10445 S De Anza Blvd Cupertino",
+     "name": "Dae Bak",
+     "lat": 37.352006,
+     "lon": -121.98636,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Dasaprakash",
+     "lat": 37.33891,
+     "lon": -121.973026,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -962,30 +1180,23 @@
      "lon": -121.998336,
      "kind": "restaurant",
      "addr": "3715 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "way/49046539"
     },
     {
      "name": "Desi Tadka",
-     "lat": 37.351984,
-     "lon": -122.01131,
+     "lat": 37.351931,
+     "lon": -122.011489,
      "kind": "indian_restaurant",
      "addr": "954 E El Camino Real Sunnyvale",
      "src": "overture"
     },
     {
-     "name": "Dish n' Dash",
-     "lat": 37.322576,
-     "lon": -122.037009,
-     "kind": "restaurant",
-     "addr": "20750 Stevens Creek Boulevard Cupertino",
-     "osm": "way/105823533"
-    },
-    {
-     "name": "Dishdash",
-     "lat": 37.322682,
-     "lon": -122.037065,
-     "kind": "mediterranean_restaurant",
-     "addr": "20750 Stevens Creek Blvd Cupertino",
+     "name": "Ding’s Kitchen",
+     "lat": 37.36623,
+     "lon": -122.016114,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -994,6 +1205,7 @@
      "lon": -122.031923,
      "kind": "cafe",
      "addr": "10250 North De Anza Boulevard",
+     "src": "osm",
      "osm": "way/377390200"
     },
     {
@@ -1018,6 +1230,7 @@
      "lon": -122.033204,
      "kind": "restaurant",
      "addr": "10118 Bandley Drive Cupertino",
+     "src": "osm",
      "osm": "node/5660176817"
     },
     {
@@ -1026,6 +1239,7 @@
      "lon": -122.014819,
      "kind": "pub",
      "addr": "10801 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/1976649036"
     },
     {
@@ -1037,11 +1251,20 @@
      "src": "overture"
     },
     {
+     "name": "Dumpling Time",
+     "lat": 37.322726,
+     "lon": -122.053583,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Dunkin'",
      "lat": 37.354833,
      "lon": -122.017105,
      "kind": "fast_food",
      "addr": null,
+     "src": "osm",
      "osm": "node/12241961775"
     },
     {
@@ -1050,23 +1273,16 @@
      "lon": -122.042458,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/8735359319"
     },
     {
-     "name": "Dynasty seafood restaurant",
-     "lat": 37.327152,
-     "lon": -122.014862,
-     "kind": "seafood_restaurant",
-     "addr": "10123 N Wolfe Rd Cupertino",
+     "name": "Dynasty Chinese Seafood Restaurant",
+     "lat": 37.32677,
+     "lon": -122.012884,
+     "kind": null,
+     "addr": null,
      "src": "overture"
-    },
-    {
-     "name": "Easterly",
-     "lat": 37.316046,
-     "lon": -122.032667,
-     "kind": "restaurant",
-     "addr": "10495 South De Anza Boulevard Cupertino",
-     "osm": "node/8401523461"
     },
     {
      "name": "Eat More Pho",
@@ -1074,14 +1290,6 @@
      "lon": -122.0033,
      "kind": "vietnamese_restaurant",
      "addr": "1066 E El Camino Real Sunnyvale",
-     "src": "overture"
-    },
-    {
-     "name": "Eat Up! @ 99",
-     "lat": 37.316438,
-     "lon": -122.033647,
-     "kind": "food_court",
-     "addr": "10455 S De Anza Blvd Cupertino",
      "src": "overture"
     },
     {
@@ -1098,6 +1306,7 @@
      "lon": -121.990374,
      "kind": "restaurant",
      "addr": "4996 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "node/9847452183"
     },
     {
@@ -1109,12 +1318,12 @@
      "src": "overture"
     },
     {
-     "name": "Eggmania Indian Food Truck & Catering",
-     "lat": 37.351989,
-     "lon": -122.010561,
-     "kind": "food_truck",
-     "addr": "962 E El Camino Real Sunnyvale",
-     "src": "overture"
+     "name": "El Caminito",
+     "lat": 37.363066,
+     "lon": -122.027435,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "El Camino Cantina",
@@ -1165,12 +1374,28 @@
      "src": "overture"
     },
     {
+     "name": "Empire Armadillo BBQ & Deli",
+     "lat": 37.36593,
+     "lon": -122.028636,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "En Japanese Tapas Restaurant",
      "lat": 37.352026,
      "lon": -121.991017,
      "kind": "japanese_restaurant",
      "addr": "3450 El Camino Real Santa Clara",
      "src": "overture"
+    },
+    {
+     "name": "Erik's Deli",
+     "lat": 37.339271,
+     "lon": -121.977716,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Erik's DeliCafe",
@@ -1189,20 +1414,21 @@
      "src": "overture"
     },
     {
-     "name": "Erthya (Earlier ARTH) Restaurant",
-     "lat": 37.318137,
-     "lon": -122.031888,
-     "kind": "restaurant",
-     "addr": "10310 S De Anza Blvd Cupertino",
-     "src": "overture"
-    },
-    {
      "name": "Eureka!",
      "lat": 37.323343,
      "lon": -122.009032,
      "kind": "restaurant",
      "addr": "19369 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/4283857365"
+    },
+    {
+     "name": "Ewha Dang",
+     "lat": 37.345909,
+     "lon": -121.979014,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Extraordinary Soup & More",
@@ -1218,7 +1444,24 @@
      "lon": -122.032707,
      "kind": "fast_food",
      "addr": "1325 Sunnyvale-Saratoga Road Sunnyvale",
+     "src": "osm",
      "osm": "way/291848412"
+    },
+    {
+     "name": "Famous Food Chinese Restaurant",
+     "lat": 37.366318,
+     "lon": -122.016212,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Famous Food Restaurant",
+     "lat": 37.366273,
+     "lon": -122.016207,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Fantasia Coffee & Tea",
@@ -1226,15 +1469,8 @@
      "lon": -122.015866,
      "kind": "cafe",
      "addr": "10933 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/3562593040"
-    },
-    {
-     "name": "Fantasia Coffee and Tea",
-     "lat": 37.335959,
-     "lon": -122.015959,
-     "kind": "bubble_tea",
-     "addr": "10933 N Wolfe Rd Cupertino",
-     "src": "overture"
     },
     {
      "name": "Fatima Restaurant",
@@ -1250,7 +1486,16 @@
      "lon": -122.042423,
      "kind": "restaurant",
      "addr": "1669 Hollenbeck Avenue Sunnyvale",
+     "src": "osm",
      "osm": "node/8735359320"
+    },
+    {
+     "name": "Filfela Restaurant and Catering",
+     "lat": 37.351999,
+     "lon": -121.986375,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Fire Wings",
@@ -1266,23 +1511,16 @@
      "lon": -122.036465,
      "kind": "restaurant",
      "addr": "20672 Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/3807526193"
     },
     {
-     "name": "Fontana's Italian",
-     "lat": 37.32245,
-     "lon": -122.03861,
-     "kind": "italian_restaurant",
-     "addr": "20840 Stevens Creek Blvd Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Fort Bakery",
-     "lat": 37.32198,
-     "lon": -122.03352,
-     "kind": "restaurant",
-     "addr": "20558 Stevens Creek Blvd Cupertino",
-     "src": "overture"
+     "name": "Flavors of India",
+     "lat": 37.317085,
+     "lon": -121.976747,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Freedom Burrito",
@@ -1290,6 +1528,7 @@
      "lon": -121.994523,
      "kind": "fast_food",
      "addr": "5239 Stevens Creek Boulevard Santa Clara",
+     "src": "osm",
      "osm": "node/3754861845"
     },
     {
@@ -1298,7 +1537,24 @@
      "lon": -122.03141,
      "kind": "ice_cream",
      "addr": null,
+     "src": "osm",
      "osm": "node/466092065"
+    },
+    {
+     "name": "Fugetsu",
+     "lat": 37.315679,
+     "lon": -121.978212,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Fuji Huoshao & Dumpling",
+     "lat": 37.308518,
+     "lon": -122.013697,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "GO GI GO Korean BBQ",
@@ -1314,7 +1570,16 @@
      "lon": -122.019288,
      "kind": "restaurant",
      "addr": "19780 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/3812900208"
+    },
+    {
+     "name": "Galpao Gaucho Three, Llc",
+     "lat": 37.322495,
+     "lon": -122.019246,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Galpão Gaucho Brazilian Steakhouse",
@@ -1325,9 +1590,33 @@
      "src": "overture"
     },
     {
+     "name": "Ganesha Indian Cuisine Sweets and",
+     "lat": 37.345878,
+     "lon": -121.978985,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Garcia's Taqueria",
+     "lat": 37.362119,
+     "lon": -122.024358,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Garlic Mediterranean Grill",
-     "lat": 37.32244,
-     "lon": -122.016928,
+     "lat": 37.338163,
+     "lon": -121.976206,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Garlic Mediterranean Grill",
+     "lat": 37.322481,
+     "lon": -122.016742,
      "kind": "mediterranean_restaurant",
      "addr": "19620 Stevens Creek Blvd Cupertino",
      "src": "overture"
@@ -1346,14 +1635,15 @@
      "lon": -121.999986,
      "kind": "restaurant",
      "addr": "1494 Halford Avenue Santa Clara",
+     "src": "osm",
      "osm": "node/5327261692"
     },
     {
-     "name": "Gochi Cupertino",
-     "lat": 37.337046,
-     "lon": -122.02257,
-     "kind": "japanese_restaurant",
-     "addr": "19980 Homestead Rd Cupertino",
+     "name": "Glaze Teriyaki",
+     "lat": 37.322833,
+     "lon": -122.053506,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -1362,6 +1652,7 @@
      "lon": -122.022744,
      "kind": "restaurant",
      "addr": "19980 East Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/2029160268"
     },
     {
@@ -1370,15 +1661,8 @@
      "lon": -121.990732,
      "kind": "restaurant",
      "addr": "5025 Stevens Creek Boulevard Santa Clara",
+     "src": "osm",
      "osm": "node/9934148630"
-    },
-    {
-     "name": "Gokaku Restaurant",
-     "lat": 37.311337,
-     "lon": -122.023747,
-     "kind": "japanese_restaurant",
-     "addr": "10789 S Blaney Ave Cupertino",
-     "src": "overture"
     },
     {
      "name": "Gold Rush Eatery at Sunken Gardens Golf Course",
@@ -1405,11 +1689,20 @@
      "src": "overture"
     },
     {
+     "name": "Grand Dynasty",
+     "lat": 37.308862,
+     "lon": -122.013012,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Grandma's Kitchen",
      "lat": 37.32193,
      "lon": -122.014858,
      "kind": "restaurant",
      "addr": "19541 Richwood Drive Cupertino",
+     "src": "osm",
      "osm": "node/3812900174"
     },
     {
@@ -1421,12 +1714,29 @@
      "src": "overture"
     },
     {
+     "name": "Gumbas",
+     "lat": 37.322703,
+     "lon": -122.05366,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Gyu-Kaku",
      "lat": 37.322445,
      "lon": -122.016898,
      "kind": "restaurant",
      "addr": "1920 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/1689921753"
+    },
+    {
+     "name": "H. Butlers BBQ",
+     "lat": 37.362372,
+     "lon": -122.027303,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "HK Super Deli",
@@ -1434,6 +1744,7 @@
      "lon": -122.001215,
      "kind": "fast_food",
      "addr": "1092 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/13317832037"
     },
     {
@@ -1442,6 +1753,7 @@
      "lon": -122.035326,
      "kind": "fast_food",
      "addr": "20735 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/2940006201"
     },
     {
@@ -1450,6 +1762,7 @@
      "lon": -122.009251,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/6052171560"
     },
     {
@@ -1458,6 +1771,7 @@
      "lon": -121.994296,
      "kind": "restaurant",
      "addr": "5229 Stevens Creek Boulevard Santa Clara",
+     "src": "osm",
      "osm": "node/3754861847"
     },
     {
@@ -1466,6 +1780,7 @@
      "lon": -122.005863,
      "kind": "restaurant",
      "addr": "19062 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/2625103957"
     },
     {
@@ -1474,7 +1789,16 @@
      "lon": -122.015136,
      "kind": "cafe",
      "addr": "10963 North Wolfe Road",
+     "src": "osm",
      "osm": "node/3815032287"
+    },
+    {
+     "name": "Happy Lemon",
+     "lat": 37.361975,
+     "lon": -122.024431,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Harumi Sushi",
@@ -1482,6 +1806,7 @@
      "lon": -122.018895,
      "kind": "restaurant",
      "addr": "19754 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/4702078768"
     },
     {
@@ -1490,6 +1815,7 @@
      "lon": -122.010512,
      "kind": "cafe",
      "addr": "19469 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "way/386908605"
     },
     {
@@ -1498,6 +1824,7 @@
      "lon": -122.005926,
      "kind": "restaurant",
      "addr": "19066 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/5783052390"
     },
     {
@@ -1506,6 +1833,7 @@
      "lon": -122.014687,
      "kind": "restaurant",
      "addr": "10815 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/9654980385"
     },
     {
@@ -1525,19 +1853,12 @@
      "src": "overture"
     },
     {
-     "name": "Home Eat",
-     "lat": 37.32198,
-     "lon": -122.034128,
-     "kind": "restaurant",
-     "addr": "20588 Stevens Creek Boulevard Cupertino",
-     "osm": "node/4185962499"
-    },
-    {
      "name": "Homestead Cocktail Lounge",
      "lat": 37.338575,
      "lon": -121.994853,
      "kind": "bar",
      "addr": "3557 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "node/599098662"
     },
     {
@@ -1546,6 +1867,7 @@
      "lon": -121.992954,
      "kind": "cafe",
      "addr": "3488 El Camino Real",
+     "src": "osm",
      "osm": "node/11112859132"
     },
     {
@@ -1557,12 +1879,12 @@
      "src": "overture"
     },
     {
-     "name": "Hong Fu",
-     "lat": 37.321897,
-     "lon": -122.03402,
-     "kind": "asian_restaurant",
-     "addr": "20588 Stevens Creek Blvd Cupertino",
-     "src": "overture"
+     "name": "Hot breads",
+     "lat": 37.36343,
+     "lon": -122.028289,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "House Of Falafel",
@@ -1570,6 +1892,7 @@
      "lon": -122.015918,
      "kind": "fast_food",
      "addr": "19590 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/1296858069"
     },
     {
@@ -1578,6 +1901,7 @@
      "lon": -122.042865,
      "kind": "bakery",
      "addr": null,
+     "src": "osm",
      "osm": "node/1674111327"
     },
     {
@@ -1586,6 +1910,7 @@
      "lon": -121.994391,
      "kind": "fast_food",
      "addr": "5231 Stevens Creek Boulevard Santa Clara",
+     "src": "osm",
      "osm": "node/3754861846"
     },
     {
@@ -1602,14 +1927,23 @@
      "lon": -122.016736,
      "kind": "cafe",
      "addr": null,
+     "src": "osm",
      "osm": "node/9849034401"
     },
     {
-     "name": "Humphry Slocombe Ice Cream Truck",
-     "lat": 37.323124,
-     "lon": -122.039665,
-     "kind": "ice_cream_shop",
-     "addr": "20955 Stevens Creek Blvd Cupertino",
+     "name": "Hunan Mifen",
+     "lat": 37.361192,
+     "lon": -122.026052,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Hung Kee Gourmet Inc",
+     "lat": 37.365417,
+     "lon": -122.01486,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -1622,8 +1956,8 @@
     },
     {
      "name": "I280",
-     "lat": 37.335514,
-     "lon": -122.03297,
+     "lat": 37.335507,
+     "lon": -122.032984,
      "kind": "bar",
      "addr": "10889 N De Anza Blvd Cupertino",
      "src": "overture"
@@ -1634,6 +1968,7 @@
      "lon": -122.013377,
      "kind": "restaurant",
      "addr": "1012 Miller Avenue San Jose",
+     "src": "osm",
      "osm": "way/483297090"
     },
     {
@@ -1658,7 +1993,16 @@
      "lon": -122.017894,
      "kind": "ice_cream",
      "addr": "19622 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/2889534944"
+    },
+    {
+     "name": "In-N-Out Burger",
+     "lat": 37.360971,
+     "lon": -122.024964,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "India Chaat Cafe",
@@ -1666,15 +2010,8 @@
      "lon": -122.002241,
      "kind": "restaurant",
      "addr": "1082 East El Camino Real",
+     "src": "osm",
      "osm": "node/2658424322"
-    },
-    {
-     "name": "India Chaat Cuisine",
-     "lat": 37.351649,
-     "lon": -122.002292,
-     "kind": "indian_restaurant",
-     "addr": "1082 E El Camino Real Sunnyvale",
-     "src": "overture"
     },
     {
      "name": "Indian Tadka",
@@ -1685,11 +2022,20 @@
      "src": "overture"
     },
     {
+     "name": "Infinity168 Corp",
+     "lat": 37.324322,
+     "lon": -122.033716,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Ippudo",
      "lat": 37.324671,
      "lon": -122.010735,
      "kind": "restaurant",
      "addr": "19540 Vallco Parkway",
+     "src": "osm",
      "osm": "node/6677820752"
     },
     {
@@ -1722,6 +2068,7 @@
      "lon": -122.018106,
      "kind": "cafe",
      "addr": "19740 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/3812900198"
     },
     {
@@ -1733,19 +2080,12 @@
      "src": "overture"
     },
     {
-     "name": "JP Taiwan Bistro",
-     "lat": 37.318549,
-     "lon": -122.029564,
-     "kind": "restaurant",
-     "addr": "10271 Torre Avenue Cupertino",
-     "osm": "way/105890659"
-    },
-    {
      "name": "JX Cuisine",
      "lat": 37.3385,
      "lon": -121.995092,
      "kind": "restaurant",
      "addr": "3581 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "node/3937004613"
     },
     {
@@ -1754,6 +2094,7 @@
      "lon": -121.992573,
      "kind": "fast_food",
      "addr": "3465 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "way/389969509"
     },
     {
@@ -1762,6 +2103,7 @@
      "lon": -121.988208,
      "kind": "fast_food",
      "addr": null,
+     "src": "osm",
      "osm": "way/484562064"
     },
     {
@@ -1786,6 +2128,7 @@
      "lon": -122.02962,
      "kind": "fast_food",
      "addr": null,
+     "src": "osm",
      "osm": "node/466092006"
     },
     {
@@ -1794,6 +2137,7 @@
      "lon": -122.017314,
      "kind": "fast_food",
      "addr": "797 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/2480845636"
     },
     {
@@ -1802,6 +2146,7 @@
      "lon": -121.994819,
      "kind": "restaurant",
      "addr": "El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/2404189908"
     },
     {
@@ -1810,7 +2155,16 @@
      "lon": -122.006506,
      "kind": "restaurant",
      "addr": "1012 East El Camino Real",
+     "src": "osm",
      "osm": "node/2663431737"
+    },
+    {
+     "name": "Jason Phuong Inc",
+     "lat": 37.353079,
+     "lon": -122.005646,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Jazen Tea",
@@ -1826,7 +2180,16 @@
      "lon": -122.014695,
      "kind": "cafe",
      "addr": "10815 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/9654980384"
+    },
+    {
+     "name": "Jerky King",
+     "lat": 37.336029,
+     "lon": -122.015678,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Jersey Mike's Subs",
@@ -1834,6 +2197,22 @@
      "lon": -122.02426,
      "kind": "sandwich_shop",
      "addr": "20080 Stevens Creek Blvd Cupertino",
+     "src": "overture"
+    },
+    {
+     "name": "Jin Li Yuan",
+     "lat": 37.338808,
+     "lon": -122.042389,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Jjcv, Inc. #2125",
+     "lat": 37.323202,
+     "lon": -122.019999,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -1853,6 +2232,14 @@
      "src": "overture"
     },
     {
+     "name": "K C Jewelry",
+     "lat": 37.351686,
+     "lon": -121.992188,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "K's Cafe",
      "lat": 37.351301,
      "lon": -122.031217,
@@ -1861,19 +2248,12 @@
      "src": "overture"
     },
     {
-     "name": "KAI Japanese Restaurant",
-     "lat": 37.322699,
-     "lon": -121.99482,
-     "kind": "japanese_restaurant",
-     "addr": "5190 Stevens Creek Blvd San Jose",
-     "src": "overture"
-    },
-    {
      "name": "KFC",
      "lat": 37.337869,
      "lon": -122.041797,
      "kind": "fast_food",
      "addr": "1695 Hollenbeck Avenue Sunnyvale",
+     "src": "osm",
      "osm": "node/1674111308"
     },
     {
@@ -1882,30 +2262,31 @@
      "lon": -122.003719,
      "kind": "fast_food",
      "addr": "1065 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "way/49187237"
     },
     {
-     "name": "KFC",
-     "lat": 37.31558,
-     "lon": -122.032187,
-     "kind": "chicken_restaurant",
-     "addr": "10520 S De Anza Blvd #257 Cupertino",
+     "name": "Kabab & Curry’s",
+     "lat": 37.323319,
+     "lon": -122.023655,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
-     "name": "Kabab and Curry",
-     "lat": 37.323365,
-     "lon": -122.023416,
-     "kind": "indian_restaurant",
-     "addr": "20007 Stevens Creek Blvd Cupertino",
+     "name": "Kai Japanese Restaurant",
+     "lat": 37.322795,
+     "lon": -121.994829,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
-     "name": "Kee Wah Bakery",
-     "lat": 37.317857,
-     "lon": -122.032105,
-     "kind": "bakery",
-     "addr": "10370 S De Anza Blvd Cupertino",
+     "name": "Kbc Restaurant Management Inc",
+     "lat": 37.336301,
+     "lon": -122.015708,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -1922,6 +2303,7 @@
      "lon": -121.994454,
      "kind": "restaurant",
      "addr": "3521 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "node/9166777366"
     },
     {
@@ -1933,12 +2315,12 @@
      "src": "overture"
     },
     {
-     "name": "Kobe Kitchen",
-     "lat": 37.323357,
-     "lon": -122.037431,
-     "kind": "restaurant",
-     "addr": "20803 Stevens Creek Boulevard Cupertino",
-     "osm": "node/10695439455"
+     "name": "Kizuna",
+     "lat": 37.308766,
+     "lon": -122.013583,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Koi Palace Contempo",
@@ -1946,6 +2328,7 @@
      "lon": -122.009305,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/6052171563"
     },
     {
@@ -1954,6 +2337,7 @@
      "lon": -122.00946,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/6052171564"
     },
     {
@@ -1965,11 +2349,20 @@
      "src": "overture"
     },
     {
+     "name": "Koko Izakaya",
+     "lat": 37.358055,
+     "lon": -122.019302,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Komala Vilas",
      "lat": 37.351412,
      "lon": -122.00644,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/266630163"
     },
     {
@@ -1982,7 +2375,7 @@
     },
     {
      "name": "Kong Tofu & BBQ",
-     "lat": 37.322523,
+     "lat": 37.322533,
      "lon": -122.01779,
      "kind": "korean_restaurant",
      "addr": "19626 Stevens Creek Blvd Cupertino",
@@ -1994,7 +2387,16 @@
      "lon": -122.01767,
      "kind": "restaurant",
      "addr": "19626 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/2629332081"
+    },
+    {
+     "name": "Korean BBQ",
+     "lat": 37.338666,
+     "lon": -121.973268,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Kura Revolving Sushi Bar",
@@ -2010,6 +2412,7 @@
      "lon": -122.011895,
      "kind": "fast_food",
      "addr": "19600 Vallco Parkway Cupertino",
+     "src": "osm",
      "osm": "node/4008930173"
     },
     {
@@ -2026,6 +2429,7 @@
      "lon": -122.005281,
      "kind": "restaurant",
      "addr": "East El Camino Real",
+     "src": "osm",
      "osm": "node/2663431753"
     },
     {
@@ -2034,7 +2438,16 @@
      "lon": -122.031296,
      "kind": "cafe",
      "addr": "126 East Fremont Avenue Sunnyvale",
+     "src": "osm",
      "osm": "node/8622684227"
+    },
+    {
+     "name": "L & P Wealth Llc",
+     "lat": 37.323964,
+     "lon": -121.994352,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "L&L Hawaiian Barbecue",
@@ -2042,6 +2455,7 @@
      "lon": -121.994686,
      "kind": "fast_food",
      "addr": "3580 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "way/258200676"
     },
     {
@@ -2050,6 +2464,7 @@
      "lon": -122.017843,
      "kind": "bakery",
      "addr": "19675 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/1296637656"
     },
     {
@@ -2061,11 +2476,20 @@
      "src": "overture"
     },
     {
+     "name": "La Chilanguita Taco Truck",
+     "lat": 37.316217,
+     "lon": -121.975341,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "La Patisserie",
      "lat": 37.321841,
      "lon": -122.019009,
      "kind": "bakery",
      "addr": "19758 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/4702096592"
     },
     {
@@ -2074,12 +2498,13 @@
      "lon": -122.013856,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/9339596983"
     },
     {
      "name": "La Terra Bakery & Cafe",
-     "lat": 37.336802,
-     "lon": -122.022545,
+     "lat": 37.3376,
+     "lon": -122.02298,
      "kind": "coffee_shop",
      "addr": "19960 Homestead Road Cupertino",
      "src": "overture"
@@ -2098,6 +2523,7 @@
      "lon": -122.008668,
      "kind": "restaurant",
      "addr": "19359 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/3902655324"
     },
     {
@@ -2106,6 +2532,7 @@
      "lon": -122.029881,
      "kind": "fast_food",
      "addr": "20363 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "node/3807643497"
     },
     {
@@ -2114,6 +2541,7 @@
      "lon": -122.018046,
      "kind": "restaurant",
      "addr": "19732 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/3812900197"
     },
     {
@@ -2122,6 +2550,7 @@
      "lon": -122.034742,
      "kind": "restaurant",
      "addr": "10125 Bandley Drive",
+     "src": "osm",
      "osm": "way/105823782"
     },
     {
@@ -2130,6 +2559,7 @@
      "lon": -122.032873,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/11492838010"
     },
     {
@@ -2141,19 +2571,44 @@
      "src": "overture"
     },
     {
+     "name": "Lilikoi Boba",
+     "lat": 37.323225,
+     "lon": -122.022716,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Local Cafe",
      "lat": 37.336967,
      "lon": -122.040259,
      "kind": "restaurant",
      "addr": "20956 Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/9328522967"
     },
     {
+     "name": "Local Kitchens",
+     "lat": 37.322756,
+     "lon": -122.053511,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Los JamayTecos",
-     "lat": 37.339704,
-     "lon": -121.994827,
+     "lat": 37.339817,
+     "lon": -121.994944,
      "kind": "food_truck",
      "addr": "1175 E Homestead Rd Sunnyvale",
+     "src": "overture"
+    },
+    {
+     "name": "Lrr Inc",
+     "lat": 37.322162,
+     "lon": -122.017916,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -2165,19 +2620,36 @@
      "src": "overture"
     },
     {
+     "name": "Lyons Restaurant",
+     "lat": 37.317014,
+     "lon": -121.976812,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Lyu And Kim Inc",
+     "lat": 37.323828,
+     "lon": -122.017527,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "M Korea Tapas",
      "lat": 37.353236,
      "lon": -121.992496,
      "kind": "bar",
      "addr": "3546 Flora Vista Avenue Santa Clara",
+     "src": "osm",
      "osm": "way/313105298"
     },
     {
      "name": "MOD Pizza",
-     "lat": 37.334113,
-     "lon": -122.014406,
-     "kind": "fast_food_restaurant",
-     "addr": "10815 N Wolfe Rd Ste 106 Cupertino",
+     "lat": 37.33654,
+     "lon": -122.01446,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -2186,6 +2658,7 @@
      "lon": -122.005711,
      "kind": "restaurant",
      "addr": "19052 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/2625103944"
     },
     {
@@ -2221,6 +2694,22 @@
      "src": "overture"
     },
     {
+     "name": "Madurai Idli Kadai",
+     "lat": 37.366061,
+     "lon": -122.013423,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Main St. Bagels",
+     "lat": 37.338839,
+     "lon": -121.973096,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Mandarin Gourmet",
      "lat": 37.3245,
      "lon": -122.032623,
@@ -2234,6 +2723,7 @@
      "lon": -121.989579,
      "kind": "restaurant",
      "addr": "3395 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/13624193197"
     },
     {
@@ -2242,6 +2732,7 @@
      "lon": -122.019772,
      "kind": "restaurant",
      "addr": "751 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/5621253568"
     },
     {
@@ -2250,6 +2741,7 @@
      "lon": -122.01929,
      "kind": "restaurant",
      "addr": "19772 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/3812900207"
     },
     {
@@ -2258,14 +2750,15 @@
      "lon": -122.03447,
      "kind": "fast_food",
      "addr": "20682 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/13051343401"
     },
     {
-     "name": "Maya Kitchen",
-     "lat": 37.352752,
-     "lon": -122.031434,
-     "kind": "indian_restaurant",
-     "addr": "159 E Fremont Ave Sunnyvale",
+     "name": "Maya Kitchen Food Truck",
+     "lat": 37.352634,
+     "lon": -122.031797,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -2274,6 +2767,7 @@
      "lon": -122.041023,
      "kind": "fast_food",
      "addr": "10990 North Stelling Road Cupertino",
+     "src": "osm",
      "osm": "way/61234994"
     },
     {
@@ -2282,7 +2776,16 @@
      "lon": -121.992842,
      "kind": "fast_food",
      "addr": "5122 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "way/103922080"
+    },
+    {
+     "name": "McDonald's",
+     "lat": 37.362939,
+     "lon": -122.027195,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "McDonald's",
@@ -2290,15 +2793,8 @@
      "lon": -121.993876,
      "kind": "fast_food",
      "addr": "3509 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "way/258213374"
-    },
-    {
-     "name": "McDonald's",
-     "lat": 37.32702,
-     "lon": -122.01601,
-     "kind": "fast_food_restaurant",
-     "addr": "10123 N Wolfe Rd Cupertino",
-     "src": "overture"
     },
     {
      "name": "Meenakshi Bhavan",
@@ -2314,14 +2810,15 @@
      "lon": -122.017144,
      "kind": "cafe",
      "addr": "19652 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/1296650491"
     },
     {
-     "name": "Merlion Restaurant & Bar",
-     "lat": 37.322502,
-     "lon": -122.017626,
-     "kind": "asian_fusion_restaurant",
-     "addr": "19628 Stevens Creek Blvd Cupertino",
+     "name": "Merlion Marketplace Inc",
+     "lat": 37.322596,
+     "lon": -122.017546,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -2334,8 +2831,8 @@
     },
     {
      "name": "Mia’s Bento Snacks & Tea",
-     "lat": 37.324509,
-     "lon": -122.03417,
+     "lat": 37.324674,
+     "lon": -122.033764,
      "kind": "restaurant",
      "addr": "10118 G Bandley Dr Cupertino",
      "src": "overture"
@@ -2346,14 +2843,15 @@
      "lon": -121.995112,
      "kind": "restaurant",
      "addr": "3590 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "way/258200680"
     },
     {
-     "name": "Ming Kee Deli",
-     "lat": 37.33685,
-     "lon": -122.040432,
-     "kind": "chinese_restaurant",
-     "addr": "20956 Homestead Rd Cupertino",
+     "name": "Mingkee Deli 西關明記腸粉",
+     "lat": 37.336758,
+     "lon": -122.040274,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -2370,7 +2868,16 @@
      "lon": -122.042426,
      "kind": "cafe",
      "addr": null,
+     "src": "osm",
      "osm": "node/8735329212"
+    },
+    {
+     "name": "Molly Tea",
+     "lat": 37.361939,
+     "lon": -122.02444,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Molly Tea",
@@ -2378,6 +2885,7 @@
      "lon": -122.006702,
      "kind": "cafe",
      "addr": "19110 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/2011558989"
     },
     {
@@ -2394,6 +2902,7 @@
      "lon": -121.999973,
      "kind": "restaurant",
      "addr": "1484 Halford Avenue Santa Clara",
+     "src": "osm",
      "osm": "node/3674240525"
     },
     {
@@ -2402,6 +2911,7 @@
      "lon": -122.017174,
      "kind": "restaurant",
      "addr": "848 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/12241961776"
     },
     {
@@ -2437,12 +2947,29 @@
      "src": "overture"
     },
     {
+     "name": "Myung Dong Tofu Cabin, Inc. Dba The Halford",
+     "lat": 37.351481,
+     "lon": -121.999949,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Myungrang Hotdog",
      "lat": 37.324671,
      "lon": -122.010675,
      "kind": "fast_food",
      "addr": "19540 Vallco Parkway Cupertino",
+     "src": "osm",
      "osm": "node/11883119088"
+    },
+    {
+     "name": "N7 Draft Tea & Coffee",
+     "lat": 37.315639,
+     "lon": -121.977285,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Nanyang Kitchen",
@@ -2461,35 +2988,36 @@
      "src": "overture"
     },
     {
-     "name": "New Port Dimsum & Seafood Restaurant (新港海鮮酒家)",
-     "lat": 37.33848,
-     "lon": -122.013873,
-     "kind": "chinese_restaurant",
-     "addr": "1686 S Wolfe Rd Sunnyvale",
-     "src": "overture"
-    },
-    {
      "name": "New Port Restaurant",
      "lat": 37.338479,
      "lon": -122.01388,
      "kind": "restaurant",
      "addr": "1686 South Wolfe Road",
+     "src": "osm",
      "osm": "way/167275730"
     },
     {
      "name": "New Tandoori Cafe",
-     "lat": 37.32289,
-     "lon": -121.99246,
+     "lat": 37.32169,
+     "lon": -121.992394,
      "kind": "pakistani_restaurant",
      "addr": "5134 Stevens Creek Blvd San Jose",
      "src": "overture"
     },
     {
      "name": "Nick The Greek",
-     "lat": 37.337763,
-     "lon": -122.042781,
+     "lat": 37.337746,
+     "lon": -122.042863,
      "kind": "greek_restaurant",
      "addr": "1603 Hollenbeck Ave Sunnyvale",
+     "src": "osm"
+    },
+    {
+     "name": "Nikvik Quality Foods Inc",
+     "lat": 37.352794,
+     "lon": -121.998339,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -2498,6 +3026,7 @@
      "lon": -122.012719,
      "kind": "cafe",
      "addr": null,
+     "src": "osm",
      "osm": "node/12359860092"
     },
     {
@@ -2506,6 +3035,7 @@
      "lon": -122.005189,
      "kind": "restaurant",
      "addr": "East El Camino Real",
+     "src": "osm",
      "osm": "node/2663431785"
     },
     {
@@ -2517,14 +3047,6 @@
      "src": "overture"
     },
     {
-     "name": "Noodleosophy",
-     "lat": 37.316765,
-     "lon": -122.033665,
-     "kind": "restaurant",
-     "addr": "10445 South De Anza Boulevard Cupertino",
-     "osm": "node/8401523460"
-    },
-    {
      "name": "Noodles and Company",
      "lat": 37.323219,
      "lon": -122.035344,
@@ -2533,19 +3055,19 @@
      "src": "overture"
     },
     {
+     "name": "Nor-Bu Korean Japanese Restaurant",
+     "lat": 37.351999,
+     "lon": -121.986375,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Nosh Cafe",
      "lat": 37.325297,
      "lon": -122.012781,
      "kind": "coffee_shop",
      "addr": "19700 Vallco Pkwy Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Nuevas Generaciones Taqueria",
-     "lat": 37.324206,
-     "lon": -121.985709,
-     "kind": "food_truck",
-     "addr": "3657 Stevens Creek Blvd Santa Clara",
      "src": "overture"
     },
     {
@@ -2570,6 +3092,7 @@
      "lon": -122.02282,
      "kind": "fast_food",
      "addr": null,
+     "src": "osm",
      "osm": "node/7159581010"
     },
     {
@@ -2578,15 +3101,8 @@
      "lon": -122.006602,
      "kind": "restaurant",
      "addr": "1010 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "way/260784260"
-    },
-    {
-     "name": "Off the Grid: Cupertino @ Whole Foods",
-     "lat": 37.323274,
-     "lon": -122.040059,
-     "kind": "food_truck",
-     "addr": "20955 Stevens Creek Blvd Cupertino",
-     "src": "overture"
     },
     {
      "name": "Olarn Thai Cuisine",
@@ -2610,15 +3126,16 @@
      "lon": -122.017008,
      "kind": "restaurant",
      "addr": "19648 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/2722527739"
     },
     {
-     "name": "Oppaya789",
-     "lat": 37.351792,
-     "lon": -122.006603,
-     "kind": "asian_restaurant",
-     "addr": "5457 Snell Ave San Jose",
-     "src": "overture"
+     "name": "Orange Square",
+     "lat": 37.340016,
+     "lon": -121.972847,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Orchard Valley Coffee",
@@ -2626,6 +3143,7 @@
      "lon": -121.994461,
      "kind": "restaurant",
      "addr": "5237 Stevens Creek Boulevard Santa Clara",
+     "src": "osm",
      "osm": "node/619015092"
     },
     {
@@ -2634,6 +3152,7 @@
      "lon": -122.009868,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/6052171561"
     },
     {
@@ -2642,6 +3161,7 @@
      "lon": -121.994133,
      "kind": "restaurant",
      "addr": "3540 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "node/1311488229"
     },
     {
@@ -2650,6 +3170,7 @@
      "lon": -122.033367,
      "kind": "restaurant",
      "addr": "20630 Valley Green Drive",
+     "src": "osm",
      "osm": "node/3381829293"
     },
     {
@@ -2658,6 +3179,7 @@
      "lon": -122.008091,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "way/519700330"
     },
     {
@@ -2666,6 +3188,7 @@
      "lon": -122.009951,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "way/519700333"
     },
     {
@@ -2674,6 +3197,7 @@
      "lon": -122.010195,
      "kind": "restaurant",
      "addr": "19399 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/4283857362"
     },
     {
@@ -2682,6 +3206,7 @@
      "lon": -122.01817,
      "kind": "fast_food",
      "addr": "790 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/1285663707"
     },
     {
@@ -2690,15 +3215,8 @@
      "lon": -121.994152,
      "kind": "fast_food",
      "addr": "5180 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "node/9847452244"
-    },
-    {
-     "name": "Panera Bread",
-     "lat": 37.323195,
-     "lon": -122.037965,
-     "kind": "fast_food",
-     "addr": "20807 Stevens Creek Boulevard Cupertino",
-     "osm": "node/1218545657"
     },
     {
      "name": "Panino Giusto - Cupertino",
@@ -2707,6 +3225,14 @@
      "kind": "italian_restaurant",
      "addr": "19469 Stevens Creek Blvd Cupertino",
      "src": "overture"
+    },
+    {
+     "name": "Papa Express",
+     "lat": 37.337764,
+     "lon": -121.977758,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Paper Moon Coffee",
@@ -2722,7 +3248,24 @@
      "lon": -122.035466,
      "kind": "bakery",
      "addr": "20735 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/467725017"
+    },
+    {
+     "name": "Paris Baguette",
+     "lat": 37.314741,
+     "lon": -121.976939,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Paris Baguette",
+     "lat": 37.361458,
+     "lon": -122.025658,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Paris Baguette",
@@ -2730,23 +3273,24 @@
      "lon": -121.99397,
      "kind": "cafe",
      "addr": "3561 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/12245021842"
     },
     {
-     "name": "Parkview Kitchen & Spirits",
-     "lat": 37.321947,
-     "lon": -122.031755,
-     "kind": "restaurant",
-     "addr": "10050 South De Anza Boulevard Cupertino",
-     "osm": "node/494747423"
+     "name": "Paul & Eddie's Monta Vista Inn",
+     "lat": 37.323123,
+     "lon": -122.051623,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
-     "name": "Pasand Indian Cuisine",
-     "lat": 37.352524,
-     "lon": -121.997782,
-     "kind": "indian_restaurant",
-     "addr": "3701 El Camino Real Santa Clara",
-     "src": "overture"
+     "name": "Paul and Eddies",
+     "lat": 37.323211,
+     "lon": -122.051616,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Peacock Lounge",
@@ -2757,20 +3301,12 @@
      "src": "overture"
     },
     {
-     "name": "Pebbles Cafe",
-     "lat": 37.31961,
-     "lon": -122.032892,
-     "kind": "sandwich_shop",
-     "addr": "10235 S De Anza Blvd Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Peet's Coffee & Tea",
-     "lat": 37.323121,
-     "lon": -122.038324,
-     "kind": "coffee_shop",
-     "addr": "20807 Stevens Creek Blvd Ste. 200 Cupertino",
-     "src": "overture"
+     "name": "Peet's Coffee",
+     "lat": 37.337272,
+     "lon": -122.06616,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Peet's Coffee & Tea (at Agilent Technologies)",
@@ -2782,8 +3318,8 @@
     },
     {
      "name": "Peet's Coffee and Tea",
-     "lat": 37.337391,
-     "lon": -121.995209,
+     "lat": 37.337455,
+     "lon": -121.995084,
      "kind": "coffee_shop",
      "addr": "3590 Homestead Rd Santa Clara",
      "src": "overture"
@@ -2818,6 +3354,7 @@
      "lon": -122.007954,
      "kind": "fast_food",
      "addr": null,
+     "src": "osm",
      "osm": "way/1260439642"
     },
     {
@@ -2826,6 +3363,7 @@
      "lon": -122.034649,
      "kind": "cafe",
      "addr": "20686 Stevens Creek Boulevard cupertino",
+     "src": "osm",
      "osm": "node/3814942187"
     },
     {
@@ -2834,7 +3372,24 @@
      "lon": -122.010516,
      "kind": "cafe",
      "addr": "19439 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "way/386908606"
+    },
+    {
+     "name": "Phin Cafe",
+     "lat": 37.308584,
+     "lon": -122.013535,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Pho #1",
+     "lat": 37.362421,
+     "lon": -122.02722,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Pho #1",
@@ -2842,14 +3397,6 @@
      "lon": -121.990755,
      "kind": "vietnamese_restaurant",
      "addr": "5025 Stevens Creek Blvd Santa Clara",
-     "src": "overture"
-    },
-    {
-     "name": "Pho Ha Noi",
-     "lat": 37.321521,
-     "lon": -122.031908,
-     "kind": "vietnamese_restaurant",
-     "addr": "10100 S De Anza Blvd Cupertino",
      "src": "overture"
     },
     {
@@ -2877,12 +3424,12 @@
      "src": "overture"
     },
     {
-     "name": "Phở Hà Nội San Jose",
-     "lat": 37.321588,
-     "lon": -122.031915,
-     "kind": "restaurant",
-     "addr": "10100 South De Anza Boulevard Cupertino",
-     "osm": "way/105821037"
+     "name": "Pho To Chau 999 Vietnamese Noodle Soup",
+     "lat": 37.338407,
+     "lon": -121.974234,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Phở Hòa",
@@ -2890,6 +3437,7 @@
      "lon": -122.036465,
      "kind": "restaurant",
      "addr": "20674 Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/3807526194"
     },
     {
@@ -2898,6 +3446,7 @@
      "lon": -121.992665,
      "kind": "restaurant",
      "addr": "3484 El Camino Real",
+     "src": "osm",
      "osm": "node/4887413302"
     },
     {
@@ -2906,6 +3455,7 @@
      "lon": -122.015585,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "way/378090618"
     },
     {
@@ -2914,6 +3464,7 @@
      "lon": -121.99459,
      "kind": "restaurant",
      "addr": "3533 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "node/9166761952"
     },
     {
@@ -2930,6 +3481,7 @@
      "lon": -122.009209,
      "kind": "restaurant",
      "addr": "19369 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/13924456866"
     },
     {
@@ -2938,15 +3490,8 @@
      "lon": -122.02087,
      "kind": "ice_cream",
      "addr": null,
+     "src": "osm",
      "osm": "node/2050793994"
-    },
-    {
-     "name": "Pizza Hut",
-     "lat": 37.322532,
-     "lon": -122.037416,
-     "kind": "pizza_restaurant",
-     "addr": "20770 Stevens Creek Blvd Cupertino",
-     "src": "overture"
     },
     {
      "name": "Pizza My Heart",
@@ -2954,6 +3499,7 @@
      "lon": -122.033068,
      "kind": "restaurant",
      "addr": "20530 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/1974359640"
     },
     {
@@ -2962,6 +3508,7 @@
      "lon": -122.008644,
      "kind": "restaurant",
      "addr": "19409 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/12065888179"
     },
     {
@@ -2970,7 +3517,16 @@
      "lon": -121.999999,
      "kind": "restaurant",
      "addr": "1576 Halford Avenue Santa Clara",
+     "src": "osm",
      "osm": "node/266651419"
+    },
+    {
+     "name": "Platinum Fnb Inc",
+     "lat": 37.351898,
+     "lon": -121.995355,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Poke-nomics",
@@ -2978,6 +3534,14 @@
      "lon": -122.042559,
      "kind": "japanese_restaurant",
      "addr": "1661 Hollenbeck Ave Sunnyvale",
+     "src": "overture"
+    },
+    {
+     "name": "Popeyes Louisiana Kitchen",
+     "lat": 37.338093,
+     "lon": -121.976251,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -2994,14 +3558,31 @@
      "lon": -122.009618,
      "kind": "fast_food",
      "addr": "19419 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/6052171562"
     },
     {
+     "name": "Proposition Chicken",
+     "lat": 37.322833,
+     "lon": -122.053506,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Pupusa Time",
-     "lat": 37.35291,
-     "lon": -122.031576,
+     "lat": 37.352923,
+     "lon": -122.031991,
      "kind": "salvadoran_restaurant",
      "addr": "105 E Fremont Ave Sunnyvale",
+     "src": "overture"
+    },
+    {
+     "name": "R&B Tea Sunnyvale",
+     "lat": 37.36271,
+     "lon": -122.02649,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3013,6 +3594,14 @@
      "src": "overture"
     },
     {
+     "name": "Rainbow Donuts and Boba (Previously Babo Boba Cafe)",
+     "lat": 37.336909,
+     "lon": -122.022459,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Rajbhog Thali",
      "lat": 37.351352,
      "lon": -122.006024,
@@ -3021,20 +3610,21 @@
      "src": "overture"
     },
     {
-     "name": "Rajjot Sweet & Snack Food To Go",
-     "lat": 37.353699,
-     "lon": -122.013538,
-     "kind": "indian_restaurant",
-     "addr": "1234 S Wolfe Rd Sunnyvale",
-     "src": "overture"
-    },
-    {
      "name": "Rajjot Sweets and Snacks",
      "lat": 37.353694,
      "lon": -122.013558,
      "kind": "restaurant",
      "addr": "1234 South Wolfe Road Sunnyvale",
+     "src": "osm",
      "osm": "node/506883216"
+    },
+    {
+     "name": "Rajwadi Thali",
+     "lat": 37.363422,
+     "lon": -122.026139,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Rama V Thai Cuisine",
@@ -3042,14 +3632,23 @@
      "lon": -122.00611,
      "kind": "restaurant",
      "addr": "1028 East El Camino Real",
+     "src": "osm",
      "osm": "node/266630162"
     },
     {
      "name": "Ramen Hajime",
-     "lat": 37.323885,
-     "lon": -121.994313,
+     "lat": 37.323964,
+     "lon": -121.994352,
      "kind": "japanese_restaurant",
      "addr": "5229 Stevens Creek Blvd Santa Clara",
+     "src": "overture"
+    },
+    {
+     "name": "Ramen Wakusei",
+     "lat": 37.363106,
+     "lon": -122.025695,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3058,7 +3657,24 @@
      "lon": -121.999655,
      "kind": "confectionery",
      "addr": "1584 Halford Avenue Santa Clara",
+     "src": "osm",
      "osm": "node/266651418"
+    },
+    {
+     "name": "Raretea",
+     "lat": 37.336758,
+     "lon": -122.040274,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Raven Ridge Investments Llc",
+     "lat": 37.33744,
+     "lon": -122.067464,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Red Hot Wok",
@@ -3066,7 +3682,16 @@
      "lon": -122.014898,
      "kind": "restaurant",
      "addr": "10074 East Estates Drive Cupertino",
+     "src": "osm",
      "osm": "node/3812899055"
+    },
+    {
+     "name": "Red Pepper Bar And Grill",
+     "lat": 37.33744,
+     "lon": -122.067464,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Red Pepper Express",
@@ -3074,6 +3699,14 @@
      "lon": -122.020366,
      "kind": "food_truck",
      "addr": "725 E El Camino Real Sunnyvale",
+     "src": "overture"
+    },
+    {
+     "name": "Renad Food Srvices Inc",
+     "lat": 37.337284,
+     "lon": -122.022828,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3090,6 +3723,7 @@
      "lon": -121.992803,
      "kind": "restaurant",
      "addr": "3486 El Camino Real",
+     "src": "osm",
      "osm": "node/11112859133"
     },
     {
@@ -3114,14 +3748,31 @@
      "lon": -121.994105,
      "kind": "restaurant",
      "addr": "5180 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "node/1199518555"
     },
     {
      "name": "Round Table Pizza",
-     "lat": 37.338876,
-     "lon": -122.041508,
+     "lat": 37.366274,
+     "lon": -122.016643,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Round Table Pizza",
+     "lat": 37.338885,
+     "lon": -122.042595,
      "kind": "buffet_restaurant",
      "addr": "1663 Hollenbeck Ave Sunnyvale",
+     "src": "overture"
+    },
+    {
+     "name": "Round Table Pizza",
+     "lat": 37.315755,
+     "lon": -121.977888,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3133,11 +3784,20 @@
      "src": "overture"
     },
     {
+     "name": "SAJJ Mediterranean",
+     "lat": 37.322764,
+     "lon": -122.053495,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "SGD Tofu House",
      "lat": 37.351934,
      "lon": -121.991082,
      "kind": "restaurant",
      "addr": "3450 El Camino Real",
+     "src": "osm",
      "osm": "node/4887413308"
     },
     {
@@ -3154,14 +3814,23 @@
      "lon": -122.012304,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/12359860090"
     },
     {
-     "name": "Sake Bomb",
-     "lat": 37.35805,
-     "lon": -122.01925,
-     "kind": "sushi_restaurant",
-     "addr": "759 E El Camino Real Sunnyvale",
+     "name": "Saizo",
+     "lat": 37.361147,
+     "lon": -122.02609,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Sakebomb Sushi & Tofu House",
+     "lat": 37.358091,
+     "lon": -122.019375,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3170,6 +3839,7 @@
      "lon": -121.997736,
      "kind": "restaurant",
      "addr": "3701 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/622352577"
     },
     {
@@ -3189,11 +3859,20 @@
      "src": "overture"
     },
     {
+     "name": "Sankranti",
+     "lat": 37.366203,
+     "lon": -122.015611,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Sawa Sushi",
      "lat": 37.351501,
      "lon": -122.004596,
      "kind": "restaurant",
      "addr": "1042 East El Camino Real",
+     "src": "osm",
      "osm": "node/2663431622"
     },
     {
@@ -3202,7 +3881,24 @@
      "lon": -122.021329,
      "kind": "restaurant",
      "addr": null,
+     "src": "osm",
      "osm": "node/1285663741"
+    },
+    {
+     "name": "See's Candies",
+     "lat": 37.352044,
+     "lon": -121.987061,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Senor Sisig",
+     "lat": 37.322833,
+     "lon": -122.053506,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Seoul Jung",
@@ -3221,35 +3917,36 @@
      "src": "overture"
     },
     {
+     "name": "Seva Global Inc",
+     "lat": 37.362914,
+     "lon": -122.024933,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "ShaQ",
      "lat": 37.352604,
      "lon": -121.991725,
      "kind": "restaurant",
      "addr": "3475 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/11112644781"
     },
     {
-     "name": "ShahRestaurant Sunnyvale",
-     "lat": 37.35181,
-     "lon": -122.010628,
-     "kind": "restaurant",
-     "addr": "962 E El Camino Real Sunnyvale",
-     "src": "overture"
+     "name": "Shabuway San Jose",
+     "lat": 37.315641,
+     "lon": -121.977169,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Shahi Chaat",
-     "lat": 37.35183,
-     "lon": -121.98706,
+     "lat": 37.351814,
+     "lon": -121.986979,
      "kind": "indian_restaurant",
      "addr": "1570 Pomeroy Ave Santa Clara",
-     "src": "overture"
-    },
-    {
-     "name": "Shan - Cupertino",
-     "lat": 37.323242,
-     "lon": -122.023444,
-     "kind": "indian_restaurant",
-     "addr": "20030 Stevens Creek Blvd Cupertino",
      "src": "overture"
     },
     {
@@ -3258,6 +3955,7 @@
      "lon": -121.998997,
      "kind": "restaurant",
      "addr": "3739 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/622352584"
     },
     {
@@ -3269,19 +3967,11 @@
      "src": "overture"
     },
     {
-     "name": "Shang Cafe",
-     "lat": 37.309517,
-     "lon": -122.01174,
-     "kind": "chinese_restaurant",
-     "addr": "6154 Bollinger Rd San Jose",
-     "src": "overture"
-    },
-    {
-     "name": "Shang Yu Lin",
+     "name": "Shang Yu Lin-Cupertino上宇林",
      "lat": 37.336936,
      "lon": -122.040305,
-     "kind": "bubble_tea",
-     "addr": "20956 Homestead Rd Cupertino",
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3301,6 +3991,14 @@
      "src": "overture"
     },
     {
+     "name": "Shanghai Flavor Shop",
+     "lat": 37.366275,
+     "lon": -122.015907,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Shanghai Garden",
      "lat": 37.337525,
      "lon": -122.040227,
@@ -3317,11 +4015,11 @@
      "src": "overture"
     },
     {
-     "name": "Shawarma Falafel Shaq",
-     "lat": 37.352662,
-     "lon": -121.991802,
-     "kind": "mediterranean_restaurant",
-     "addr": "3475 El Camino Real Santa Clara",
+     "name": "ShareTea",
+     "lat": 37.362391,
+     "lon": -122.027121,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3330,6 +4028,7 @@
      "lon": -122.014882,
      "kind": "bakery",
      "addr": "10961 North Wolfe Road",
+     "src": "osm",
      "osm": "node/3815032286"
     },
     {
@@ -3373,12 +4072,12 @@
      "src": "overture"
     },
     {
-     "name": "Sizzling Lunch",
-     "lat": 37.323788,
-     "lon": -122.037499,
-     "kind": "restaurant",
-     "addr": "10033 Saich Way Cupertino",
-     "osm": "node/3808378094"
+     "name": "Smk Association Inc",
+     "lat": 37.33876,
+     "lon": -121.973178,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "SomiSomi",
@@ -3386,7 +4085,16 @@
      "lon": -122.010518,
      "kind": "ice_cream",
      "addr": "19540 Vallco Parkway Cupertino",
+     "src": "osm",
      "osm": "node/6677820751"
+    },
+    {
+     "name": "Sony Nam Dba Three Star Construction",
+     "lat": 37.338928,
+     "lon": -121.994995,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Southland Flavor Cafe",
@@ -3394,15 +4102,8 @@
      "lon": -122.015375,
      "kind": "restaurant",
      "addr": "10825 Wolfe Road",
+     "src": "osm",
      "osm": "node/3815031856"
-    },
-    {
-     "name": "Special Noodle Soup",
-     "lat": 37.31882,
-     "lon": -122.032783,
-     "kind": "noodles_restaurant",
-     "addr": "10275 S De Anza Blvd Cupertino",
-     "src": "overture"
     },
     {
      "name": "Specialty's Cafe & Bakery",
@@ -3413,12 +4114,12 @@
      "src": "overture"
     },
     {
-     "name": "SpiceKlub",
-     "lat": 37.318152,
-     "lon": -122.031856,
-     "kind": "restaurant",
-     "addr": "10310 South De Anza Boulevard Cupertino",
-     "osm": "node/8814118082"
+     "name": "Spice Hut",
+     "lat": 37.361131,
+     "lon": -122.026066,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Sporty’s Bikini Bar",
@@ -3426,12 +4127,21 @@
      "lon": -122.004262,
      "kind": "bar",
      "addr": null,
+     "src": "osm",
      "osm": "node/5327261695"
+    },
+    {
+     "name": "Stan's Donuts",
+     "lat": 37.33889,
+     "lon": -121.972901,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Star Chaat Cuisine",
      "lat": 37.351927,
-     "lon": -121.995338,
+     "lon": -121.995348,
      "kind": "indian_restaurant",
      "addr": "3590 El Camino Real Santa Clara",
      "src": "overture"
@@ -3450,6 +4160,7 @@
      "lon": -121.994882,
      "kind": "cafe",
      "addr": "3551 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "node/599098661"
     },
     {
@@ -3458,6 +4169,7 @@
      "lon": -121.997325,
      "kind": "cafe",
      "addr": "3605 East El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/599326229"
     },
     {
@@ -3466,6 +4178,7 @@
      "lon": -122.011983,
      "kind": "cafe",
      "addr": "6150 Bollinger Road San Jose",
+     "src": "osm",
      "osm": "node/2299920951"
     },
     {
@@ -3474,7 +4187,16 @@
      "lon": -122.036462,
      "kind": "cafe",
      "addr": "20676 Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/3807526196"
+    },
+    {
+     "name": "Starbucks",
+     "lat": 37.3381,
+     "lon": -121.974904,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Starbucks",
@@ -3482,7 +4204,16 @@
      "lon": -122.007816,
      "kind": "cafe",
      "addr": "1003 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "way/49187239"
+    },
+    {
+     "name": "Starbucks",
+     "lat": 37.337482,
+     "lon": -122.066711,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Starbucks",
@@ -3502,10 +4233,10 @@
     },
     {
      "name": "Starbucks",
-     "lat": 37.323966,
-     "lon": -122.036436,
+     "lat": 37.357133,
+     "lon": -122.017779,
      "kind": "coffee_shop",
-     "addr": "20745 Stevens Creek Blvd Cupertino",
+     "addr": "785 E El Camino Real Sunnyvale",
      "src": "overture"
     },
     {
@@ -3518,18 +4249,18 @@
     },
     {
      "name": "Starbucks",
-     "lat": 37.32454,
-     "lon": -122.015737,
-     "kind": "coffee_shop",
-     "addr": "10101 N Wolfe Rd Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Starbucks",
      "lat": 37.323469,
      "lon": -122.011217,
      "kind": "coffee_shop",
      "addr": "Mainstreet & Stevens Creek Blvd Cupertino",
+     "src": "overture"
+    },
+    {
+     "name": "Starbucks",
+     "lat": 37.32454,
+     "lon": -122.015737,
+     "kind": "coffee_shop",
+     "addr": "10101 N Wolfe Rd Cupertino",
      "src": "overture"
     },
     {
@@ -3541,20 +4272,21 @@
      "src": "overture"
     },
     {
-     "name": "Starbucks",
-     "lat": 37.357133,
-     "lon": -122.017779,
-     "kind": "coffee_shop",
-     "addr": "785 E El Camino Real Sunnyvale",
-     "src": "overture"
-    },
-    {
      "name": "Starbucks Reserve",
      "lat": 37.321985,
      "lon": -122.032754,
      "kind": "cafe",
      "addr": "20520 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/1974353562"
+    },
+    {
+     "name": "Stone Stew Grill and Bar",
+     "lat": 37.317069,
+     "lon": -121.976887,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Stuft Pizza",
@@ -3562,6 +4294,14 @@
      "lon": -122.017197,
      "kind": "pizza_restaurant",
      "addr": "826 E Fremont Ave Sunnyvale",
+     "src": "overture"
+    },
+    {
+     "name": "Stuft Pizza",
+     "lat": 37.337651,
+     "lon": -121.978723,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3574,10 +4314,35 @@
     },
     {
      "name": "Subway",
+     "lat": 37.361868,
+     "lon": -122.024376,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Subway",
+     "lat": 37.337165,
+     "lon": -122.066216,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Subway",
+     "lat": 37.366476,
+     "lon": -122.013072,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Subway",
      "lat": 37.322765,
      "lon": -122.006809,
      "kind": "fast_food",
      "addr": "19110 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/4879505221"
     },
     {
@@ -3586,14 +4351,23 @@
      "lon": -121.994824,
      "kind": "fast_food",
      "addr": "3586 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "way/258200677"
     },
     {
      "name": "Subway",
-     "lat": 37.337188,
-     "lon": -122.040297,
+     "lat": 37.337155,
+     "lon": -122.040248,
      "kind": "sandwich_shop",
      "addr": "20916 Homestead Rd Ste E Cupertino",
+     "src": "overture"
+    },
+    {
+     "name": "Subway",
+     "lat": 37.308941,
+     "lon": -122.013064,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3605,20 +4379,37 @@
      "src": "overture"
     },
     {
+     "name": "Subway",
+     "lat": 37.351632,
+     "lon": -122.004323,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Sul & Beans",
      "lat": 37.324667,
      "lon": -122.010616,
      "kind": "restaurant",
      "addr": "19540 Vallco Parkway",
+     "src": "osm",
      "osm": "node/11883125922"
     },
     {
-     "name": "Sunnyvale",
-     "lat": 37.337754,
-     "lon": -122.042881,
-     "kind": "fast_food_restaurant",
-     "addr": "1687 Hollenbeck Ave. Sunnyvale",
-     "src": "overture"
+     "name": "Sumiya",
+     "lat": 37.338883,
+     "lon": -121.972995,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Sunny’s To Go",
+     "lat": 37.352013,
+     "lon": -121.986134,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Sunright Tea Studio",
@@ -3626,6 +4417,7 @@
      "lon": -122.017316,
      "kind": "cafe",
      "addr": null,
+     "src": "osm",
      "osm": "node/9177051684"
     },
     {
@@ -3634,6 +4426,7 @@
      "lon": -122.042421,
      "kind": "fast_food",
      "addr": "1671 Hollenbeck Avenue Sunnyvale",
+     "src": "osm",
      "osm": "node/2307928718"
     },
     {
@@ -3653,22 +4446,6 @@
      "src": "overture"
     },
     {
-     "name": "Sushi Hana",
-     "lat": 37.322748,
-     "lon": -122.006022,
-     "kind": "sushi_restaurant",
-     "addr": "19068 Stevens Creek Blvd Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Sushi Kuni",
-     "lat": 37.31993,
-     "lon": -122.032858,
-     "kind": "restaurant",
-     "addr": "10211 South De Anza Boulevard Cupertino",
-     "osm": "way/105823539"
-    },
-    {
      "name": "Sushi West",
      "lat": 37.357289,
      "lon": -122.017721,
@@ -3677,11 +4454,20 @@
      "src": "overture"
     },
     {
+     "name": "Sushirrito",
+     "lat": 37.322675,
+     "lon": -122.053587,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Sweet Maple",
      "lat": 37.322572,
      "lon": -122.023515,
      "kind": "restaurant",
      "addr": "20010 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "way/105819651"
     },
     {
@@ -3709,12 +4495,12 @@
      "src": "overture"
     },
     {
-     "name": "TP Tea",
-     "lat": 37.311278,
-     "lon": -122.023629,
-     "kind": "cafe",
-     "addr": "10787 South Blaney Avenue",
-     "osm": "node/3812767036"
+     "name": "TOGO'S Sandwiches",
+     "lat": 37.36371,
+     "lon": -122.02669,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Taco Bell",
@@ -3722,7 +4508,16 @@
      "lon": -122.041936,
      "kind": "fast_food",
      "addr": "1695 Hollenbeck Avenue Sunnyvale",
+     "src": "osm",
      "osm": "node/1674111313"
+    },
+    {
+     "name": "Taco Bell",
+     "lat": 37.339376,
+     "lon": -121.972562,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Tacos Azteca",
@@ -3733,12 +4528,28 @@
      "src": "overture"
     },
     {
+     "name": "Tacos Santiaguito",
+     "lat": 37.315558,
+     "lon": -121.976518,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Tacos The King David",
-     "lat": 37.35286,
+     "lat": 37.35287,
      "lon": -121.998748,
      "kind": "mexican_restaurant",
      "addr": "3725 El Camino Real Santa Clara",
      "src": "overture"
+    },
+    {
+     "name": "Taichi Pot Shabu Shabu",
+     "lat": 37.338798,
+     "lon": -121.973157,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Taiwan Porridge Kingdom",
@@ -3746,6 +4557,7 @@
      "lon": -122.040265,
      "kind": "restaurant",
      "addr": "20956 Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/5543604921"
     },
     {
@@ -3754,6 +4566,7 @@
      "lon": -122.011486,
      "kind": "cafe",
      "addr": null,
+     "src": "osm",
      "osm": "node/8645408737"
     },
     {
@@ -3762,6 +4575,7 @@
      "lon": -122.003979,
      "kind": "restaurant",
      "addr": "1063 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/2879035050"
     },
     {
@@ -3770,7 +4584,16 @@
      "lon": -122.034124,
      "kind": "cafe",
      "addr": null,
+     "src": "osm",
      "osm": "node/2622899125"
+    },
+    {
+     "name": "Tarim Global Cuisine Inc",
+     "lat": 37.322462,
+     "lon": -122.022179,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Taste Good Beijing Cuisine",
@@ -3794,6 +4617,7 @@
      "lon": -122.040305,
      "kind": "cafe",
      "addr": "20916 Homestead Road",
+     "src": "osm",
      "osm": "node/3807526205"
     },
     {
@@ -3802,12 +4626,13 @@
      "lon": -121.991025,
      "kind": "cafe",
      "addr": "3450 El Camino Real",
+     "src": "osm",
      "osm": "node/11112644779"
     },
     {
      "name": "Ten Ren Tea",
      "lat": 37.335664,
-     "lon": -122.014919,
+     "lon": -122.014929,
      "kind": "tea_room",
      "addr": "10881 N Wolfe Rd Cupertino",
      "src": "overture"
@@ -3818,7 +4643,16 @@
      "lon": -122.014914,
      "kind": "cafe",
      "addr": "10881 North Wolfe Road",
+     "src": "osm",
      "osm": "node/3815032269"
+    },
+    {
+     "name": "Thai Bangkok Cuisine",
+     "lat": 37.322763,
+     "lon": -122.053584,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Thai Chili Cuisine",
@@ -3826,6 +4660,7 @@
      "lon": -122.000328,
      "kind": "restaurant",
      "addr": "1550 Halford Avenue Santa Clara",
+     "src": "osm",
      "osm": "node/626201322"
     },
     {
@@ -3842,6 +4677,7 @@
      "lon": -122.031766,
      "kind": "restaurant",
      "addr": "103 East Fremont Avenue Sunnyvale",
+     "src": "osm",
      "osm": "node/466092051"
     },
     {
@@ -3853,12 +4689,20 @@
      "src": "overture"
     },
     {
-     "name": "Thali Indian Vegetarian",
-     "lat": 37.351931,
-     "lon": -122.011489,
-     "kind": "indian_restaurant",
-     "addr": "954 E El Camino Real Sunnyvale",
+     "name": "Thali Vegetarian",
+     "lat": 37.351893,
+     "lon": -122.01135,
+     "kind": null,
+     "addr": null,
      "src": "overture"
+    },
+    {
+     "name": "The City Fish",
+     "lat": 37.322761,
+     "lon": -122.053664,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "The Counter",
@@ -3866,15 +4710,8 @@
      "lon": -122.024179,
      "kind": "restaurant",
      "addr": "20080 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/10978270503"
-    },
-    {
-     "name": "The Cupertino Hotel Lounge",
-     "lat": 37.335266,
-     "lon": -122.033193,
-     "kind": "restaurant",
-     "addr": "10889 N De Anza Blvd Cupertino",
-     "src": "overture"
     },
     {
      "name": "The Everest Momo",
@@ -3893,11 +4730,11 @@
      "src": "overture"
     },
     {
-     "name": "The King David Tacos",
-     "lat": 37.352662,
-     "lon": -121.998952,
-     "kind": "food_truck",
-     "addr": "3725 El Camino Real Santa Clara",
+     "name": "The Little Chihuahua",
+     "lat": 37.322833,
+     "lon": -122.053506,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3906,7 +4743,16 @@
      "lon": -122.011497,
      "kind": "bar",
      "addr": "952 East El Camino Real",
+     "src": "osm",
      "osm": "way/207269873"
+    },
+    {
+     "name": "The Pasta Market",
+     "lat": 37.363431,
+     "lon": -122.028385,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "The Patio",
@@ -3914,6 +4760,7 @@
      "lon": -122.011809,
      "kind": "bar",
      "addr": "948 East El Camino Real",
+     "src": "osm",
      "osm": "node/2663431873"
     },
     {
@@ -3922,6 +4769,7 @@
      "lon": -121.992511,
      "kind": "fast_food",
      "addr": "5126 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "node/9306985164"
     },
     {
@@ -3930,6 +4778,7 @@
      "lon": -121.99492,
      "kind": "fast_food",
      "addr": "785 Lawrence Expressway Santa Clara",
+     "src": "osm",
      "osm": "node/8774056645"
     },
     {
@@ -3938,14 +4787,23 @@
      "lon": -122.040395,
      "kind": "bar",
      "addr": null,
+     "src": "osm",
      "osm": "node/4733467121"
     },
     {
-     "name": "Tiger Sugar",
-     "lat": 37.322352,
-     "lon": -122.01672,
-     "kind": "bubble_tea",
-     "addr": "19620 Stevens Creek Blvd Cupertino",
+     "name": "Tiger Sugar Cupertino",
+     "lat": 37.322513,
+     "lon": -122.01679,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Tlt International",
+     "lat": 37.323587,
+     "lon": -122.029958,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -3962,23 +4820,25 @@
      "lon": -122.015212,
      "kind": "restaurant",
      "addr": "10971 Wolfe Road",
+     "src": "osm",
      "osm": "node/3815032289"
     },
     {
      "name": "Togo's",
-     "lat": 37.337777,
-     "lon": -122.042871,
+     "lat": 37.337798,
+     "lon": -122.042864,
      "kind": "fast_food",
      "addr": null,
+     "src": "osm",
      "osm": "node/2307922686"
     },
     {
-     "name": "Togo's Sandwiches",
-     "lat": 37.339291,
-     "lon": -122.042559,
-     "kind": "sandwich_shop",
-     "addr": "1683 Hollenbeck Ave Sunnyvale",
-     "src": "overture"
+     "name": "Togo's",
+     "lat": 37.346245,
+     "lon": -121.97829,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Tong Dumpling",
@@ -3986,7 +4846,16 @@
      "lon": -122.015065,
      "kind": "restaurant",
      "addr": "10869 North Wolfe Road",
+     "src": "osm",
      "osm": "node/3815032265"
+    },
+    {
+     "name": "Tony Roma's",
+     "lat": 37.316891,
+     "lon": -121.976944,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Tous les Jours",
@@ -3994,6 +4863,7 @@
      "lon": -121.994679,
      "kind": "bakery",
      "addr": "3535 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "node/9166749443"
     },
     {
@@ -4002,6 +4872,7 @@
      "lon": -122.022701,
      "kind": "cafe",
      "addr": "19959 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/3710129262"
     },
     {
@@ -4010,15 +4881,16 @@
      "lon": -122.014706,
      "kind": "cafe",
      "addr": "10815 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/9654980383"
     },
     {
-     "name": "Truya Sushi",
-     "lat": 37.352735,
-     "lon": -121.990344,
-     "kind": "restaurant",
+     "name": "UMe | Tea & Snacks",
+     "lat": 37.335728,
+     "lon": -122.015684,
+     "kind": null,
      "addr": null,
-     "osm": "node/13137235830"
+     "src": "overture"
     },
     {
      "name": "Udupi Palace",
@@ -4029,11 +4901,20 @@
      "src": "overture"
     },
     {
+     "name": "Ulavacharu",
+     "lat": 37.360326,
+     "lon": -122.02247,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Ulavacharu Tiffins",
      "lat": 37.351998,
      "lon": -121.99356,
      "kind": "restaurant",
      "addr": "3530 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "way/181369014"
     },
     {
@@ -4042,15 +4923,8 @@
      "lon": -122.015603,
      "kind": "cafe",
      "addr": "10887 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/3815032272"
-    },
-    {
-     "name": "Ume Tea",
-     "lat": 37.335713,
-     "lon": -122.015758,
-     "kind": "tea_room",
-     "addr": "10887 N Wolfe Rd Cupertino",
-     "src": "overture"
     },
     {
      "name": "Una Mas",
@@ -4058,30 +4932,6 @@
      "lon": -121.992456,
      "kind": "mexican_restaurant",
      "addr": "5134 Stevens Creek Blvd San Jose",
-     "src": "overture"
-    },
-    {
-     "name": "Uzumakiya Udon Izakaya",
-     "lat": 37.311303,
-     "lon": -122.023756,
-     "kind": "restaurant",
-     "addr": "10789 South Blaney Avenue Cupertino",
-     "osm": "node/9644844248"
-    },
-    {
-     "name": "Vampire Penguin",
-     "lat": 37.316655,
-     "lon": -122.033662,
-     "kind": "cafe",
-     "addr": "10445 South De Anza Boulevard Cupertino",
-     "osm": "node/3814942153"
-    },
-    {
-     "name": "Veggie Grill",
-     "lat": 37.324225,
-     "lon": -122.015765,
-     "kind": "vegetarian_restaurant",
-     "addr": "10101 N Wolfe Rd Cupertino",
      "src": "overture"
     },
     {
@@ -4109,11 +4959,36 @@
      "src": "overture"
     },
     {
+     "name": "Vishnuji Ki Rasoi",
+     "lat": 37.36569,
+     "lon": -122.028822,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Vishnuji Ki Rasoi",
+     "lat": 37.366175,
+     "lon": -122.015138,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Vision M&s Inc",
+     "lat": 37.339725,
+     "lon": -122.042607,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Vitality Bowls",
      "lat": 37.32533,
      "lon": -122.012504,
      "kind": "restaurant",
      "addr": "19700 Vallco Parkway Cupertino",
+     "src": "osm",
      "osm": "node/4008930174"
     },
     {
@@ -4122,23 +4997,32 @@
      "lon": -122.005805,
      "kind": "restaurant",
      "addr": "19058 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/5783052388"
     },
     {
-     "name": "Von's Oven Chicken",
-     "lat": 37.351676,
-     "lon": -122.002669,
-     "kind": "korean_restaurant",
-     "addr": "1082 E El Camino Real Sunnyvale",
+     "name": "Vons Chicken",
+     "lat": 37.315595,
+     "lon": -121.976619,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Vons Chicken",
+     "lat": 37.351723,
+     "lon": -122.002641,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
-     "name": "Voyager Craft Coffee",
-     "lat": 37.323208,
-     "lon": -122.038271,
-     "kind": "cafe",
-     "addr": "20807 Stevens Creek Boulevard Cupertino",
-     "osm": "node/1218545831"
+     "name": "Vons Saratoga",
+     "lat": 37.315525,
+     "lon": -121.976437,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Wanpo Tea Shop",
@@ -4146,23 +5030,40 @@
      "lon": -122.00721,
      "kind": "cafe",
      "addr": "19319 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/13646689852"
     },
     {
-     "name": "Wei's Fish",
-     "lat": 37.315562,
-     "lon": -122.031907,
-     "kind": "restaurant",
-     "addr": "10520 South De Anza Boulevard Cupertino",
-     "osm": "node/3812767023"
+     "name": "Water Spring",
+     "lat": 37.338797,
+     "lon": -121.973239,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Wendy's",
-     "lat": 37.351014,
-     "lon": -122.014606,
+     "lat": 37.351091,
+     "lon": -122.014663,
      "kind": "burger_restaurant",
      "addr": "1313 S Wolfe Rd Sunnyvale",
      "src": "overture"
+    },
+    {
+     "name": "Windsor Fish & Chips",
+     "lat": 37.36623,
+     "lon": -122.016114,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Windsor Fish and Chips",
+     "lat": 37.366273,
+     "lon": -122.016115,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Wingstop",
@@ -4170,6 +5071,7 @@
      "lon": -122.042437,
      "kind": "fast_food",
      "addr": "1661 Hollenbeck Avenue Sunnyvale",
+     "src": "osm",
      "osm": "node/2307950332"
     },
     {
@@ -4178,22 +5080,23 @@
      "lon": -121.992476,
      "kind": "fast_food",
      "addr": "5134 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "node/9847452174"
     },
     {
      "name": "Wingstop",
-     "lat": 37.322358,
-     "lon": -122.016626,
+     "lat": 37.3223,
+     "lon": -122.016844,
      "kind": "chicken_wings_restaurant",
      "addr": "19620 Stevens Creek Blvd Ste 190 Cupertino",
      "src": "overture"
     },
     {
-     "name": "XLB Kitchen",
-     "lat": 37.319443,
-     "lon": -122.032999,
-     "kind": "chinese_restaurant",
-     "addr": "10235 S De Anza Blvd Cupertino",
+     "name": "Wise Sons Deli",
+     "lat": 37.322833,
+     "lon": -122.053506,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -4210,6 +5113,7 @@
      "lon": -122.017419,
      "kind": "restaurant",
      "addr": "19672 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/1801225868"
     },
     {
@@ -4218,14 +5122,6 @@
      "lon": -122.017557,
      "kind": "chinese_restaurant",
      "addr": "19672 Stevens Creek Blvd Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Yang BBQ",
-     "lat": 37.335498,
-     "lon": -122.015478,
-     "kind": "chinese_restaurant",
-     "addr": "10831 N Wolfe Rd Cupertino",
      "src": "overture"
     },
     {
@@ -4242,7 +5138,16 @@
      "lon": -122.036451,
      "kind": "restaurant",
      "addr": "20682 Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/3807526198"
+    },
+    {
+     "name": "Yewon Rice Bakery",
+     "lat": 37.351684,
+     "lon": -121.986358,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Yogurtland",
@@ -4250,6 +5155,7 @@
      "lon": -122.017831,
      "kind": "ice_cream",
      "addr": "19700 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/1689923296"
     },
     {
@@ -4258,6 +5164,7 @@
      "lon": -122.019981,
      "kind": "fast_food",
      "addr": "19825 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/2700653277"
     },
     {
@@ -4266,6 +5173,7 @@
      "lon": -122.015409,
      "kind": "restaurant",
      "addr": "10893 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/2760016718"
     },
     {
@@ -4274,6 +5182,14 @@
      "lon": -121.994178,
      "kind": "noodles_restaurant",
      "addr": "5223 Stevens Creek Blvd Santa Clara",
+     "src": "overture"
+    },
+    {
+     "name": "Yummee Sandwiches",
+     "lat": 37.322675,
+     "lon": -122.053587,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -4293,11 +5209,11 @@
      "src": "overture"
     },
     {
-     "name": "ZERO&",
-     "lat": 37.335499,
-     "lon": -122.014594,
-     "kind": "bubble_tea",
-     "addr": "10815 N Wolfe Rd Ste 102 Cupertino",
+     "name": "Zero& | Cupertino Village",
+     "lat": 37.335431,
+     "lon": -122.01454,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -4309,11 +5225,28 @@
      "src": "overture"
     },
     {
+     "name": "bb.q Chicken",
+     "lat": 37.363705,
+     "lon": -122.026696,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "bbq lover",
+     "lat": 37.351971,
+     "lon": -121.986128,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "cocohodo",
      "lat": 37.35167,
      "lon": -122.002331,
      "kind": "cafe",
      "addr": "1082 East El Camino Real",
+     "src": "osm",
      "osm": "node/2658424326"
     },
     {
@@ -4322,6 +5255,7 @@
      "lon": -122.015208,
      "kind": "restaurant",
      "addr": "10851 North Wolfe Road",
+     "src": "osm",
      "osm": "node/2760016945"
     },
     {
@@ -4341,9 +5275,25 @@
      "src": "overture"
     },
     {
+     "name": "magic wok",
+     "lat": 37.366097,
+     "lon": -122.013271,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "丁香豆花 - 加州分店",
+     "lat": 37.315566,
+     "lon": -121.977264,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "上海喬家柵",
-     "lat": 37.335502,
-     "lon": -122.015178,
+     "lat": 37.335491,
+     "lon": -122.01518,
      "kind": "chinese_restaurant",
      "addr": "10877 N Wolfe Rd Cupertino",
      "src": "overture"
@@ -4357,28 +5307,20 @@
      "src": "overture"
     },
     {
-     "name": "好客棧",
-     "lat": 37.322108,
-     "lon": -122.014911,
-     "kind": "chinese_restaurant",
-     "addr": "10074 E Estates Dr Cupertino",
+     "name": "小滿",
+     "lat": 37.36329,
+     "lon": -122.02574,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
-     "name": "小刘清粥 Taiwan Porridge-Cupertino",
-     "lat": 37.336624,
-     "lon": -122.040397,
-     "kind": "taiwanese_restaurant",
-     "addr": "20956 Homestead Rd Ste A1 Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "杨师傅烧烤 Chef Yang's BBQ",
-     "lat": 37.335447,
-     "lon": -122.015462,
-     "kind": "barbecue_restaurant",
-     "addr": "10831 N Wolfe Rd Cupertino",
-     "src": "overture"
+     "name": "小滿 Xiaoman Riceburrito",
+     "lat": 37.363374,
+     "lon": -122.025958,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "西北坊 Northwest Noodle House",
@@ -4387,6 +5329,14 @@
      "kind": "restaurant",
      "addr": "4996 Stevens Creek Blvd San Jose",
      "src": "overture"
+    },
+    {
+     "name": "여원",
+     "lat": 37.3517,
+     "lon": -121.986428,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     }
    ]
   },
@@ -4394,7 +5344,7 @@
    "label_zh": "医疗",
    "label_en": "Health",
    "color": "#0f9d58",
-   "count": 50,
+   "count": 44,
    "items": [
     {
      "name": "Apple Park Wellness Center",
@@ -4410,6 +5360,7 @@
      "lon": -122.012306,
      "kind": "clinic",
      "addr": "19500 Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/7341421080"
     },
     {
@@ -4418,22 +5369,6 @@
      "lon": -122.035537,
      "kind": "medical_center",
      "addr": "20730 Valley Green Dr Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Bay Area Foot Care",
-     "lat": 37.317401,
-     "lon": -122.029627,
-     "kind": "medical_center",
-     "addr": "10353 Torre Ave Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Beacon Urgent Care",
-     "lat": 37.323317,
-     "lon": -121.989604,
-     "kind": "urgent_care_clinic",
-     "addr": "4949 Stevens Creek Blvd Santa Clara",
      "src": "overture"
     },
     {
@@ -4450,23 +5385,16 @@
      "lon": -122.042478,
      "kind": "pharmacy",
      "addr": null,
+     "src": "osm",
      "osm": "node/765337251"
     },
     {
      "name": "CVS Pharmacy",
-     "lat": 37.316443,
-     "lon": -122.033681,
-     "kind": "pharmacy",
-     "addr": "10455 South De Anza Boulevard Cupertino",
-     "osm": "node/8401523459"
-    },
-    {
-     "name": "Cancer Care",
-     "lat": 37.336519,
-     "lon": -122.000858,
-     "kind": "medical_center",
-     "addr": "3800 Homestead Rd Santa Clara",
-     "src": "overture"
+     "lat": 37.338267,
+     "lon": -121.974123,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "El Camino Health Urgent Care",
@@ -4474,15 +5402,8 @@
      "lon": -122.012037,
      "kind": "clinic",
      "addr": null,
+     "src": "osm",
      "osm": "node/12359860088"
-    },
-    {
-     "name": "Emergency Room Kaiser Santa Clara",
-     "lat": 37.335515,
-     "lon": -121.998323,
-     "kind": "emergency_room",
-     "addr": "710 Lawrence Expy Santa Clara",
-     "src": "overture"
     },
     {
      "name": "GETWELL URGENT CARE",
@@ -4491,22 +5412,6 @@
      "kind": "urgent_care_clinic",
      "addr": "2803 E El Camino Real Santa Clara",
      "src": "overture"
-    },
-    {
-     "name": "Geetha B. Thippeswamy, MD",
-     "lat": 37.31739,
-     "lon": -122.03113,
-     "kind": "walk_in_clinic",
-     "addr": "10430 S De Anza Blvd, Ste 130 Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Han’s Pharmacy",
-     "lat": 37.352704,
-     "lon": -121.989971,
-     "kind": "pharmacy",
-     "addr": "3423 El Camino Real Santa Clara",
-     "osm": "node/5125483289"
     },
     {
      "name": "Homestead West Lobby Kaiser Permanente",
@@ -4518,8 +5423,8 @@
     },
     {
      "name": "IVX Health",
-     "lat": 37.359061,
-     "lon": -122.021009,
+     "lat": 37.359077,
+     "lon": -122.021008,
      "kind": "hospital",
      "addr": "717 E El Camino Real Sunnyvale",
      "src": "overture"
@@ -4530,6 +5435,7 @@
      "lon": -121.992215,
      "kind": "clinic",
      "addr": "3466 El Camino Real",
+     "src": "osm",
      "osm": "node/12117621246"
     },
     {
@@ -4546,28 +5452,13 @@
      "lon": -122.000864,
      "kind": "clinic",
      "addr": null,
+     "src": "osm",
      "osm": "way/29014141"
     },
     {
-     "name": "Kaiser Emergency Department",
-     "lat": 37.33541,
-     "lon": -121.998371,
-     "kind": "hospital",
-     "addr": "700 Lawrence Expy Santa Clara",
-     "src": "overture"
-    },
-    {
-     "name": "Kaiser Foundation Hospital Santa Clara",
-     "lat": 37.33593,
-     "lon": -121.999488,
-     "kind": "hospital",
-     "addr": "700 Lawrence Expy Santa Clara",
-     "src": "overture"
-    },
-    {
      "name": "Kaiser Fracture Clinic Orthopedics",
-     "lat": 37.335966,
-     "lon": -121.997394,
+     "lat": 37.336021,
+     "lon": -121.997656,
      "kind": "hospital",
      "addr": "Santa Clara",
      "src": "overture"
@@ -4578,22 +5469,6 @@
      "lon": -121.998152,
      "kind": "hospital",
      "addr": "Santa Clara",
-     "src": "overture"
-    },
-    {
-     "name": "Kaiser Hospital",
-     "lat": 37.336235,
-     "lon": -121.998533,
-     "kind": "hospital",
-     "addr": "700 Lawrence Expy Santa Clara",
-     "src": "overture"
-    },
-    {
-     "name": "Kaiser Lawrence ICU",
-     "lat": 37.336176,
-     "lon": -121.999557,
-     "kind": "hospital",
-     "addr": "700 Lawrence Expy Santa Clara",
      "src": "overture"
     },
     {
@@ -4618,6 +5493,7 @@
      "lon": -122.013521,
      "kind": "clinic",
      "addr": "10050 Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "node/13164215836"
     },
     {
@@ -4626,7 +5502,16 @@
      "lon": -122.004267,
      "kind": "clinic",
      "addr": "19000 Homestead Road Cupertino",
+     "src": "osm",
      "osm": "way/378090547"
+    },
+    {
+     "name": "Kaiser Permanente Hearing Centers",
+     "lat": 37.337629,
+     "lon": -121.978883,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Kaiser Permanente Infusion Center 440",
@@ -4637,18 +5522,18 @@
      "src": "overture"
     },
     {
-     "name": "Kaiser Permanente Main Pharmacy",
-     "lat": 37.336314,
-     "lon": -121.9975,
-     "kind": "pharmacy",
-     "addr": "710 Lawrence Expy Santa Clara",
+     "name": "Kaiser Permanente Labor & Delivery",
+     "lat": 37.335554,
+     "lon": -121.998786,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
-     "name": "Kaiser Permanente Medical Center",
-     "lat": 37.336384,
-     "lon": -121.999075,
-     "kind": "medical_center",
+     "name": "Kaiser Permanente Main Pharmacy",
+     "lat": 37.336548,
+     "lon": -121.998626,
+     "kind": "pharmacy",
      "addr": "710 Lawrence Expy Santa Clara",
      "src": "overture"
     },
@@ -4666,6 +5551,7 @@
      "lon": -121.99919,
      "kind": "hospital",
      "addr": "710 Lawrence Expressway Santa Clara",
+     "src": "osm",
      "osm": "way/38198942"
     },
     {
@@ -4685,22 +5571,6 @@
      "src": "overture"
     },
     {
-     "name": "Kaiser Santa Clara Ambulance Bay",
-     "lat": 37.335169,
-     "lon": -121.998616,
-     "kind": "emergency_room",
-     "addr": "700 Lawrence Expy Santa Clara",
-     "src": "overture"
-    },
-    {
-     "name": "Kaiser Santa Clara, Head & Neck Surgery",
-     "lat": 37.336601,
-     "lon": -121.998534,
-     "kind": "hospital",
-     "addr": "3690 Homestead Rd Santa Clara",
-     "src": "overture"
-    },
-    {
      "name": "Kaiser Tantau Medical Offices",
      "lat": 37.336798,
      "lon": -122.004292,
@@ -4709,20 +5579,36 @@
      "src": "overture"
     },
     {
-     "name": "Lawrence Pet Hospital",
-     "lat": 37.335652,
-     "lon": -121.995143,
-     "kind": "medical_center",
-     "addr": "771 Lawrence Expy Santa Clara",
+     "name": "Kassi Eloranta",
+     "lat": 37.33623,
+     "lon": -121.998532,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Medicann",
+     "lat": 37.31631,
+     "lon": -121.974269,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
      "name": "MinuteClinic at CVS",
-     "lat": 37.3165,
-     "lon": -122.0339,
-     "kind": "walk_in_clinic",
-     "addr": "10455 S De Anza Blvd Cupertino",
+     "lat": 37.3383,
+     "lon": -121.9741,
+     "kind": null,
+     "addr": null,
      "src": "overture"
+    },
+    {
+     "name": "Okai Chiropractic Clinic",
+     "lat": 37.316123,
+     "lon": -121.977651,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Ophthamology",
@@ -4733,27 +5619,44 @@
      "src": "overture"
     },
     {
-     "name": "Optivision Optometric",
-     "lat": 37.340106,
-     "lon": -122.042451,
-     "kind": "pharmacy",
-     "addr": null,
-     "osm": "node/2307955085"
-    },
-    {
      "name": "Rite Aid",
      "lat": 37.33707,
      "lon": -122.033292,
      "kind": "pharmacy",
      "addr": "20572 Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/8356078592"
     },
     {
-     "name": "SOAR Spine and Orthopedics",
-     "lat": 37.32362,
-     "lon": -121.98419,
-     "kind": "medical_center",
-     "addr": "4675 Stevens Creek Blvd., Ste 230 Santa Clara",
+     "name": "Rite Aid",
+     "lat": 37.3368,
+     "lon": -122.067,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Rite Aid",
+     "lat": 37.3087,
+     "lon": -122.013,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Safeway Pharmacy",
+     "lat": 37.336174,
+     "lon": -122.034662,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Safeway Pharmacy",
+     "lat": 37.320469,
+     "lon": -121.99267,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -4762,23 +5665,32 @@
      "lon": -121.999941,
      "kind": "clinic",
      "addr": null,
+     "src": "osm",
      "osm": "node/5125483283"
     },
     {
-     "name": "Silicon Valley Surgical Arts",
-     "lat": 37.317025,
-     "lon": -122.029603,
-     "kind": "medical_center",
-     "addr": "Cupertino",
+     "name": "U.S. HealthWorks Medical Group",
+     "lat": 37.322099,
+     "lon": -122.051449,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
      "name": "Urgent Care Cupertino - El Camino Health",
-     "lat": 37.325356,
-     "lon": -122.011792,
+     "lat": 37.325364,
+     "lon": -122.011946,
      "kind": "urgent_care_clinic",
      "addr": "19600 Vallco Pkwy Ste 170 Cupertino",
      "src": "overture"
+    },
+    {
+     "name": "Valley Health Center Sunnyvale",
+     "lat": 37.364844,
+     "lon": -122.023477,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Walgreens",
@@ -4786,6 +5698,7 @@
      "lon": -121.992105,
      "kind": "pharmacy",
      "addr": null,
+     "src": "osm",
      "osm": "node/760778738"
     },
     {
@@ -4802,12 +5715,20 @@
    "label_zh": "学校",
    "label_en": "Education",
    "color": "#4285f4",
-   "count": 60,
+   "count": 56,
    "items": [
     {
+     "name": "A+ Academy",
+     "lat": 37.363489,
+     "lon": -122.026204,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Adult & Community Education",
-     "lat": 37.326938,
-     "lon": -122.013624,
+     "lat": 37.327192,
+     "lon": -122.013569,
      "kind": "school",
      "addr": "10123 N Wolfe Rd Cupertino",
      "src": "overture"
@@ -4821,19 +5742,12 @@
      "src": "overture"
     },
     {
-     "name": "Archbishop Mitty High School",
-     "lat": 37.314564,
-     "lon": -121.993058,
-     "kind": "school",
-     "addr": "5000 Mitty Way San Jose",
-     "osm": "way/38540885"
-    },
-    {
      "name": "BASIS Independent Silicon Valley Lower School",
      "lat": 37.34471,
      "lon": -122.007407,
      "kind": "school",
      "addr": "1500 Partridge Avenue Sunnyvale",
+     "src": "osm",
      "osm": "way/441086908"
     },
     {
@@ -4845,20 +5759,12 @@
      "src": "overture"
     },
     {
-     "name": "C. B. Eaton Elementary School",
-     "lat": 37.314304,
-     "lon": -122.025873,
-     "kind": "school",
-     "addr": "20220 Suisun Drive Cupertino",
-     "osm": "way/379529170"
-    },
-    {
-     "name": "Champions at Lawson Middle School",
-     "lat": 37.329634,
-     "lon": -122.026715,
-     "kind": "middle_school",
-     "addr": "10401 Vista Dr Cupertino",
-     "src": "overture"
+     "name": "Boost Up Kids Academy",
+     "lat": 37.365463,
+     "lon": -122.015185,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Creative Learning",
@@ -4874,7 +5780,16 @@
      "lon": -122.009113,
      "kind": "school",
      "addr": "10100 Finch Avenue Cupertino",
+     "src": "osm",
      "osm": "way/38899955"
+    },
+    {
+     "name": "Cupertino Union School District",
+     "lat": 37.346901,
+     "lon": -122.033463,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Delight Schools",
@@ -4890,15 +5805,8 @@
      "lon": -121.988418,
      "kind": "school",
      "addr": null,
+     "src": "osm",
      "osm": "way/28485124"
-    },
-    {
-     "name": "Emil R. Buchser High School",
-     "lat": 37.346421,
-     "lon": -121.983117,
-     "kind": "school",
-     "addr": "3000 Benton St Santa Clara",
-     "src": "overture"
     },
     {
      "name": "Footprints Early Education Center",
@@ -4906,15 +5814,8 @@
      "lon": -122.009104,
      "kind": "school",
      "addr": "1515 Partridge Avenue Sunnyvale",
+     "src": "osm",
      "osm": "way/386908943"
-    },
-    {
-     "name": "Fremont High MTS Club",
-     "lat": 37.353647,
-     "lon": -122.033122,
-     "kind": "elementary_school",
-     "addr": "1279 Sunnyvale Saratoga Rd Sunnyvale",
-     "src": "overture"
     },
     {
      "name": "Fusion Academy Cupertino",
@@ -4938,6 +5839,7 @@
      "lon": -122.015859,
      "kind": "school",
      "addr": null,
+     "src": "osm",
      "osm": "way/154068041"
     },
     {
@@ -4954,7 +5856,24 @@
      "lon": -122.011735,
      "kind": "school",
      "addr": "19325 Bollinger Road Cupertino",
+     "src": "osm",
      "osm": "way/39158120"
+    },
+    {
+     "name": "Institute For Brain Potential",
+     "lat": 37.361594,
+     "lon": -122.023539,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Institute for the Study of Western Civilization",
+     "lat": 37.321797,
+     "lon": -122.0509,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Inverness School",
@@ -4962,6 +5881,7 @@
      "lon": -122.01996,
      "kind": "school",
      "addr": null,
+     "src": "osm",
      "osm": "node/358768067"
     },
     {
@@ -4978,6 +5898,7 @@
      "lon": -122.021475,
      "kind": "school",
      "addr": "10300 North Blaney Avenue Cupertino",
+     "src": "osm",
      "osm": "way/38899359"
     },
     {
@@ -4986,6 +5907,7 @@
      "lon": -122.001275,
      "kind": "school",
      "addr": "955 Teal Drive Santa Clara",
+     "src": "osm",
      "osm": "way/241140306"
     },
     {
@@ -5002,15 +5924,8 @@
      "lon": -121.994032,
      "kind": "school",
      "addr": "3530 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "node/1311402909"
-    },
-    {
-     "name": "Louis E. Stocklmeir Elementary",
-     "lat": 37.34434,
-     "lon": -122.028344,
-     "kind": "elementary_school",
-     "addr": "592 Dunholme Way Sunnyvale",
-     "src": "overture"
     },
     {
      "name": "Maestro Stars Academy",
@@ -5026,6 +5941,7 @@
      "lon": -122.007493,
      "kind": "school",
      "addr": "1380 Rosalia Avenue Sunnyvale",
+     "src": "osm",
      "osm": "way/38199541"
     },
     {
@@ -5034,31 +5950,16 @@
      "lon": -121.989897,
      "kind": "school",
      "addr": "3345-3365 Lochinvar Avenue Santa Clara",
+     "src": "osm",
      "osm": "way/929136533"
     },
     {
      "name": "New Concept Academy",
-     "lat": 37.339128,
-     "lon": -122.042589,
+     "lat": 37.339124,
+     "lon": -122.042488,
      "kind": "private_school",
      "addr": "1657 Hollenbeck Ave Sunnyvale",
      "src": "overture"
-    },
-    {
-     "name": "New Valley High School",
-     "lat": 37.356478,
-     "lon": -121.995203,
-     "kind": "school",
-     "addr": "1872 Lawrence Road Santa Clara",
-     "osm": "way/923075486"
-    },
-    {
-     "name": "Nimitz Elementary School",
-     "lat": 37.347582,
-     "lon": -122.035772,
-     "kind": "school",
-     "addr": "545 Cheyenne Drive Sunnyvale",
-     "osm": "way/24429375"
     },
     {
      "name": "Pomeroy Elementary",
@@ -5066,15 +5967,8 @@
      "lon": -121.988274,
      "kind": "school",
      "addr": "1250 Pomeroy Avenue Santa Clara",
+     "src": "osm",
      "osm": "way/28485215"
-    },
-    {
-     "name": "Queen of Apostles School",
-     "lat": 37.315063,
-     "lon": -121.991165,
-     "kind": "school",
-     "addr": "4950 Mitty Way San Jose",
-     "osm": "way/38540877"
     },
     {
      "name": "RSM in the Bay Area",
@@ -5085,11 +5979,27 @@
      "src": "overture"
     },
     {
+     "name": "RSM in the Bay Area",
+     "lat": 37.358011,
+     "lon": -122.018789,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Raynor School",
      "lat": 37.344386,
      "lon": -122.007182,
      "kind": "school",
      "addr": "Sunnyvale",
+     "src": "overture"
+    },
+    {
+     "name": "Rossinca Academy",
+     "lat": 37.320692,
+     "lon": -122.0111,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -5114,7 +6024,24 @@
      "lon": -122.030004,
      "kind": "school",
      "addr": "10120 North De Anza Boulevard",
+     "src": "osm",
      "osm": "way/39185848"
+    },
+    {
+     "name": "Saint Justin School",
+     "lat": 37.340178,
+     "lon": -121.975135,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "Saint Lawrence Elementary and Middle School",
+     "lat": 37.35898,
+     "lon": -121.995506,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Sam H. Lawson Middle School",
@@ -5122,15 +6049,8 @@
      "lon": -122.027852,
      "kind": "school",
      "addr": "10401 Vista Drive Cupertino",
+     "src": "osm",
      "osm": "way/43870757"
-    },
-    {
-     "name": "Santa Clara Christian School",
-     "lat": 37.349756,
-     "lon": -121.986539,
-     "kind": "private_school",
-     "addr": "3421 Monroe St Santa Clara",
-     "src": "overture"
     },
     {
      "name": "Santa Clara Community Day School",
@@ -5138,15 +6058,8 @@
      "lon": -121.991627,
      "kind": "school",
      "addr": "3450 Brookdale Drive Santa Clara",
+     "src": "osm",
      "osm": "way/929136528"
-    },
-    {
-     "name": "Santa Clara High School",
-     "lat": 37.34501,
-     "lon": -121.981875,
-     "kind": "school",
-     "addr": "3000 Benton Street Santa Clara",
-     "osm": "way/35603694"
     },
     {
      "name": "Sedgwick Elementary School",
@@ -5154,6 +6067,7 @@
      "lon": -122.008999,
      "kind": "school",
      "addr": "19200 Phil Lane Cupertino",
+     "src": "osm",
      "osm": "way/38899854"
     },
     {
@@ -5165,8 +6079,16 @@
      "src": "overture"
     },
     {
+     "name": "St Justin School | Santa Clara",
+     "lat": 37.339901,
+     "lon": -121.974961,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "St. Joseph of Cupertino School",
-     "lat": 37.32402,
+     "lat": 37.32403,
      "lon": -122.030268,
      "kind": "private_school",
      "addr": "10120 N De Anza Blvd Cupertino",
@@ -5186,15 +6108,8 @@
      "lon": -122.027232,
      "kind": "school",
      "addr": "592 Dunholme Way Sunnyvale",
+     "src": "osm",
      "osm": "way/39368190"
-    },
-    {
-     "name": "Stratford School",
-     "lat": 37.324119,
-     "lon": -121.986774,
-     "kind": "private_school",
-     "addr": "57 Cronin Dr Santa Clara",
-     "src": "overture"
     },
     {
      "name": "Stratford School Pomeroy",
@@ -5202,6 +6117,7 @@
      "lon": -121.989553,
      "kind": "school",
      "addr": "890 Pomeroy Avenue Santa Clara",
+     "src": "osm",
      "osm": "way/929136498"
     },
     {
@@ -5218,6 +6134,7 @@
      "lon": -121.987234,
      "kind": "school",
      "addr": null,
+     "src": "osm",
      "osm": "way/28485166"
     },
     {
@@ -5237,11 +6154,20 @@
      "src": "overture"
     },
     {
+     "name": "The Genius Kids Club",
+     "lat": 37.359006,
+     "lon": -122.020749,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Vidyarambh preschool Cupertino",
      "lat": 37.32371,
      "lon": -122.023529,
      "kind": "school",
      "addr": "20015 Stevens Creek Boulevard",
+     "src": "osm",
      "osm": "node/13991314802"
     },
     {
@@ -5250,31 +6176,8 @@
      "lon": -122.010732,
      "kind": "school",
      "addr": "10181 Finch Avenue",
+     "src": "osm",
      "osm": "node/12918379501"
-    },
-    {
-     "name": "Waha Montessori",
-     "lat": 37.328336,
-     "lon": -121.98013,
-     "kind": "school",
-     "addr": "220 Blake Avenue",
-     "osm": "way/37877955"
-    },
-    {
-     "name": "Warren E. Hyde Middle",
-     "lat": 37.311597,
-     "lon": -122.011794,
-     "kind": "middle_school",
-     "addr": "19325 Bollinger Rd Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Своими словами. Школа для детей-билингвов",
-     "lat": 37.318565,
-     "lon": -122.031765,
-     "kind": "school",
-     "addr": "10300 S De Anza Blvd Cupertino",
-     "src": "overture"
     },
     {
      "name": "未来学園",
@@ -5290,15 +6193,32 @@
    "label_zh": "住宿",
    "label_en": "Lodging",
    "color": "#9c27b0",
-   "count": 29,
+   "count": 28,
    "items": [
+    {
+     "name": "AC Hotel Sunnyvale",
+     "lat": 37.362722,
+     "lon": -122.025001,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
     {
      "name": "Aloft Cupertino",
      "lat": 37.325473,
      "lon": -122.03294,
      "kind": "hotel",
      "addr": "10165 North De Anza Boulevard Cupertino",
+     "src": "osm",
      "osm": "way/300847826"
+    },
+    {
+     "name": "Aloft San Jose Cupertino",
+     "lat": 37.316524,
+     "lon": -121.977236,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Bella Vista Inn",
@@ -5306,6 +6226,7 @@
      "lon": -121.994043,
      "kind": "motel",
      "addr": null,
+     "src": "osm",
      "osm": "way/313105291"
     },
     {
@@ -5314,6 +6235,7 @@
      "lon": -122.001368,
      "kind": "motel",
      "addr": "4341 East El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "way/49187245"
     },
     {
@@ -5322,6 +6244,7 @@
      "lon": -122.003323,
      "kind": "hotel",
      "addr": null,
+     "src": "osm",
      "osm": "way/49187247"
     },
     {
@@ -5330,6 +6253,7 @@
      "lon": -122.016764,
      "kind": "hotel",
      "addr": "805 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "relation/5743849"
     },
     {
@@ -5346,6 +6270,7 @@
      "lon": -122.015243,
      "kind": "hotel",
      "addr": "10605 North Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "relation/5636643"
     },
     {
@@ -5354,12 +6279,13 @@
      "lon": -122.033184,
      "kind": "hotel",
      "addr": "10889 North de Anza Boulevard Cupertino",
+     "src": "osm",
      "osm": "relation/2325083"
     },
     {
      "name": "Driftwood Inn Santa Clara",
-     "lat": 37.352746,
-     "lon": -121.991973,
+     "lat": 37.352911,
+     "lon": -121.992044,
      "kind": "hotel",
      "addr": "3477 El Camino Real Santa Clara",
      "src": "overture"
@@ -5370,6 +6296,7 @@
      "lon": -121.992068,
      "kind": "motel",
      "addr": null,
+     "src": "osm",
      "osm": "way/313105300"
     },
     {
@@ -5378,6 +6305,7 @@
      "lon": -122.010884,
      "kind": "motel",
      "addr": "958 East El Camino Real",
+     "src": "osm",
      "osm": "way/207269872"
     },
     {
@@ -5386,15 +6314,8 @@
      "lon": -122.015371,
      "kind": "hotel",
      "addr": "861 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/11002539279"
-    },
-    {
-     "name": "Hampton Inn and Suites Sunnyvale Silicon Valley",
-     "lat": 37.354131,
-     "lon": -122.015224,
-     "kind": "hotel",
-     "addr": "861 E El Camino Real Sunnyvale",
-     "src": "overture"
     },
     {
      "name": "Hilton Garden Inn Cupertino",
@@ -5402,6 +6323,7 @@
      "lon": -122.014861,
      "kind": "hotel",
      "addr": "10741 Wolfe Road Cupertino",
+     "src": "osm",
      "osm": "way/167275582"
     },
     {
@@ -5410,6 +6332,7 @@
      "lon": -122.017998,
      "kind": "hotel",
      "addr": "830 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "way/947541037"
     },
     {
@@ -5426,6 +6349,7 @@
      "lon": -121.995018,
      "kind": "motel",
      "addr": null,
+     "src": "osm",
      "osm": "way/313105292"
     },
     {
@@ -5434,23 +6358,16 @@
      "lon": -122.013186,
      "kind": "hotel",
      "addr": "10380 Perimeter Road Cupertino",
+     "src": "osm",
      "osm": "way/756171387"
     },
     {
-     "name": "Juniper Hotel Cupertino",
-     "lat": 37.32163,
-     "lon": -122.031523,
-     "kind": "hotel",
-     "addr": "10050 South De Anza Boulevard Cupertino",
-     "osm": "way/39199989"
-    },
-    {
-     "name": "Markham Apartment",
-     "lat": 37.335409,
-     "lon": -122.039262,
-     "kind": "hotel",
-     "addr": "10870 N Stelling Rd Cupertino",
-     "src": "overture"
+     "name": "Maple Tree Inn",
+     "lat": 37.359916,
+     "lon": -122.02154,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Residence Inn Marriott",
@@ -5458,6 +6375,7 @@
      "lon": -122.009622,
      "kind": "hotel",
      "addr": "19429 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "way/398115466"
     },
     {
@@ -5482,22 +6400,15 @@
      "lon": -122.002083,
      "kind": "hotel",
      "addr": "1085 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "way/37892693"
     },
     {
      "name": "Vagabond Inn Santa Clara",
-     "lat": 37.351688,
-     "lon": -121.994858,
+     "lat": 37.351678,
+     "lon": -121.994942,
      "kind": "resort",
      "addr": "3580 El Camino Real Santa Clara",
-     "src": "overture"
-    },
-    {
-     "name": "WILD PALMS, A JDV BY HYATT HOTEL",
-     "lat": 37.352137,
-     "lon": -122.013685,
-     "kind": "resort",
-     "addr": "910 E Fremont Ave, null SUNNYVALE",
      "src": "overture"
     },
     {
@@ -5514,6 +6425,7 @@
      "lon": -122.013652,
      "kind": "hotel",
      "addr": "910 East Fremont Avenue Sunnyvale",
+     "src": "osm",
      "osm": "relation/2878950"
     },
     {
@@ -5522,6 +6434,7 @@
      "lon": -122.003567,
      "kind": "hotel",
      "addr": "5415 Stevens Creek Boulevard Santa Clara",
+     "src": "osm",
      "osm": "relation/5941843"
     }
    ]
@@ -5530,7 +6443,7 @@
    "label_zh": "购物",
    "label_en": "Shopping",
    "color": "#f4a300",
-   "count": 61,
+   "count": 69,
    "items": [
     {
      "name": "99 Ranch Market",
@@ -5538,15 +6451,8 @@
      "lon": -122.015328,
      "kind": "supermarket",
      "addr": null,
+     "src": "osm",
      "osm": "node/2418420316"
-    },
-    {
-     "name": "99 Ranch Market",
-     "lat": 37.316987,
-     "lon": -122.033804,
-     "kind": "supermarket",
-     "addr": "10425 South De Anza Boulevard Cupertino",
-     "osm": "node/3814942152"
     },
     {
      "name": "Aji Ichiban",
@@ -5554,14 +6460,6 @@
      "lon": -122.015638,
      "kind": "grocery_store",
      "addr": "10919 N Wolfe Rd Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Baby Buddha LLC",
-     "lat": 37.352863,
-     "lon": -122.031273,
-     "kind": "grocery_store",
-     "addr": "145 E Fremont Ave Sunnyvale",
      "src": "overture"
     },
     {
@@ -5594,7 +6492,16 @@
      "lon": -121.998654,
      "kind": "department_store",
      "addr": "3735 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/622352576"
+    },
+    {
+     "name": "Country Farm Produce",
+     "lat": 37.366265,
+     "lon": -122.013434,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Creekside Farmers' Market",
@@ -5605,27 +6512,19 @@
      "src": "overture"
     },
     {
-     "name": "Cupertino",
-     "lat": 37.33617,
-     "lon": -122.03576,
-     "kind": "department_store",
-     "addr": "20650 Homestead Rd. Cupertino",
-     "src": "overture"
-    },
-    {
-     "name": "Cupertino (DeAnza Blvd)",
-     "lat": 37.316898,
-     "lon": -122.033524,
-     "kind": "supermarket",
-     "addr": "10425 S. DeAnza Blvd, Cupertino, CA 95014 Cupertino",
-     "src": "overture"
-    },
-    {
      "name": "Cupertino (North Wolfe Rd)",
      "lat": 37.336582,
      "lon": -122.01546,
      "kind": "supermarket",
      "addr": "10983 North Wolfe Rd Cupertino, CA Cupertino",
+     "src": "overture"
+    },
+    {
+     "name": "Cupertino Crossroads",
+     "lat": 37.322579,
+     "lon": -122.034486,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -5642,7 +6541,24 @@
      "lon": -122.015392,
      "kind": "mall",
      "addr": null,
+     "src": "osm",
      "osm": "node/1704948708"
+    },
+    {
+     "name": "Dakota Brothers Inc",
+     "lat": 37.324428,
+     "lon": -122.033741,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Desi Bazar Desi Kitchen",
+     "lat": 37.36637,
+     "lon": -122.013187,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "FoodMaxx",
@@ -5650,7 +6566,24 @@
      "lon": -121.998114,
      "kind": "supermarket",
      "addr": "3705 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/309331540"
+    },
+    {
+     "name": "Foothill Crossing",
+     "lat": 37.336502,
+     "lon": -122.067186,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Fremont Corners Center",
+     "lat": 37.3515,
+     "lon": -122.031947,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Fuheng Herbs",
@@ -5669,20 +6602,21 @@
      "src": "overture"
     },
     {
-     "name": "Genji Sushi",
-     "lat": 37.3235,
-     "lon": -122.03966,
-     "kind": "asian_grocery_store",
-     "addr": "20955 Stevens Creek Blvd Cupertino",
-     "src": "overture"
-    },
-    {
      "name": "Grocery Outlet",
      "lat": 37.336362,
      "lon": -121.993637,
      "kind": "supermarket",
      "addr": "3520 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "way/258200674"
+    },
+    {
+     "name": "Hacienda Shopping Center",
+     "lat": 37.358125,
+     "lon": -122.019771,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Hankook",
@@ -5690,7 +6624,16 @@
      "lon": -122.001484,
      "kind": "supermarket",
      "addr": "1092 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/2658424321"
+    },
+    {
+     "name": "Heartland",
+     "lat": 37.322495,
+     "lon": -122.01609,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Heritage Indian Market",
@@ -5706,6 +6649,7 @@
      "lon": -122.005692,
      "kind": "supermarket",
      "addr": "1032 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "node/266630158"
     },
     {
@@ -5722,14 +6666,15 @@
      "lon": -121.987564,
      "kind": "supermarket",
      "addr": "3330 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/12582654793"
     },
     {
-     "name": "Kaiser Permanente Santa Clara Farmers' Market",
-     "lat": 37.336348,
-     "lon": -121.997327,
-     "kind": "farmers_market",
-     "addr": "710 Lawrence Expy Santa Clara",
+     "name": "Kaiser Santa Clara Farmers' Market",
+     "lat": 37.336319,
+     "lon": -121.997449,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -5738,6 +6683,7 @@
      "lon": -122.004182,
      "kind": "supermarket",
      "addr": null,
+     "src": "osm",
      "osm": "node/266630161"
     },
     {
@@ -5759,7 +6705,7 @@
     {
      "name": "Main Street Cupertino",
      "lat": 37.323875,
-     "lon": -122.010386,
+     "lon": -122.010396,
      "kind": "shopping_center",
      "addr": "19401 Stevens Creek Blvd Cupertino",
      "src": "overture"
@@ -5770,14 +6716,15 @@
      "lon": -122.033756,
      "kind": "supermarket",
      "addr": "10118 Bandley Drive",
+     "src": "osm",
      "osm": "node/3808428945"
     },
     {
-     "name": "Market Cocina",
-     "lat": 37.323594,
-     "lon": -122.040074,
-     "kind": "supermarket",
-     "addr": "20955 Stevens Creek Blvd Cupertino",
+     "name": "Mariposa Shopping Center",
+     "lat": 37.338611,
+     "lon": -121.975014,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -5786,6 +6733,7 @@
      "lon": -121.99398,
      "kind": "department_store",
      "addr": "5160 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "node/3926511561"
     },
     {
@@ -5802,7 +6750,16 @@
      "lon": -122.02028,
      "kind": "supermarket",
      "addr": "760 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "way/61113456"
+    },
+    {
+     "name": "My Bangla Bazar",
+     "lat": 37.3661,
+     "lon": -122.01341,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Namaste Plaza",
@@ -5810,7 +6767,16 @@
      "lon": -122.042447,
      "kind": "supermarket",
      "addr": "1637 Hollenbeck Avenue Sunnyvale",
+     "src": "osm",
      "osm": "node/8735359324"
+    },
+    {
+     "name": "Oakmont Produce Market",
+     "lat": 37.337212,
+     "lon": -122.02239,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "Portal Plaza",
@@ -5829,12 +6795,29 @@
      "src": "overture"
     },
     {
+     "name": "Quincy Liquors",
+     "lat": 37.352008,
+     "lon": -122.009143,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Ross",
      "lat": 37.336143,
      "lon": -122.035797,
      "kind": "department_store",
      "addr": "20650 West Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/3681402862"
+    },
+    {
+     "name": "Ross",
+     "lat": 37.338468,
+     "lon": -121.973799,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Ross Dress for Less",
@@ -5850,6 +6833,7 @@
      "lon": -122.034735,
      "kind": "supermarket",
      "addr": "20620 West Homestead Road Cupertino",
+     "src": "osm",
      "osm": "node/2856527717"
     },
     {
@@ -5858,6 +6842,7 @@
      "lon": -122.017685,
      "kind": "supermarket",
      "addr": "785 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "way/238699879"
     },
     {
@@ -5866,6 +6851,7 @@
      "lon": -122.011799,
      "kind": "supermarket",
      "addr": "6132 Bollinger Road San Jose",
+     "src": "osm",
      "osm": "way/239712120"
     },
     {
@@ -5874,7 +6860,16 @@
      "lon": -121.992782,
      "kind": "supermarket",
      "addr": "5146 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "way/239719276"
+    },
+    {
+     "name": "Safeway",
+     "lat": 37.337862,
+     "lon": -121.975108,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Shoppes at Homestead",
@@ -5910,10 +6905,10 @@
     },
     {
      "name": "Stevens Creek Central",
-     "lat": 37.32214,
-     "lon": -121.99511,
-     "kind": "shopping_center",
-     "addr": "5146 Stevens Creek Blvd San Jose",
+     "lat": 37.320872,
+     "lon": -121.992867,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -5922,6 +6917,7 @@
      "lon": -121.994282,
      "kind": "supermarket",
      "addr": "3521 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "way/258213390"
     },
     {
@@ -5933,19 +6929,12 @@
      "src": "overture"
     },
     {
-     "name": "TJ Maxx",
-     "lat": 37.322068,
-     "lon": -122.035742,
-     "kind": "department_store",
-     "addr": "20730 Stevens Creek Boulevard",
-     "osm": "node/3814942193"
-    },
-    {
      "name": "Target",
      "lat": 37.324491,
      "lon": -122.035995,
      "kind": "department_store",
      "addr": "20745 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "way/105823778"
     },
     {
@@ -5970,6 +6959,7 @@
      "lon": -121.989173,
      "kind": "supermarket",
      "addr": "3379 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "node/8458894617"
     },
     {
@@ -5978,15 +6968,16 @@
      "lon": -122.018548,
      "kind": "supermarket",
      "addr": "19750 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/435104547"
     },
     {
-     "name": "Trinethra Indian Supermarket",
-     "lat": 37.318958,
-     "lon": -122.032982,
-     "kind": "supermarket",
-     "addr": "10255 S De Anza Blvd Cupertino",
-     "src": "overture"
+     "name": "Trader Joe's",
+     "lat": 37.337157,
+     "lon": -122.067512,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Vallco Mall",
@@ -5994,6 +6985,7 @@
      "lon": -122.013469,
      "kind": "mall",
      "addr": null,
+     "src": "osm",
      "osm": "way/38899438"
     },
     {
@@ -6005,20 +6997,28 @@
      "src": "overture"
     },
     {
-     "name": "WFM Coffee Bar",
-     "lat": 37.323594,
-     "lon": -122.040074,
-     "kind": "supermarket",
-     "addr": "20955 Stevens Creek Blvd Cupertino",
+     "name": "Vrudhi Products USA",
+     "lat": 37.352518,
+     "lon": -122.000652,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
-     "name": "Whole Foods Market",
-     "lat": 37.323616,
-     "lon": -122.039602,
-     "kind": "supermarket",
-     "addr": "20955 Stevens Creek Boulevard Cupertino",
-     "osm": "way/105884717"
+     "name": "Wolfe India Bazar",
+     "lat": 37.366276,
+     "lon": -122.016928,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "dd's Discounts",
+     "lat": 37.361261,
+     "lon": -122.026286,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     }
    ]
   },
@@ -6026,23 +7026,24 @@
    "label_zh": "加油/充电",
    "label_en": "Fuel / EV",
    "color": "#607d8b",
-   "count": 54,
+   "count": 61,
    "items": [
+    {
+     "name": "7-Eleven",
+     "lat": 37.322457,
+     "lon": -122.051577,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
     {
      "name": "76",
      "lat": 37.352451,
      "lon": -122.031886,
      "kind": "fuel",
      "addr": "1296 Sunnyvale-Saratoga Road Sunnyvale",
+     "src": "osm",
      "osm": "node/315024019"
-    },
-    {
-     "name": "76",
-     "lat": 37.315841,
-     "lon": -122.031973,
-     "kind": "fuel",
-     "addr": "10490 South De Anza Boulevard Cupertino",
-     "osm": "node/8816004196"
     },
     {
      "name": "76",
@@ -6050,7 +7051,16 @@
      "lon": -122.014667,
      "kind": "fuel",
      "addr": null,
+     "src": "osm",
      "osm": "node/11382869097"
+    },
+    {
+     "name": "76",
+     "lat": 37.337705,
+     "lon": -122.058728,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "76",
@@ -6058,6 +7068,7 @@
      "lon": -122.013329,
      "kind": "fuel",
      "addr": "905 East El Camino Real Sunnyvale",
+     "src": "osm",
      "osm": "way/387468678"
     },
     {
@@ -6066,14 +7077,23 @@
      "lon": -121.993296,
      "kind": "fuel",
      "addr": "3501 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "way/389969506"
     },
     {
      "name": "76",
-     "lat": 37.33213,
-     "lon": -122.03278,
-     "kind": "gas_station",
-     "addr": "10625 N De Anza Blvd Cupertino",
+     "lat": 37.316196,
+     "lon": -121.975249,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
+     "name": "76",
+     "lat": 37.322449,
+     "lon": -122.0515,
+     "kind": null,
+     "addr": null,
      "src": "overture"
     },
     {
@@ -6082,6 +7102,14 @@
      "lon": -122.031819,
      "kind": "gas_station",
      "addr": "10002 N De Anza Blvd Cupertino",
+     "src": "overture"
+    },
+    {
+     "name": "76",
+     "lat": 37.33213,
+     "lon": -122.03278,
+     "kind": "gas_station",
+     "addr": "10625 N De Anza Blvd Cupertino",
      "src": "overture"
     },
     {
@@ -6106,6 +7134,7 @@
      "lon": -122.022912,
      "kind": "fuel",
      "addr": "19990 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/11382869096"
     },
     {
@@ -6114,12 +7143,21 @@
      "lon": -122.014566,
      "kind": "fuel",
      "addr": null,
+     "src": "osm",
      "osm": "node/2760019648"
     },
     {
+     "name": "Arco",
+     "lat": 37.338011,
+     "lon": -121.976961,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
+    },
+    {
      "name": "Auto Row Texaco",
-     "lat": 37.32267,
-     "lon": -121.99475,
+     "lat": 37.322771,
+     "lon": -121.995076,
      "kind": "gas_station",
      "addr": "5194 Stevens Creek Blvd San Jose",
      "src": "overture"
@@ -6141,20 +7179,12 @@
      "src": "overture"
     },
     {
-     "name": "ChargePoint",
-     "lat": 37.324783,
-     "lon": -122.03698,
-     "kind": "charging_station",
+     "name": "BW HOMESTEAD INC",
+     "lat": 37.337791,
+     "lon": -122.058731,
+     "kind": null,
      "addr": null,
-     "osm": "node/11141584016"
-    },
-    {
-     "name": "ChargePoint",
-     "lat": 37.317704,
-     "lon": -122.028341,
-     "kind": "charging_station",
-     "addr": null,
-     "osm": "way/1510425266"
+     "src": "overture"
     },
     {
      "name": "Chevron",
@@ -6162,6 +7192,7 @@
      "lon": -122.032744,
      "kind": "fuel",
      "addr": "10023 South De Anza Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/11382869095"
     },
     {
@@ -6170,6 +7201,7 @@
      "lon": -122.031855,
      "kind": "fuel",
      "addr": "11010 North De Anza Boulevard Cupertino",
+     "src": "osm",
      "osm": "way/167372407"
     },
     {
@@ -6178,6 +7210,7 @@
      "lon": -122.014676,
      "kind": "fuel",
      "addr": null,
+     "src": "osm",
      "osm": "way/190516374"
     },
     {
@@ -6186,6 +7219,7 @@
      "lon": -121.996027,
      "kind": "fuel",
      "addr": "500 Lawrence Expressway Santa Clara",
+     "src": "osm",
      "osm": "way/390112244"
     },
     {
@@ -6202,7 +7236,24 @@
      "lon": -122.031873,
      "kind": "fuel",
      "addr": "10002 North De Anza Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/11382869094"
+    },
+    {
+     "name": "DBA AGARWAL CORP",
+     "lat": 37.316143,
+     "lon": -121.975272,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "DBA T.B.D.J INC",
+     "lat": 37.32245,
+     "lon": -122.05157,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "EVgo",
@@ -6210,6 +7261,7 @@
      "lon": -122.016212,
      "kind": "charging_station",
      "addr": null,
+     "src": "osm",
      "osm": "node/8421786099"
     },
     {
@@ -6218,23 +7270,8 @@
      "lon": -122.011406,
      "kind": "charging_station",
      "addr": null,
+     "src": "osm",
      "osm": "node/11648406265"
-    },
-    {
-     "name": "EVgo",
-     "lat": 37.357885,
-     "lon": -122.024398,
-     "kind": "charging_station",
-     "addr": null,
-     "osm": "node/11762876423"
-    },
-    {
-     "name": "EVgo",
-     "lat": 37.32416,
-     "lon": -122.04032,
-     "kind": "ev_charging_station",
-     "addr": "20955 Stevens Creek Blvd Cupertino",
-     "src": "overture"
     },
     {
      "name": "El Camino Chevron",
@@ -6242,12 +7279,13 @@
      "lon": -121.998781,
      "kind": "fuel",
      "addr": "3740 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "way/103753078"
     },
     {
      "name": "ExtraMile",
-     "lat": 37.33174,
-     "lon": -121.995692,
+     "lat": 37.331718,
+     "lon": -121.996015,
      "kind": "gas_station",
      "addr": "500 Lawrence Expy Santa Clara",
      "src": "overture"
@@ -6269,20 +7307,21 @@
      "src": "overture"
     },
     {
-     "name": "HSH PETROLEUM INC",
-     "lat": 37.35265,
-     "lon": -121.998779,
-     "kind": "gas_station",
-     "addr": "3725 EL CAMINO REAL SANTA CLARA",
-     "src": "overture"
-    },
-    {
      "name": "Homestead Car Wash",
      "lat": 37.337451,
      "lon": -121.993261,
      "kind": "fuel",
      "addr": null,
+     "src": "osm",
      "osm": "way/1006123670"
+    },
+    {
+     "name": "Los Altos Chevron",
+     "lat": 37.337671,
+     "lon": -122.067818,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Mobil",
@@ -6290,6 +7329,7 @@
      "lon": -121.998767,
      "kind": "fuel",
      "addr": "3725 El Camino Real Santa Clara",
+     "src": "osm",
      "osm": "way/279805036"
     },
     {
@@ -6314,6 +7354,7 @@
      "lon": -122.005132,
      "kind": "fuel",
      "addr": "19030 Stevens Creek Boulevard Cupertino",
+     "src": "osm",
      "osm": "node/11382869098"
     },
     {
@@ -6346,7 +7387,16 @@
      "lon": -122.003005,
      "kind": "fuel",
      "addr": "5696 Stevens Creek Boulevard San Jose",
+     "src": "osm",
      "osm": "node/11382869102"
+    },
+    {
+     "name": "Shell",
+     "lat": 37.366271,
+     "lon": -122.014385,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Shell",
@@ -6354,6 +7404,7 @@
      "lon": -122.03192,
      "kind": "fuel",
      "addr": null,
+     "src": "osm",
      "osm": "way/189315225"
     },
     {
@@ -6373,11 +7424,28 @@
      "src": "overture"
     },
     {
+     "name": "Shell",
+     "lat": 37.338407,
+     "lon": -121.974229,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Shell",
+     "lat": 37.315553,
+     "lon": -121.976564,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Sofi Sunnyvale Apartments",
      "lat": 37.353551,
      "lon": -122.010945,
      "kind": "charging_station",
      "addr": null,
+     "src": "osm",
      "osm": "node/11762870965"
     },
     {
@@ -6389,12 +7457,12 @@
      "src": "overture"
     },
     {
-     "name": "Tesla Supercharger",
-     "lat": 37.32472,
-     "lon": -122.03684,
-     "kind": "charging_station",
-     "addr": "20745 Stevens Creek Boulevard Cupertino",
-     "osm": "node/11763820679"
+     "name": "Sunnyvale CA Supercharger",
+     "lat": 37.362512,
+     "lon": -122.026246,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Tesla Supercharger",
@@ -6402,6 +7470,7 @@
      "lon": -122.00918,
      "kind": "charging_station",
      "addr": "19500 Vallco Parkway Cupertino",
+     "src": "osm",
      "osm": "node/12944743621"
     },
     {
@@ -6418,6 +7487,7 @@
      "lon": -122.031887,
      "kind": "fuel",
      "addr": "1296 Sunnyvale-Saratoga Road Sunnyvale",
+     "src": "osm",
      "osm": "node/8847375197"
     },
     {
@@ -6426,6 +7496,7 @@
      "lon": -121.995251,
      "kind": "fuel",
      "addr": "3595 Benton Street Santa Clara",
+     "src": "osm",
      "osm": "node/760775752"
     },
     {
@@ -6434,6 +7505,7 @@
      "lon": -121.992554,
      "kind": "fuel",
      "addr": "3480 Homestead Road Santa Clara",
+     "src": "osm",
      "osm": "way/389969505"
     },
     {
@@ -6445,11 +7517,20 @@
      "src": "overture"
     },
     {
+     "name": "Valero",
+     "lat": 37.316363,
+     "lon": -121.976276,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Volta",
      "lat": 37.340495,
      "lon": -122.042284,
      "kind": "charging_station",
      "addr": null,
+     "src": "osm",
      "osm": "node/6496207832"
     },
     {
@@ -6458,6 +7539,7 @@
      "lon": -122.018141,
      "kind": "charging_station",
      "addr": null,
+     "src": "osm",
      "osm": "node/11714929405"
     }
    ]
@@ -6466,23 +7548,15 @@
    "label_zh": "景点/文化",
    "label_en": "Attractions",
    "color": "#e91e63",
-   "count": 2,
+   "count": 1,
    "items": [
     {
-     "name": "Orchard Heritage Park",
-     "lat": 37.356735,
-     "lon": -122.025687,
-     "kind": "history_museum",
-     "addr": "560 E Remington Dr Sunnyvale",
+     "name": "Children's Discovery Msm-Sn Js",
+     "lat": 37.353342,
+     "lon": -122.012854,
+     "kind": null,
+     "addr": null,
      "src": "overture"
-    },
-    {
-     "name": "Sunnyvale Heritage Park Museum",
-     "lat": 37.356469,
-     "lon": -122.025481,
-     "kind": "museum",
-     "addr": "570 East Remington Drive Sunnyvale",
-     "osm": "node/8364028860"
     }
    ]
   },
@@ -6490,7 +7564,7 @@
    "label_zh": "公园",
    "label_en": "Parks",
    "color": "#33a02c",
-   "count": 30,
+   "count": 29,
    "items": [
     {
      "name": "Amphitheater",
@@ -6498,12 +7572,13 @@
      "lon": -122.029486,
      "kind": "park",
      "addr": null,
+     "src": "osm",
      "osm": "way/189475305"
     },
     {
      "name": "Apple Park",
-     "lat": 37.326198,
-     "lon": -122.010766,
+     "lat": 37.326202,
+     "lon": -122.010206,
      "kind": "park",
      "addr": "19333 Vallco Pkwy Cupertino",
      "src": "overture"
@@ -6518,19 +7593,19 @@
     },
     {
      "name": "Apple Park Cupertino",
-     "lat": 37.33291,
-     "lon": -122.005419,
+     "lat": 37.332824,
+     "lon": -122.005388,
      "kind": "park",
      "addr": "10600 N Tantau Ave Cupertino",
      "src": "overture"
     },
     {
-     "name": "Apple Park Wolfe Reception Building",
-     "lat": 37.333788,
-     "lon": -122.011647,
-     "kind": "park",
-     "addr": "1 Apple Park Way Cupertino",
-     "src": "overture"
+     "name": "Bill Wilson Jr. Park",
+     "lat": 37.339793,
+     "lon": -121.978725,
+     "kind": null,
+     "addr": null,
+     "src": "osm"
     },
     {
      "name": "Cali Mill Park",
@@ -6538,6 +7613,7 @@
      "lon": -122.031722,
      "kind": "park",
      "addr": null,
+     "src": "osm",
      "osm": "way/189475306"
     },
     {
@@ -6549,11 +7625,28 @@
      "src": "overture"
     },
     {
+     "name": "City of Santa Clara Central Park",
+     "lat": 37.33542,
+     "lon": -121.97497,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
+     "name": "Civic Park Center",
+     "lat": 37.318769,
+     "lon": -122.029908,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Creekside Park",
      "lat": 37.31623,
      "lon": -122.014996,
      "kind": "park",
      "addr": null,
+     "src": "osm",
      "osm": "way/38745773"
     },
     {
@@ -6562,6 +7655,7 @@
      "lon": -121.991054,
      "kind": "park",
      "addr": "3445 Benton Street Santa Clara",
+     "src": "osm",
      "osm": "way/38329002"
     },
     {
@@ -6570,14 +7664,16 @@
      "lon": -122.037106,
      "kind": "park",
      "addr": null,
+     "src": "osm",
      "osm": "way/458216423"
     },
     {
      "name": "Homeridge Park",
-     "lat": 37.336304,
+     "lat": 37.336267,
      "lon": -121.982145,
      "kind": "park",
      "addr": "2985 Stevenson Street Santa Clara",
+     "src": "osm",
      "osm": "way/37946174"
     },
     {
@@ -6594,15 +7690,8 @@
      "lon": -122.00371,
      "kind": "park",
      "addr": "250 Howard Drive Santa Clara",
+     "src": "osm",
      "osm": "way/38176417"
-    },
-    {
-     "name": "John Mise Park",
-     "lat": 37.317019,
-     "lon": -121.990029,
-     "kind": "park",
-     "addr": null,
-     "osm": "way/38540870"
     },
     {
      "name": "Lavender Community Park",
@@ -6610,15 +7699,8 @@
      "lon": -122.015074,
      "kind": "park",
      "addr": null,
+     "src": "osm",
      "osm": "way/1169781318"
-    },
-    {
-     "name": "Library Field",
-     "lat": 37.316668,
-     "lon": -122.028536,
-     "kind": "park",
-     "addr": null,
-     "osm": "way/52420092"
     },
     {
      "name": "Maywood Park",
@@ -6626,6 +7708,7 @@
      "lon": -121.988073,
      "kind": "park",
      "addr": "3330 Pruneridge Avenue Santa Clara",
+     "src": "osm",
      "osm": "way/28485145"
     },
     {
@@ -6637,27 +7720,12 @@
      "src": "overture"
     },
     {
-     "name": "Nimitz School Park",
-     "lat": 37.347579,
-     "lon": -122.035071,
-     "kind": "park",
-     "addr": null,
-     "osm": "way/28664604"
-    },
-    {
-     "name": "Orchard Heritage Park",
-     "lat": 37.355196,
-     "lon": -122.025944,
-     "kind": "park",
-     "addr": "Sunnyvale",
-     "src": "overture"
-    },
-    {
      "name": "Ortega Park",
      "lat": 37.342184,
      "lon": -122.025574,
      "kind": "park",
      "addr": "636 Harrow Way Sunnyvale",
+     "src": "osm",
      "osm": "way/22462667"
     },
     {
@@ -6666,6 +7734,7 @@
      "lon": -122.018629,
      "kind": "park",
      "addr": "755 Dartshire Way Sunnyvale",
+     "src": "osm",
      "osm": "way/39201406"
     },
     {
@@ -6674,6 +7743,7 @@
      "lon": -122.020593,
      "kind": "park",
      "addr": null,
+     "src": "osm",
      "osm": "way/38745785"
     },
     {
@@ -6682,7 +7752,16 @@
      "lon": -122.00679,
      "kind": "park",
      "addr": "1565 Quail Avenue Sunnyvale",
+     "src": "osm",
      "osm": "way/38199298"
+    },
+    {
+     "name": "Santa Clara High School Athletics Field",
+     "lat": 37.346161,
+     "lon": -121.979109,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
     },
     {
      "name": "South Bay",
@@ -6693,14 +7772,6 @@
      "src": "overture"
     },
     {
-     "name": "Sterling Barnhart Park",
-     "lat": 37.315531,
-     "lon": -121.99639,
-     "kind": "park",
-     "addr": null,
-     "osm": "way/365804688"
-    },
-    {
      "name": "Sunnyvale Community Center Park",
      "lat": 37.356592,
      "lon": -122.024194,
@@ -6709,11 +7780,20 @@
      "src": "overture"
     },
     {
+     "name": "Trinity Park Sunnyvale",
+     "lat": 37.341829,
+     "lon": -122.042726,
+     "kind": null,
+     "addr": null,
+     "src": "overture"
+    },
+    {
      "name": "Vista Pointe Apartments Park Space",
      "lat": 37.338618,
      "lon": -121.991872,
      "kind": "park",
      "addr": null,
+     "src": "osm",
      "osm": "way/1364218501"
     },
     {
@@ -6722,6 +7802,7 @@
      "lon": -122.000352,
      "kind": "park",
      "addr": "460 La Herran Drive Santa Clara",
+     "src": "osm",
      "osm": "way/38176390"
     },
     {
@@ -6730,6 +7811,7 @@
      "lon": -122.020319,
      "kind": "park",
      "addr": null,
+     "src": "osm",
      "osm": "way/38745769"
     }
    ]

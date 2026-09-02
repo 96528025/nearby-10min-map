@@ -1751,6 +1751,7 @@
   "source": "Valhalla (FOSSGIS public server, valhalla1.openstreetmap.de)",
   "costing": "auto",
   "contour_minutes": 10,
+  "denoise": 0.3,
   "origin": {
    "lat": 37.33484,
    "lon": -122.01139,

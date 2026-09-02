@@ -90,6 +90,7 @@ describe("App workflow", () => {
 
     expect(workflowRoot()).toHaveAttribute("data-workflow-state", "idle");
     expect(screen.getByRole("heading", { name: "Apple Park" })).toBeInTheDocument();
+    expect(screen.getByText("921")).toBeInTheDocument();
     expect(geocodeMock).not.toHaveBeenCalled();
     expect(areaMock).not.toHaveBeenCalled();
   });
@@ -221,12 +222,12 @@ describe("App workflow", () => {
     expect(workflowRoot()).toHaveAttribute("data-workflow-state", "osmOnly");
   });
 
-  it("shows the routed provenance label only when boundary_mode says routed", async () => {
+  it("shows the routed isochrone provenance and modelled area, never a radius, when boundary_mode says routed", async () => {
     const stanford = candidate("Stanford University");
     geocodeMock.mockResolvedValue({ candidates: [stanford] });
     areaMock.mockResolvedValue(
       areaResponse("complete", stanford, 42, {
-        boundaryMode: "routed_equal_area_circle",
+        boundaryMode: "routed_isochrone",
       }),
     );
     await renderReadyApp();
@@ -237,12 +238,58 @@ describe("App workflow", () => {
     );
 
     expect(
-      await screen.findByText("Routed equal-area circle"),
+      await screen.findByText("Routed isochrone (Valhalla, free-flow)"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Road-network derived")).toBeInTheDocument();
+    expect(screen.getByText("Routed isochrone")).toBeInTheDocument();
+    expect(screen.getByText("Modelled area")).toBeInTheDocument();
+    expect(screen.getByText("25.8 km²")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Geometry: Polygon · 1 component · 0 holes/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/does not establish real-world drive-time accuracy/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Searches attempt to snap to the nearest public drivable road/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/if none is found, they keep the requested point/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Boundary radius/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Fixed radius")).not.toBeInTheDocument();
     expect(
       screen.queryByText("Fixed nominal-radius circle"),
     ).not.toBeInTheDocument();
+  });
+
+  it("takes the bundled default's provenance from boundary.json instead of inferring it", async () => {
+    await renderReadyApp();
+
+    expect(
+      screen.getByText("Routed isochrone (Valhalla, free-flow)"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Modelled area")).toBeInTheDocument();
+    expect(screen.getByText("25.8 km²")).toBeInTheDocument();
+    expect(
+      screen.getByText(/bundled Apple Park snapshot uses a recorded unsnapped point/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Searches may snap to the nearest public drivable road/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Boundary radius/)).not.toBeInTheDocument();
+  });
+
+  it("reports no provenance for a bundled boundary.json that declares no mode", async () => {
+    const data = defaultViewData();
+    delete data.boundary.boundary_mode;
+    loadDefaultDataMock.mockResolvedValue(data);
+    await renderReadyApp();
+
+    expect(screen.getByText("Boundary mode not reported")).toBeInTheDocument();
+    expect(screen.getByText("Boundary extent")).toBeInTheDocument();
+    expect(screen.getByText("Not reported")).toBeInTheDocument();
+    expect(screen.queryByText("Modelled area")).not.toBeInTheDocument();
+    expect(screen.queryByText("Fixed radius")).not.toBeInTheDocument();
   });
 
   it("uses nominal boundary_mode despite routed-looking metadata and warns honestly", async () => {
@@ -265,6 +312,9 @@ describe("App workflow", () => {
       await screen.findByText("Fixed nominal-radius circle"),
     ).toBeInTheDocument();
     expect(screen.getByText("Fixed radius · no routing")).toBeInTheDocument();
+    expect(screen.getByText("Fixed radius")).toBeInTheDocument();
+    expect(screen.getByText("5.0 km")).toBeInTheDocument();
+    expect(screen.queryByText("Modelled area")).not.toBeInTheDocument();
     expect(
       screen.getByText(
         "当前显示的是固定半径的近似范围，不是基于真实路网计算的约 10 分钟驾车可达范围。",
@@ -272,7 +322,7 @@ describe("App workflow", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Valhalla was unavailable.")).toBeInTheDocument();
     expect(
-      screen.queryByText("Routed equal-area circle"),
+      screen.queryByText("Routed isochrone (Valhalla, free-flow)"),
     ).not.toBeInTheDocument();
   });
 
@@ -280,6 +330,7 @@ describe("App workflow", () => {
     const stanford = candidate("Stanford University");
     const legacyResponse = areaResponse("complete", stanford, 42);
     delete legacyResponse.boundary_mode;
+    delete legacyResponse.boundary.boundary_mode;
     geocodeMock.mockResolvedValue({ candidates: [stanford] });
     areaMock.mockResolvedValue(legacyResponse);
     await renderReadyApp();
@@ -292,8 +343,11 @@ describe("App workflow", () => {
     expect(
       await screen.findByText("Boundary mode not reported"),
     ).toBeInTheDocument();
+    expect(screen.getByText("Boundary extent")).toBeInTheDocument();
+    expect(screen.queryByText("Modelled area")).not.toBeInTheDocument();
+    expect(screen.queryByText("Fixed radius")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("circle with the same area as the routed test isochrone"),
+      screen.queryByText(/routed 10-minute drive isochrone \(test fixture\)/),
     ).not.toBeInTheDocument();
   });
 

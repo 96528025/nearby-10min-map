@@ -51,11 +51,41 @@ interface FitBoundaryProps {
   boundary: BoundaryFeatureCollection;
 }
 
+/**
+ * Bounds of the whole boundary. Leaflet's GeoJSON layer already walks every
+ * Polygon / MultiPolygon component and every ring, so fitting to it never
+ * drops a component the way a `coordinates[0]` read would.
+ */
+export function boundaryBounds(boundary: BoundaryFeatureCollection) {
+  return L.geoJSON(boundary).getBounds();
+}
+
+/**
+ * Remount key for the boundary layer: react-leaflet's GeoJSON does not
+ * re-read `data`, so the key must change whenever a different boundary
+ * arrives. Mode, generation time and the mode's own size figure identify it.
+ */
+export function boundaryLayerKey(
+  boundary: BoundaryFeatureCollection,
+  center: AreaMapCenter,
+) {
+  return [
+    center.lat,
+    center.lon,
+    boundary.boundary_mode ?? "",
+    boundary.metadata.generated_utc,
+    boundary.metadata.isochrone_area_km2 ?? "",
+    boundary.metadata.radius_m ?? "",
+    boundary.metadata.geometry_components ?? "",
+    boundary.metadata.geometry_holes ?? "",
+  ].join(":");
+}
+
 function FitBoundary({ boundary }: FitBoundaryProps) {
   const map = useMap();
 
   useEffect(() => {
-    const bounds = L.geoJSON(boundary).getBounds();
+    const bounds = boundaryBounds(boundary);
     if (!bounds.isValid()) return;
 
     const frame = window.requestAnimationFrame(() => {
@@ -157,12 +187,7 @@ export function AreaMap({
     [facilities.categories],
   );
 
-  const boundaryKey = [
-    center.lat,
-    center.lon,
-    boundary.metadata.radius_m,
-    boundary.metadata.generated_utc,
-  ].join(":");
+  const boundaryKey = boundaryLayerKey(boundary, center);
 
   const toggleCategory = (key: FacilityCategoryKey) => {
     setHiddenCategories((current) => {
@@ -296,7 +321,7 @@ export function AreaMap({
           })}
         </div>
         <div className="map-legend__key">
-          <span><i className="map-key map-key--area" />约 10 分钟驾车范围</span>
+          <span><i className="map-key map-key--area" />约 10 分钟驾车范围（模型估算）</span>
           <span><i className="map-key map-key--center" />中心</span>
           {landmarks.length > 0 ? (
             <span><i className="map-key map-key--landmark" />默认视图地标</span>

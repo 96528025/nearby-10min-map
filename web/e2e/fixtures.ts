@@ -36,13 +36,17 @@ function boundary(
 ): BoundaryFeatureCollection {
   return {
     type: "FeatureCollection",
+    boundary_mode: "routed_isochrone",
     metadata: {
       generated_utc: "2026-08-31T00:00:00Z",
       method:
-        "circle with the same area as the routed 10-minute isochrone (Valhalla, free-flow)",
+        "routed 10-minute drive isochrone (Valhalla, auto costing, free-flow, denoise=0.3), rendered and filtered as returned; no circle approximation",
+      denoise: 0.3,
       center: { lat, lon, name },
-      radius_m: 4_200,
       isochrone_area_km2: 55.42,
+      geometry_type: "Polygon",
+      geometry_components: 1,
+      geometry_holes: 0,
     },
     features: [
       {
@@ -71,7 +75,7 @@ function facilities(total: number, source: string): FacilitiesCollection {
       generated_utc: "2026-08-31T00:00:01Z",
       source,
       filter:
-        "named facilities inside the displayed equal-area circle derived from the routed 10-minute drive isochrone, not the isochrone geometry itself",
+        "named facilities inside the displayed routed 10-minute drive isochrone (Valhalla, free-flow); the displayed geometry itself is the filter",
       overture_release: source.includes("Overture") ? "2026-08-19.0" : undefined,
     },
     categories: Object.fromEntries(
@@ -91,7 +95,7 @@ function facilities(total: number, source: string): FacilitiesCollection {
 
 export const DEFAULT_DATA: DefaultViewData = {
   boundary: boundary("Apple Park", 37.33484, -122.01139),
-  facilities: facilities(833, "Bundled OpenStreetMap fixture"),
+  facilities: facilities(921, "Bundled OpenStreetMap fixture"),
   landmarks: [],
 };
 
@@ -110,7 +114,7 @@ export function areaFixture(status: AreaStatus): AreaResponse {
         : "OpenStreetMap test fixture",
     ),
     total,
-    boundary_mode: "routed_equal_area_circle",
+    boundary_mode: "routed_isochrone",
     warnings:
       status === "osm_only"
         ? ["Overture enrichment failed in this deterministic test fixture."]

@@ -2,10 +2,17 @@
 """Area pipeline for arbitrary attractions.
 
 Same method as the Apple Park build, as reusable functions:
-geocode (Nominatim) -> 10-min drive isochrone (Valhalla) -> equal-area
-circle boundary -> facilities from OSM Overpass (phase 1) -> Overture
-places merge (phase 2, slower). Every facility is point-in-polygon
-verified against the boundary before it is returned.
+geocode (Nominatim) -> 10-min drive isochrone (Valhalla) -> the isochrone
+polygon itself is the boundary -> facilities from OSM Overpass (phase 1) ->
+Overture places merge (phase 2, slower). Display, facility filtering and the
+Overture merge all use the same geometry and the same point-in-polygon
+predicate; `verify_inside` re-applies that predicate as a consistency guard.
+
+The former equal-area circle was retired after the preregistered benchmark
+(reports/accuracy, docs/DECISIONS.md D-2) measured it at 9.1 % macro false
+inclusion and 24.7 % macro false exclusion against Valhalla's own geometry.
+Rendering the isochrone removes that approximation layer; it does not make
+the model's free-flow estimate a real-world drive-time measurement.
 """
 import json
 import math
@@ -23,7 +30,9 @@ from pathlib import Path
 SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from verify import point_in_polygon                     # noqa: E402
+from verify import (M_PER_DEG_LAT, geometry_area_m2,   # noqa: E402
+                    geometry_bbox, isochrone_geometry, m_per_deg_lon,
+                    point_in_polygon, polygon_rings)
 from fetch_facilities import (CATEGORIES, overpass_query_all,  # noqa: E402
                               categorize, element_coords)
 from merge_overture import (map_category, same_place,   # noqa: E402
@@ -48,6 +57,7 @@ SNAP_TOTAL_TIMEOUT_SECONDS = float(
 VALHALLA_ISOCHRONE_TIMEOUT_SECONDS = float(
     os.getenv("VALHALLA_ISOCHRONE_TIMEOUT_SECONDS", "30")
 )
+ISOCHRONE_DENOISE = 0.3
 OVERTURE_CONNECT_TIMEOUT_SECONDS = int(
     os.getenv("OVERTURE_CONNECT_TIMEOUT_SECONDS", "15")
 )
@@ -58,22 +68,23 @@ OVERTURE_PROCESS_TIMEOUT_SECONDS = float(
     os.getenv("OVERTURE_PROCESS_TIMEOUT_SECONDS", "600")
 )
 NOMINAL_RADIUS_M = float(os.getenv("NOMINAL_RADIUS_M", "3000"))
-M_PER_DEG_LAT = 111000.0
+FREE_FLOW_NOTE = (
+    "free-flow / speed-limit based; no live or historical traffic data"
+)
 
-ROUTED_BOUNDARY_MODE = "routed_equal_area_circle"
+ROUTED_BOUNDARY_MODE = "routed_isochrone"
 NOMINAL_BOUNDARY_MODE = "nominal_radius_circle"
+# Retired after the preregistered benchmark (docs/DECISIONS.md D-2). Cache
+# entries carrying it hold circle geometry and are recomputed, never served.
+RETIRED_BOUNDARY_MODES = frozenset({"routed_equal_area_circle"})
 ROUTED_FACILITY_FILTER = (
-    "named facilities inside the displayed equal-area circle derived from "
-    "the routed 10-minute drive isochrone, not the isochrone geometry itself"
+    "named facilities inside the displayed routed 10-minute drive isochrone "
+    "(Valhalla, free-flow); the displayed geometry itself is the filter"
 )
 NOMINAL_FACILITY_FILTER = (
     "named facilities inside the displayed fixed nominal-radius circle; "
     "no road-network input was used to derive this boundary"
 )
-
-
-def m_per_deg_lon(lat):
-    return 111320.0 * math.cos(math.radians(lat))
 
 
 def http_json(url, timeout=60):
@@ -231,7 +242,8 @@ def snap_to_drivable(lat, lon):
 
 def fetch_isochrone(lat, lon, minutes=10):
     req = {"locations": [{"lat": lat, "lon": lon}], "costing": "auto",
-           "contours": [{"time": minutes}], "polygons": True, "denoise": 0.3}
+           "contours": [{"time": minutes}], "polygons": True,
+           "denoise": ISOCHRONE_DENOISE}
     url = f"{VALHALLA}/isochrone?json=" + urllib.parse.quote(json.dumps(req))
     iso = http_json(url, timeout=VALHALLA_ISOCHRONE_TIMEOUT_SECONDS)
     if not iso.get("features"):
@@ -239,31 +251,48 @@ def fetch_isochrone(lat, lon, minutes=10):
     return iso
 
 
-def boundary_from_isochrone(iso, lat, lon, name):
-    m_lon = m_per_deg_lon(lat)
-    ring = iso["features"][0]["geometry"]["coordinates"][0]
-    pts = [((rlon - lon) * m_lon, (rlat - lat) * M_PER_DEG_LAT)
-           for rlon, rlat in ring]
-    area = 0.0
-    for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
-        area += x1 * y2 - x2 * y1
-    area = abs(area) / 2
-    radius = math.sqrt(area / math.pi)
+def boundary_from_isochrone(
+        iso, lat, lon, name, minutes=10, denoise=ISOCHRONE_DENOISE):
+    """Return the routed isochrone itself as the boundary of record.
+
+    The geometry is Valhalla's response collapsed to one Polygon or
+    MultiPolygon with every component and hole preserved (nothing reads
+    ``coordinates[0]``). The same geometry object is displayed, used as the
+    OSM / Overture filter, and re-checked by `verify_inside`.
+    """
+    geometry = isochrone_geometry(iso)
+    rings = polygon_rings(geometry)
+    area = geometry_area_m2(geometry, lat, lon)
 
     return {
         "type": "FeatureCollection",
+        "boundary_mode": ROUTED_BOUNDARY_MODE,
         "metadata": {
             "generated_utc": _now(),
-            "method": ("circle with the same area as the routed 10-minute "
-                       "isochrone (Valhalla, free-flow)"),
+            "method": (
+                f"routed {minutes}-minute drive isochrone (Valhalla, auto "
+                f"costing, free-flow, denoise={denoise:g}), rendered and "
+                "filtered as returned; "
+                "no circle approximation"
+            ),
             "center": {"lat": lat, "lon": lon, "name": name},
-            "radius_m": round(radius),
             "isochrone_area_km2": round(area / 1e6, 2),
+            "geometry_type": geometry["type"],
+            "geometry_components": len(rings),
+            "geometry_holes": sum(len(r) - 1 for r in rings),
+            "contour_minutes": minutes,
+            "costing": "auto",
+            "denoise": denoise,
+            "traffic": FREE_FLOW_NOTE,
+            "source": f"Valhalla ({VALHALLA})",
         },
         "features": [{
             "type": "Feature",
-            "properties": {"contour": "approx 10 min drive"},
-            "geometry": _circle_geometry(lat, lon, radius),
+            "properties": {
+                "contour": f"approx {minutes} min drive",
+                "contour_minutes": minutes,
+            },
+            "geometry": geometry,
         }],
     }
 
@@ -284,6 +313,7 @@ def boundary_from_nominal_radius(lat, lon, name, radius_m=NOMINAL_RADIUS_M):
     """Return an explicitly non-routed fixed-radius fallback boundary."""
     return {
         "type": "FeatureCollection",
+        "boundary_mode": NOMINAL_BOUNDARY_MODE,
         "metadata": {
             "generated_utc": _now(),
             "method": (
@@ -307,10 +337,18 @@ def _now():
 
 
 def _bbox(geometry):
-    ring = geometry["coordinates"][0]
-    lons = [p[0] for p in ring]
-    lats = [p[1] for p in ring]
-    return (min(lats), min(lons), max(lats), max(lons))   # s, w, n, e
+    """Upstream query envelope: covers every component and hole (s, w, n, e)."""
+    return geometry_bbox(geometry)
+
+
+def boundary_geometry(boundary):
+    """The single geometry a boundary FeatureCollection displays and filters with."""
+    features = boundary["features"]
+    if len(features) != 1:
+        raise ValueError(
+            f"boundary must carry exactly one feature, got {len(features)}"
+        )
+    return features[0]["geometry"]
 
 
 def facility_filter_for(boundary_mode):
@@ -490,7 +528,13 @@ def merge_overture(fac, geometry):
 
 
 def verify_inside(fac, geometry):
-    """Hard gate: every facility must be inside the boundary."""
+    """Consistency guard: every facility must satisfy the display predicate.
+
+    This re-applies the same `point_in_polygon` over the same geometry the
+    facilities were filtered with, so it can only catch a code path that
+    bypassed the filter. It is not evidence of accuracy of any kind (see
+    docs/DECISIONS.md D-4).
+    """
     bad = [i["name"] for c in fac["categories"].values() for i in c["items"]
            if not point_in_polygon(i["lon"], i["lat"], geometry)]
     if bad:

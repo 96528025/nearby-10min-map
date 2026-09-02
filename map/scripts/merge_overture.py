@@ -5,7 +5,8 @@ Reads the OSM-based facilities.json written by fetch_facilities.py plus a raw
 Overture places GeoJSON (download with:
   overturemaps download --bbox=W,S,E,N -f geojson --type=place -o places.geojson
 ), maps Overture's fine-grained categories onto our visitor categories, keeps
-only places inside the circular boundary (data/boundary.json) with
+only places inside the boundary of record (data/boundary.json, the routed
+isochrone; same point-in-polygon predicate as the rest of the pipeline) with
 confidence >= MIN_CONFIDENCE, and adds whatever OSM didn't already have
 (same-name-nearby entries are considered the same place; the OSM record wins).
 

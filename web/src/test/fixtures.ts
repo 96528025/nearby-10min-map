@@ -74,11 +74,20 @@ export function areaResponse(
     lon: place.lon,
     boundary: {
       type: "FeatureCollection",
+      boundary_mode: options.boundaryMode ?? "routed_isochrone",
       metadata: {
         generated_utc: "2026-08-30T00:00:00Z",
-        method: "circle with the same area as the routed test isochrone",
+        method:
+          "routed 10-minute drive isochrone (test fixture, denoise=0.3), rendered as returned",
+        denoise: 0.3,
         center: { lat: place.lat, lon: place.lon, name: place.name },
+        // Both size figures are present on purpose: the UI must show the one
+        // its declared mode supports and never infer a mode from metadata.
         radius_m: 5_000,
+        isochrone_area_km2: 25.76,
+        geometry_type: "Polygon",
+        geometry_components: 1,
+        geometry_holes: 0,
       },
       features: [
         {
@@ -103,15 +112,14 @@ export function areaResponse(
     total,
     enrich_error:
       options.enrichError ?? (status === "osm_only" ? true : undefined),
-    boundary_mode:
-      options.boundaryMode ?? "routed_equal_area_circle",
+    boundary_mode: options.boundaryMode ?? "routed_isochrone",
     warnings: options.warnings,
   };
 }
 
 export function defaultViewData(): DefaultViewData {
   const applePark = candidate("Apple Park", 37.33484, -122.01139);
-  const response = areaResponse("complete", applePark, 833);
+  const response = areaResponse("complete", applePark, 921);
   return {
     boundary: response.boundary,
     facilities: response.facilities,
