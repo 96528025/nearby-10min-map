@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Fetch visitor-relevant facilities inside the circular boundary.
+"""Fetch visitor-relevant facilities inside the boundary of record.
 
-Queries the OSM Overpass API for the boundary's bounding box (data/
-boundary.json, the equal-area circle derived from the 10-minute isochrone
-by make_boundary.py), keeps only named facilities whose coordinates fall
-inside it (point-in-polygon, same test as verify.py), and writes
-data/facilities.json grouped by category. Residential features are never
-queried — the tool is for visitors, not residents.
+Queries the OSM Overpass API over the bounding box of data/boundary.json (the
+routed 10-minute isochrone written by make_boundary.py; the envelope covers
+every component and hole), keeps only named facilities whose coordinates fall
+inside the geometry (point-in-polygon, the same predicate as verify.py and the
+runtime pipeline), and writes data/facilities.json grouped by category.
+Residential features are never queried — the tool is for visitors, not
+residents.
 """
 import json
 import re
@@ -18,7 +19,7 @@ import urllib.request
 import urllib.parse
 from pathlib import Path
 
-from verify import point_in_polygon
+from verify import geometry_bbox, point_in_polygon
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 OVERPASS = "https://overpass-api.de/api/interpreter"
@@ -42,11 +43,11 @@ OVERPASS_HTTP_TIMEOUT_SECONDS = float(
     os.getenv("OVERPASS_HTTP_TIMEOUT_SECONDS", "30")
 )
 
-ROUTED_BOUNDARY_MODE = "routed_equal_area_circle"
+ROUTED_BOUNDARY_MODE = "routed_isochrone"
 NOMINAL_BOUNDARY_MODE = "nominal_radius_circle"
 ROUTED_FACILITY_FILTER = (
-    "named facilities inside the displayed equal-area circle derived from "
-    "the routed 10-minute drive isochrone, not the isochrone geometry itself"
+    "named facilities inside the displayed routed 10-minute drive isochrone "
+    "(Valhalla, free-flow); the displayed geometry itself is the filter"
 )
 NOMINAL_FACILITY_FILTER = (
     "named facilities inside the displayed fixed nominal-radius circle; "
@@ -168,12 +169,9 @@ def facility_filter_for(boundary_mode):
 
 
 def main(boundary_mode=ROUTED_BOUNDARY_MODE):
-    iso = json.loads((DATA / "boundary.json").read_text())
-    geometry = iso["features"][0]["geometry"]
-    ring = geometry["coordinates"][0]
-    lons = [p[0] for p in ring]
-    lats = [p[1] for p in ring]
-    bbox = (min(lats), min(lons), max(lats), max(lons))
+    boundary = json.loads((DATA / "boundary.json").read_text())
+    geometry = boundary["features"][0]["geometry"]
+    bbox = geometry_bbox(geometry)   # covers every component and hole
 
     out = {
         "metadata": {
@@ -260,7 +258,7 @@ if __name__ == "__main__":
         "--boundary-mode",
         choices=(ROUTED_BOUNDARY_MODE, NOMINAL_BOUNDARY_MODE),
         default=ROUTED_BOUNDARY_MODE,
-        help="Provenance of the displayed circular boundary being filtered",
+        help="Provenance of the displayed boundary being filtered",
     )
     args = parser.parse_args()
     main(args.boundary_mode)

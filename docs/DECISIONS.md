@@ -160,6 +160,23 @@ the model-vs-reality gap entirely untouched. Copy must continue to say
 "approximately 10 minutes", must continue to disclose free-flow assumptions,
 and must not be upgraded to a stronger claim on the strength of this decision.
 
+### Implementation status (2026-09-02)
+
+Implemented in this change. `pipeline.boundary_from_isochrone` now
+returns Valhalla's geometry as returned (all components, all holes; nothing
+reads `coordinates[0]`), `boundary_mode="routed_isochrone"` replaces the
+retired `routed_equal_area_circle`, the OSM and Overture query envelopes cover
+the full geometry, and display, filtering and the consistency guard share one
+geometry object. The bundled Apple Park path was regenerated from the
+recorded `map/data/isochrone.json` through the same code, with facilities
+rebuilt offline from this run's frozen POI universe. Cache entries carrying
+the retired mode are recomputed rather than served. The nominal fallback is
+unchanged and remains the only mode that reports a radius.
+
+The only claim this supports is the one above: the product no longer adds a
+circle-vs-isochrone approximation on top of the model. Its 0 % / 0 % score
+here is definitional (D-0) and is not an accuracy figure.
+
 **Rejected — dual mode (circle by default, isochrone on toggle).** Keeps the
 failing representation as the default and doubles the surface to explain.
 Reconsider only if user research shows the jagged polygon actively confuses
@@ -276,7 +293,9 @@ measured area understatement was **0.000 % at all five**. The defect is
 **latent, not active** at this sample — which is not evidence that the code is
 correct, only that this sample did not reach it. Recorded, not fixed, because
 fixing it changes shipped boundary geometry and belongs with D-2's
-implementation.
+implementation. *Status (implemented 2026-09-02): fixed together with D-2;
+the full geometry is now kept and MultiPolygon / hole handling is pinned by
+`tests/test_isochrone_boundary.py`.*
 
 **`norm_name` deletes accents instead of folding them**, so "Café Rêve" and
 "Cafe Reve" do not cross-source dedup. Pinned by a test as a known limitation;

@@ -3,8 +3,9 @@
 
 Run: uvicorn app:app --port 8642 --app-dir map/server
 
-The first ``/api/area`` response contains the routed boundary (or an explicit
-fixed-radius fallback) plus OSM facilities. Optional Overture enrichment runs
+The first ``/api/area`` response contains the routed isochrone boundary (the
+Valhalla polygon itself, or an explicit fixed-radius fallback) plus OSM
+facilities filtered with that same geometry. Optional Overture enrichment runs
 in a background thread. Its terminal states are ``complete`` and ``osm_only``;
 clients poll the same URL while the response is ``enriching``.
 """
@@ -45,6 +46,17 @@ OSM_LOOKUP_WARNING = (
     "OSM facility lookup is currently unavailable; the boundary is usable, "
     "but facility coverage is incomplete."
 )
+STATIC_JSON_CACHE_CONTROL = "no-cache, must-revalidate"
+
+
+class RevalidatingJsonStaticFiles(StaticFiles):
+    """Serve data JSON with validation while leaving other assets untouched."""
+
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        if path.lower().endswith(".json"):
+            response.headers["Cache-Control"] = STATIC_JSON_CACHE_CONTROL
+        return response
 
 
 def _env_enabled(name: str, default: bool) -> bool:
@@ -103,11 +115,24 @@ def _append_warning(area: dict, warning: str) -> None:
         warnings.append(warning)
 
 
-def _normalise_cached_area(area: dict) -> dict:
-    """Add the Stage 3 optional fields to legacy routed cache entries."""
-    boundary_mode = area.setdefault(
-        "boundary_mode", pipeline.ROUTED_BOUNDARY_MODE
-    )
+CURRENT_BOUNDARY_MODES = frozenset({
+    pipeline.ROUTED_BOUNDARY_MODE,
+    pipeline.NOMINAL_BOUNDARY_MODE,
+})
+
+
+def _normalise_cached_area(area: dict) -> dict | None:
+    """Return a servable cache entry, or None when it predates the isochrone.
+
+    Entries written before the true-isochrone migration carry the retired
+    ``routed_equal_area_circle`` mode (or no mode at all) and hold circle
+    geometry. Serving one would label a circle as a routed isochrone, so such
+    entries are treated as a cache miss and recomputed; the cache is an
+    optimisation, not durable state.
+    """
+    boundary_mode = area.get("boundary_mode")
+    if boundary_mode not in CURRENT_BOUNDARY_MODES:
+        return None
     area.setdefault("warnings", [])
     metadata = area.get("facilities", {}).get("metadata")
     if isinstance(metadata, dict):
@@ -134,13 +159,9 @@ def api_geocode(q: str, bias_lat: float | None = None,
 
 def _enrich_async(slug: str, area: dict):
     try:
-        fac = pipeline.merge_overture(
-            area["facilities"],
-            area["boundary"]["features"][0]["geometry"],
-        )
-        total = pipeline.verify_inside(
-            fac, area["boundary"]["features"][0]["geometry"]
-        )
+        geometry = pipeline.boundary_geometry(area["boundary"])
+        fac = pipeline.merge_overture(area["facilities"], geometry)
+        total = pipeline.verify_inside(fac, geometry)
         area["facilities"] = fac
         area["status"] = "complete"
         area["total"] = total
@@ -192,7 +213,10 @@ def api_area(lat: float, lon: float, name: str = ""):
     slug = slug_for(lat, lon)
     area = _read_cached_area(cache_path(slug))
     if area is not None:
+        # A retired-mode entry comes back as None and falls through to a
+        # fresh computation that overwrites it.
         area = _normalise_cached_area(area)
+    if area is not None:
         if area.get("status") == "enriching":
             if OVERTURE_ENRICHMENT_ENABLED:
                 # A prior worker can disappear mid-enrichment on Render's
@@ -227,7 +251,9 @@ def api_area(lat: float, lon: float, name: str = ""):
             }
             warnings.append(NOMINAL_BOUNDARY_WARNING)
 
-        geometry = boundary["features"][0]["geometry"]
+        # One geometry object serves display, the OSM filter, the Overture
+        # merge and the consistency guard.
+        geometry = pipeline.boundary_geometry(boundary)
         try:
             facilities = pipeline.osm_facilities(
                 geometry, boundary_mode=boundary_mode
@@ -266,7 +292,7 @@ def api_area(lat: float, lon: float, name: str = ""):
 
 
 # API routes and /data must be registered before this HTML catch-all.
-app.mount("/data", StaticFiles(directory=DATA_DIR), name="data")
+app.mount("/data", RevalidatingJsonStaticFiles(directory=DATA_DIR), name="data")
 app.mount(
     "/",
     StaticFiles(directory=WEB_DIST, html=True, check_dir=False),

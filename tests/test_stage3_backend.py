@@ -9,6 +9,7 @@ import pytest
 
 import app as server_app
 import fetch_facilities
+import make_boundary
 import pipeline
 
 
@@ -113,7 +114,8 @@ def test_overpass_failure_returns_boundary_and_explicit_empty_facilities(
         pipeline,
         "fetch_isochrone",
         lambda lat, lon: {
-            "features": [{"geometry": {"coordinates": ring}}]
+            "features": [{"geometry": {"type": "Polygon",
+                                       "coordinates": ring}}]
         },
     )
     monkeypatch.setattr(
@@ -187,6 +189,68 @@ def test_http_client_sends_contact_user_agent_and_timeout(monkeypatch):
         "timeout": 7,
     }
     assert "github.com/96528025/nearby-10min-map" in pipeline.USER_AGENT
+
+
+def test_isochrone_request_and_boundary_report_one_denoise_value(monkeypatch):
+    captured = {}
+    geometry = {
+        "type": "Polygon",
+        "coordinates": [[
+            [LON - 0.01, LAT - 0.01],
+            [LON + 0.01, LAT - 0.01],
+            [LON + 0.01, LAT + 0.01],
+            [LON - 0.01, LAT + 0.01],
+            [LON - 0.01, LAT - 0.01],
+        ]],
+    }
+
+    def fake_http_json(url, timeout):
+        captured["request"] = json.loads(
+            pipeline.urllib.parse.parse_qs(
+                pipeline.urllib.parse.urlparse(url).query
+            )["json"][0]
+        )
+        captured["timeout"] = timeout
+        return {"features": [{"geometry": geometry}]}
+
+    monkeypatch.setattr(pipeline, "http_json", fake_http_json)
+
+    isochrone = pipeline.fetch_isochrone(LAT, LON)
+    boundary = pipeline.boundary_from_isochrone(
+        isochrone, LAT, LON, "Apple Park"
+    )
+
+    assert captured["request"]["denoise"] == pipeline.ISOCHRONE_DENOISE
+    assert captured["timeout"] == pipeline.VALHALLA_ISOCHRONE_TIMEOUT_SECONDS
+    assert boundary["metadata"]["denoise"] == pipeline.ISOCHRONE_DENOISE
+    assert "denoise=0.3" in boundary["metadata"]["method"]
+
+
+def test_recorded_isochrone_denoise_is_propagated_to_boundary():
+    source_denoise = 0.45
+    isochrone = {
+        "metadata": {
+            "contour_minutes": 10,
+            "denoise": source_denoise,
+        },
+        "features": [{
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [[
+                    [LON - 0.01, LAT - 0.01],
+                    [LON + 0.01, LAT - 0.01],
+                    [LON + 0.01, LAT + 0.01],
+                    [LON - 0.01, LAT + 0.01],
+                    [LON - 0.01, LAT - 0.01],
+                ]],
+            },
+        }],
+    }
+
+    boundary = make_boundary.build_boundary(isochrone)
+
+    assert boundary["metadata"]["denoise"] == source_denoise
+    assert "denoise=0.45" in boundary["metadata"]["method"]
 
 
 def test_geocode_raises_only_when_both_sources_fail(monkeypatch):
@@ -354,3 +418,35 @@ def test_data_and_frontend_mounts_follow_api_routes():
     frontend_mount = routes[names.index("frontend")]
     assert Path(data_mount.app.directory) == server_app.DATA_DIR
     assert Path(frontend_mount.app.directory) == server_app.WEB_DIST
+    assert isinstance(data_mount.app, server_app.RevalidatingJsonStaticFiles)
+    assert type(frontend_mount.app) is server_app.StaticFiles
+
+
+def test_data_json_revalidates_without_changing_other_static_cache_policy(
+        monkeypatch, tmp_path):
+    class Response:
+        def __init__(self):
+            self.headers = {}
+
+    async def static_response(_self, _path, _scope):
+        return Response()
+
+    monkeypatch.setattr(
+        server_app.StaticFiles, "get_response", static_response
+    )
+    static = server_app.RevalidatingJsonStaticFiles(directory=tmp_path)
+
+    def finish(coroutine):
+        try:
+            coroutine.send(None)
+        except StopIteration as complete:
+            return complete.value
+        raise AssertionError("stubbed static response unexpectedly suspended")
+
+    json_response = finish(static.get_response("boundary.json", {}))
+    text_response = finish(static.get_response("note.txt", {}))
+
+    assert json_response.headers["Cache-Control"] == (
+        server_app.STATIC_JSON_CACHE_CONTROL
+    )
+    assert "Cache-Control" not in text_response.headers

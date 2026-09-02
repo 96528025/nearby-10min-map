@@ -90,12 +90,12 @@ function boundaryProvenance(
   mode: BoundaryMode | undefined,
 ): BoundaryProvenance {
   switch (mode) {
-    case "routed_equal_area_circle":
+    case "routed_isochrone":
       return {
-        label: "Routed equal-area circle",
+        label: "Routed isochrone (Valhalla, free-flow)",
         description:
-          "The radius comes from the area of a routed, free-flow 10-minute drive isochrone; the displayed geometry is an equal-area circle.",
-        calculation: "Road-network derived",
+          "The displayed shape is the approximately 10-minute driving isochrone returned by the Valhalla routing model, rendered as returned (every component and hole) and used unchanged to filter facilities. It is a free-flow estimate from posted speed limits with no live or historical traffic. Showing the isochrone removes the earlier circle approximation; it does not establish real-world drive-time accuracy.",
+        calculation: "Routed isochrone",
       };
     case "nominal_radius_circle":
       return {
@@ -108,10 +108,64 @@ function boundaryProvenance(
       return {
         label: "Boundary mode not reported",
         description:
-          "This bundled or legacy response does not include boundary_mode, so the client does not infer routed or nominal provenance.",
+          "This response or bundled file does not declare boundary_mode, so the client does not infer routed or nominal provenance from the geometry.",
         calculation: "Mode not reported",
       };
   }
+}
+
+interface BoundaryMetric {
+  label: string;
+  value: string;
+}
+
+/**
+ * The one size figure the declared mode can vouch for. A routed isochrone has
+ * no radius, so its modelled area is shown; only the nominal fallback is a
+ * fixed circle with a radius. Nothing is derived from the geometry's shape.
+ */
+function boundaryMetric(area: DisplayArea): BoundaryMetric {
+  const { metadata } = area.boundary;
+  if (area.boundaryMode === "nominal_radius_circle") {
+    return {
+      label: "Fixed radius",
+      value:
+        metadata.radius_m === undefined
+          ? "Not reported"
+          : `${(metadata.radius_m / 1_000).toFixed(1)} km`,
+    };
+  }
+  if (
+    area.boundaryMode === "routed_isochrone" &&
+    metadata.isochrone_area_km2 !== undefined
+  ) {
+    return {
+      label: "Modelled area",
+      value: `${metadata.isochrone_area_km2.toFixed(1)} km²`,
+    };
+  }
+  return { label: "Boundary extent", value: "Not reported" };
+}
+
+function geometrySummary(area: DisplayArea): string | null {
+  const { metadata } = area.boundary;
+  if (area.boundaryMode !== "routed_isochrone" || !metadata.geometry_type) {
+    return null;
+  }
+  const components = metadata.geometry_components ?? 1;
+  const holes = metadata.geometry_holes ?? 0;
+  return `${metadata.geometry_type} · ${components} component${components === 1 ? "" : "s"} · ${holes} hole${holes === 1 ? "" : "s"}`;
+}
+
+function routingOriginNote(
+  area: DisplayArea,
+  isBundledDefault: boolean,
+): string | null {
+  if (area.boundaryMode !== "routed_isochrone") return null;
+
+  return isBundledDefault
+    ? "Origin: This bundled Apple Park snapshot uses a recorded unsnapped point. Searches may snap to the nearest public drivable road, so the same place can produce a substantially different modelled area."
+    : "Origin: Searches attempt to snap to the nearest public drivable road; if none is found, they keep the requested point. The bundled Apple Park snapshot uses a recorded unsnapped point, so the same place can produce a substantially different modelled area.";
 }
 
 function displayedWarnings(area: DisplayArea): string[] {
@@ -309,6 +363,8 @@ export default function App() {
         facilities,
         landmarks,
         total: facilityTotal(facilities),
+        // Declared by boundary.json itself; never inferred from the shape.
+        boundaryMode: boundary.boundary_mode,
         warnings: [],
       });
       dispatch({ type: "DEFAULT_READY" });
@@ -603,11 +659,13 @@ export default function App() {
     defaultLoading,
     areaWakeNotice,
   );
-  const radiusKm = displayArea
-    ? (displayArea.boundary.metadata.radius_m / 1_000).toFixed(1)
-    : "—";
+  const metric = displayArea ? boundaryMetric(displayArea) : null;
+  const geometry = displayArea ? geometrySummary(displayArea) : null;
   const provenance = displayArea
     ? boundaryProvenance(displayArea.boundaryMode)
+    : null;
+  const originNote = displayArea
+    ? routingOriginNote(displayArea, dynamicArea === null)
     : null;
   const warnings = displayArea ? displayedWarnings(displayArea) : [];
   const busy =
@@ -697,8 +755,8 @@ export default function App() {
             </div>
             <dl className="area-stats">
               <div>
-                <dt>Boundary radius</dt>
-                <dd>{radiusKm} km</dd>
+                <dt>{metric?.label ?? "Boundary extent"}</dt>
+                <dd>{metric?.value ?? "—"}</dd>
               </div>
               <div>
                 <dt>Facilities</dt>
@@ -734,6 +792,18 @@ export default function App() {
                 <strong>{provenance?.label}</strong>
                 <br />
                 {provenance?.description}
+                {geometry ? (
+                  <>
+                    <br />
+                    Geometry: {geometry}
+                  </>
+                ) : null}
+                {originNote ? (
+                  <>
+                    <br />
+                    {originNote}
+                  </>
+                ) : null}
               </p>
             </div>
             <div>

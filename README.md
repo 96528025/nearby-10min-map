@@ -22,7 +22,10 @@ free-flow road costs and does not include real-time traffic.
 
 | Wake / slow-request notice | Phase-one map available | Enrichment complete |
 |---|---|---|
-| ![The public app explaining that its free Render instance might be waking](docs/assets/public-query-waking.webp) | ![A routed equal-area circle and OSM facilities shown while enrichment runs](docs/assets/public-query-enriching.webp) | ![The selected destination after facility enrichment completes](docs/assets/public-query-complete.webp) |
+| ![The public app explaining that its free Render instance might be waking](docs/assets/public-query-waking.webp) | ![A routed boundary and OSM facilities shown while enrichment runs; this screenshot predates the isochrone migration and still shows the retired circle](docs/assets/public-query-enriching.webp) | ![The selected destination after facility enrichment completes](docs/assets/public-query-complete.webp) |
+
+The screenshots were taken before the boundary migration described under
+"What the boundary means" and still show the retired equal-area circle.
 
 Once the app is served, the bundled Apple Park view loads from `/data/*.json`
 without calling a public geocoding, routing, or POI upstream API. A submitted
@@ -38,9 +41,10 @@ search then exercises the complete API flow.
   deadlines prevent stale searches and polls from overwriting newer results.
 - **Resilient two-phase API:** FastAPI returns a usable OSM map first, then
   enriches it with Overture Places in a background single-flight operation.
-- **Honest geospatial provenance:** the API explicitly distinguishes a circle
-  derived from a routed isochrone from a fixed nominal-radius fallback. The UI
-  never infers provenance from the fact that both are circles.
+- **Honest geospatial provenance:** the API explicitly distinguishes the
+  routed Valhalla isochrone (rendered as returned) from a fixed nominal-radius
+  fallback. The UI never infers provenance from the geometry's shape; the
+  bundled snapshot declares its own `boundary_mode`.
 - **Public-service safeguards:** submitted searches only, aggregate Nominatim
   rate limiting, cache-before-limit lookup, request coalescing, identifiable
   backend `User-Agent`, bounded upstream calls, and no tile prefetching.
@@ -61,8 +65,8 @@ Browser
     ├── /api/geocode    cache → single-flight → 1 req/s limiter
     │                    → Photon + Nominatim
     ├── /api/area       four-decimal file-cache key
-    │   ├── phase 1     attempted road snap → Valhalla isochrone → display circle
-    │   │               → OSM Overpass facilities
+    │   ├── phase 1     attempted road snap → Valhalla isochrone (rendered as
+    │   │               returned) → OSM Overpass facilities filtered with it
     │   └── phase 2     background Overture merge → verify → atomic cache write
     ├── /data           committed static snapshot
     └── /               web/dist HTML catch-all, mounted last
@@ -113,21 +117,41 @@ may still populate the final result.
 
 ## What the boundary means
 
-The normal result is intentionally a circle:
+The normal result is the routed isochrone itself:
 
 1. The API attempts to snap the selected point to a drivable public road. If
    Valhalla locate is unavailable or finds no suitable road, it retains the
    user-selected coordinates for the routed isochrone request.
 2. Valhalla computes a ten-minute `auto` isochrone under free-flow costs.
-3. The API measures that routed geometry and displays a circle with the same
-   area: `boundary_mode="routed_equal_area_circle"`.
+3. The API returns that geometry as returned — every `Polygon` /
+   `MultiPolygon` component and every interior hole — as the displayed
+   boundary: `boundary_mode="routed_isochrone"`. The same geometry object
+   filters OSM facilities, filters the Overture merge, and is re-checked by
+   the consistency guard; the upstream POI queries use its full bounding box.
 
-The circle is therefore a simplified visualization of the routed area's size,
-not the original isochrone geometry. If Valhalla is unavailable, the API uses a
-fixed radius with no road-network input,
-`boundary_mode="nominal_radius_circle"`, and returns a user-displayable
-warning. Facility-filter provenance changes with the boundary mode instead of
-claiming that a nominal circle came from routing.
+Both bundled and live isochrone requests use Valhalla `denoise=0.3`.
+"As returned" therefore means the complete geometry in Valhalla's
+post-denoise response, not every smaller reachable fragment that Valhalla may
+remove before returning that response.
+
+The isochrone is a **model estimate** of the free-flow, approximately
+ten-minute driving range from posted speed limits, with no live or historical
+traffic. Until this migration the API displayed an equal-area circle derived
+from the isochrone; the preregistered benchmark
+(`reports/accuracy/BENCHMARK_PLAN.md`, run
+`20260729T082833Z_cfge03df09d_pland796c05b`) measured that circle at 9.1 %
+macro false inclusion and 24.7 % macro false exclusion against Valhalla's own
+geometry, failing its frozen acceptance rule, so the circle approximation was
+retired on both the bundled and the live path (`docs/DECISIONS.md`, D-2).
+Rendering the isochrone removes that model-internal approximation layer. It
+does not validate real-world drive time, which would need GPS traces,
+historical traffic data or field sampling that this project does not have.
+
+If Valhalla is unavailable, the API uses a fixed radius with no road-network
+input, `boundary_mode="nominal_radius_circle"`, and returns a user-displayable
+warning; only this fallback reports a radius. Facility-filter provenance
+changes with the boundary mode instead of claiming that a nominal circle came
+from routing.
 
 Point-in-polygon checks confirm that the returned facilities satisfy the same
 boundary predicate used to filter them. They do **not** independently validate
@@ -202,7 +226,11 @@ Library cover the state machine, every terminal UI state, timeouts, retries,
 request cancellation, unmount cleanup, and stale-response races. Playwright
 intercepts `/api/geocode` and `/api/area` for both
 `enriching → complete` and `enriching → osm_only`; CI never depends on a public
-upstream's availability or usage allowance.
+upstream's availability or usage allowance. Five small, provenance-bearing
+Valhalla response fixtures replay the benchmark locations in clean CI, while a
+Shapely cross-check independently verifies the production boundary predicate
+over all 12,600 frozen Apple Park POI candidates. These are dataset-consistency
+checks, not claims about real-world drive time or POI quality.
 
 GitHub Actions runs Python 3.11 tests plus the Node 24 typecheck, component
 tests, production build, and browser tests. Render's Blueprint uses
@@ -248,14 +276,17 @@ result. The production Overture release is pinned to `2026-08-19.0`.
   updated together so local and deployed behavior remain reproducible. If the
   release that is actually in use disappears or becomes unavailable,
   enrichment can end as `osm_only` or remain incomplete.
-- **The boundary is an approximation:** the routed mode displays an equal-area
-  circle, not the actual isochrone outline. The nominal mode is a fixed-radius
+- **The boundary is a model estimate:** the routed mode displays Valhalla's
+  free-flow isochrone as returned. That removes the former circle
+  approximation but does not make the ten-minute range a measured quantity;
+  road snapping alone can change the modelled area several-fold at some
+  destinations (`docs/DECISIONS.md`, D-6). The nominal mode is a fixed-radius
   fallback with no road-network input and must always remain visibly labeled.
 - **No traffic model:** Valhalla uses free-flow costs; rush hour, closures,
   weather, parking, and time spent leaving a campus or airport are absent.
 - **Facility quality is not independently verified:** the committed Apple Park
-  snapshot contains 833 facilities, but the repository has no record of manual
-  review for all 833. Its six-landmark check only verifies containment.
+  snapshot contains 921 facilities, but the repository has no record of manual
+  review for all 921. Its six-landmark check only verifies containment.
 - **Demo-scale service:** unauthenticated public endpoints and community
   upstreams are suitable for a portfolio deployment, not high-volume
   commercial traffic. A production service would use owned or contracted
@@ -276,9 +307,25 @@ measurements into permanent product claims:
 - [`docs/ATTRIBUTION_AUDIT.md`](docs/ATTRIBUTION_AUDIT.md) records OSM,
   Overture, and Foursquare attribution findings and remediation.
 
-The committed Apple Park snapshot contains 833 facilities across the eight
-categories (`547/50/60/29/61/54/2/30`). Its historical Overture release was
-not recorded, so it is reported as **unknown** rather than inferred later.
+The committed Apple Park snapshot contains 921 facilities across the eight
+categories (`633/44/56/28/69/61/1/29`). It is rebuilt offline by
+`map/scripts/facilities_from_frozen_universe.py` from the benchmark run of
+record's frozen POI universe (Overture release `2026-07-22.0`, Overpass query
+hash and dedup rules recorded in `facilities.json.metadata.provenance`),
+filtered with the same boundary predicate the live API uses. The earlier
+snapshot was fetched over the retired circle's bounding box, which the true
+isochrone extends beyond by up to about 3.9 km, so it could not simply be
+re-filtered. Compared with the pre-migration snapshot at commit `2b9289f`, 70
+previously displayed records that fall inside the new boundary have no exact
+`(category, name)` match in the regenerated snapshot. This is a label-level
+reconciliation, not a count of physical facilities removed: the committed
+artifacts do not classify how many reflect source-version drift, renaming,
+deduplication, or an actual disappearance. The frozen universe stores no OSM
+tags; `kind`, `addr` and the OSM id were carried over from the earlier snapshot
+where the same named place lies within 150 m and are otherwise null. The
+bundled boundary itself is the recorded `map/data/isochrone.json` (unsnapped
+ring-building origin, 2026-07-12), written through the live
+`pipeline.boundary_from_isochrone` by `map/scripts/make_boundary.py`.
 
 ## Data sources, policies, and license
 

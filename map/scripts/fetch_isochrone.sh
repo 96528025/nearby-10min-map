@@ -19,6 +19,7 @@ d['metadata'] = {
     'source': 'Valhalla (FOSSGIS public server, valhalla1.openstreetmap.de)',
     'costing': 'auto',
     'contour_minutes': 10,
+    'denoise': 0.3,
     'origin': {'lat': 37.33484, 'lon': -122.01139, 'name': 'Apple Park (ring building center, OSM relation 5281838)'},
     'traffic': 'free-flow / speed-limit based; no live or historical traffic data'
 }
@@ -26,7 +27,7 @@ json.dump(d, open('data/isochrone.json', 'w'), indent=1)
 print('data/isochrone.json regenerated')
 EOF
 
-# The circle boundary derives from the isochrone; regenerate it, then make
-# sure the landmarks still fall inside.
+# The boundary of record is the isochrone itself (docs/DECISIONS.md D-2);
+# rewrite boundary.json from it, then make sure the landmarks still fall inside.
 python3 scripts/make_boundary.py
 python3 scripts/verify.py
