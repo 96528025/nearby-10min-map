@@ -1,4 +1,12 @@
-# Current-State Audit
+# Historical Current-State Audit (2026-07-29)
+
+> **Historical snapshot, not current architecture.** This audit describes the
+> repository as it existed on 2026-07-29, before the React frontend, automated
+> test suites, CI, deployment files, public-service safeguards, and routed
+> isochrone migration were implemented. References below to an equal-area
+> circle, `map/index.html`, or missing tests are preserved as findings about
+> that audited snapshot. For current behavior, start with the repository
+> [`README.md`](../README.md) and source at `HEAD`.
 
 **Audit date:** 2026-07-29
 **Snapshot audited:** the initial repository state before history cleanup (the
@@ -12,9 +20,9 @@ removed an editor-specific local launch configuration. Commit IDs therefore
 changed. The benchmark provenance mapping is recorded in `DECISIONS.md`;
 immutable benchmark run artifacts were not edited.
 
-This document records *what is*, not what should be. It deliberately does not
-fix the README — README changes are out of scope for Run 1. Discrepancies are
-listed in §9 for a later round.
+This document records *what was true at the audited snapshot*, not what should
+be true now. It deliberately did not fix the README because README changes
+were out of scope for Run 1. Discrepancies were listed in §9 for later work.
 
 ---
 

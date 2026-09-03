@@ -1,5 +1,15 @@
 # Decision Record
 
+> **Status note (2026-09-03):** this is a historical decision and evidence
+> record, not a description of every current runtime choice. D-2 is now
+> implemented: normal results use `boundary_mode="routed_isochrone"`, and the
+> former routed equal-area circle is neither produced nor served. The only
+> circle still produced is the explicitly labelled fixed-radius fallback when
+> routing cannot return an isochrone. D-1's static-only hosting proposal was
+> not implemented; the current app keeps a committed static Apple Park startup
+> view and a Docker/FastAPI live-search path. See the [README](../README.md) for
+> the current architecture.
+
 Decisions made in Run 1, with the evidence behind them and the alternatives
 that were rejected. Each entry states what would change the decision.
 

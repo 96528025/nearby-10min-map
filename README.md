@@ -2,189 +2,166 @@
 
 [![CI](https://github.com/96528025/nearby-10min-map/actions/workflows/ci.yml/badge.svg)](https://github.com/96528025/nearby-10min-map/actions/workflows/ci.yml)
 
-A deployed full-stack geospatial application for understanding the area around
-a destination before a trip. Submit a place, confirm the intended geocoding
-candidate, and explore visitor-relevant dining, health, education, lodging,
-shopping, fuel/EV, culture, and park facilities within an **approximate
-10-minute drive**.
+A deployed React + FastAPI geospatial application that turns a confirmed
+destination into a model-estimated 10-minute driving area, shows nearby
+visitor facilities, and makes data provenance and degraded states visible.
 
-This is a driving map, not a walking-radius map. The routed path uses
-free-flow road costs and does not include real-time traffic.
+**Live demo:** [nearby-10min-map.onrender.com](https://nearby-10min-map.onrender.com)
 
-**Public app:** [nearby-10min-map.onrender.com](https://nearby-10min-map.onrender.com)
+The normal boundary is the routed Valhalla isochrone itself, including every
+returned polygon component and interior hole. It is a free-flow model based on
+road-network costs, not a measurement of traffic or actual travel time.
 
-> **Cold-start note:** [Render's free tier](https://render.com/docs/free) may
-> take about a minute to wake after 15 minutes without inbound traffic and
-> shows a loading page while it starts. One wake-up observed on 2026-08-31
-> took 21.9 seconds; that single observation is not an SLA.
+## What this project demonstrates
 
-## Product walkthrough
+| Area | Implementation |
+|---|---|
+| Product flow | Search a destination, confirm one geocoding candidate, then explore eight bilingual facility categories on an interactive map |
+| Frontend | React 19, TypeScript, React Leaflet, accessible status messaging, and an explicit state machine for loading, success, empty, degraded, and error paths |
+| Backend | FastAPI with cache-first geocoding, in-process request coalescing, bounded upstream calls, atomic JSON cache writes, and two-phase area responses |
+| Geospatial contract | Attempted road snap → Valhalla `auto` isochrone → the same Polygon/MultiPolygon used for display, POI filtering, enrichment, and consistency checks |
+| Failure handling | A labelled fixed-radius fallback when routing fails, OSM-only terminal results when enrichment is unavailable, and visible warnings for incomplete coverage |
+| Delivery | Multi-stage Docker image, non-root Python runtime, Render Blueprint, and GitHub Actions for Python, TypeScript, component, build, and browser checks |
 
-| Wake / slow-request notice | Phase-one map available | Enrichment complete |
-|---|---|---|
-| ![The public app explaining that its free Render instance might be waking](docs/assets/public-query-waking.webp) | ![A routed boundary and OSM facilities shown while enrichment runs; this screenshot predates the isochrone migration and still shows the retired circle](docs/assets/public-query-enriching.webp) | ![The selected destination after facility enrichment completes](docs/assets/public-query-complete.webp) |
-
-The screenshots were taken before the boundary migration described under
-"What the boundary means" and still show the retired equal-area circle.
-
-Once the app is served, the bundled Apple Park view loads from `/data/*.json`
-without calling a public geocoding, routing, or POI upstream API. A submitted
-search then exercises the complete API flow.
-
-## Engineering highlights
-
-- **Typed React workflow:** React 19, TypeScript, React Leaflet, and a strict
-  discriminated-union state machine cover every success, empty, degraded, and
-  error terminal state.
-- **Race-safe asynchronous UI:** `AbortController`, request generations,
-  component cleanup, bounded exponential-backoff polling, and retryable
-  deadlines prevent stale searches and polls from overwriting newer results.
-- **Resilient two-phase API:** FastAPI returns a usable OSM map first, then
-  enriches it with Overture Places in a background single-flight operation.
-- **Honest geospatial provenance:** the API explicitly distinguishes the
-  routed Valhalla isochrone (rendered as returned) from a fixed nominal-radius
-  fallback. The UI never infers provenance from the geometry's shape; the
-  bundled snapshot declares its own `boundary_mode`.
-- **Public-service safeguards:** submitted searches only, aggregate Nominatim
-  rate limiting, cache-before-limit lookup, request coalescing, identifiable
-  backend `User-Agent`, bounded upstream calls, and no tile prefetching.
-- **Deployable as one service:** a multi-stage Docker image builds the Vite
-  frontend with Node 24 and serves it with the Python 3.11 API on Render.
+The bundled Apple Park view loads immediately from committed JSON and makes no
+geocoding, routing, or facility API request. A submitted search exercises the
+live API path. The free Render service can be slow after an idle period, so the
+UI shows a delayed wake-up notice and provides retryable request deadlines.
 
 ## Architecture
 
 ```text
 Browser
-├── React + TypeScript + react-leaflet
-│   ├── /data/...  bundled Apple Park snapshot
-│   ├── /api/...   same-origin application API
+├── React + TypeScript + React Leaflet
+│   ├── /data/*        committed Apple Park snapshot
+│   ├── /api/geocode   explicit-submit place search
+│   ├── /api/area      boundary + facilities, then polling
 │   └── OSM raster tiles with visible attribution
 │
 └── FastAPI
-    ├── /api/health     local liveness only; no upstream call
-    ├── /api/geocode    cache → single-flight → 1 req/s limiter
-    │                    → Photon + Nominatim
-    ├── /api/area       four-decimal file-cache key
-    │   ├── phase 1     attempted road snap → Valhalla isochrone (rendered as
-    │   │               returned) → OSM Overpass facilities filtered with it
-    │   └── phase 2     background Overture merge → verify → atomic cache write
-    ├── /data           committed static snapshot
-    └── /               web/dist HTML catch-all, mounted last
+    ├── /api/health    local liveness; no upstream request
+    ├── /api/geocode   file cache → single flight → 1 s start interval
+    │                  → Nominatim + Photon
+    ├── /api/area      four-decimal coordinate cache key
+    │   ├── phase 1    road snap → Valhalla isochrone → OSM facilities
+    │   └── phase 2    background Overture merge → atomic cache replace
+    ├── /data          committed JSON snapshot
+    └── /              built Vite application, mounted last
 ```
 
-The cache under `map/cache/` is an optimization, not durable application
-state. API and `/data` routes are registered before the frontend catch-all.
-Local Vite development preserves the same absolute `/api/...` and `/data/...`
-paths through a proxy, so production needs neither a hard-coded backend host
-nor CORS.
+The Vite development server proxies the same absolute `/api/*` and `/data/*`
+paths used in production. The deployed image therefore needs neither a
+hard-coded backend URL nor CORS configuration.
 
-## Request and state lifecycle
+### Live request lifecycle
 
-The browser only geocodes after an explicit form submission; there is no
-autocomplete or search-on-keystroke behavior.
+1. `/api/geocode` runs only after form submission. Normalized identical misses
+   share one in-process request, and cached results bypass the global one-second
+   upstream-start interval.
+2. The user confirms a candidate instead of letting a fuzzy geocoder silently
+   choose the destination.
+3. `/api/area` attempts to snap the point to a public drivable road, requests a
+   10-minute Valhalla `auto` isochrone with `denoise=0.3`, and queries Overpass
+   over the geometry's complete bounding box.
+4. The first usable response contains the boundary and OSM facilities with
+   `status="enriching"`. One background enrichment flight per coordinate key
+   and process merges qualifying Overture Places.
+5. The client polls with bounded exponential backoff until `complete` or
+   `osm_only`. Abort signals and request-generation checks prevent older
+   searches from overwriting newer ones.
 
-```text
-idle
-└── explicit submit → geocoding
-    ├── candidates
-    │   └── selection → loadingArea
-    │       ├── enriching
-    │       │   ├── complete
-    │       │   ├── osmOnly
-    │       │   └── error
-    │       ├── complete
-    │       ├── osmOnly
-    │       └── error
-    ├── empty
-    └── error
-```
+The API's terminal states are deliberately distinct:
 
-`/api/area` exposes the backend values `enriching`, `complete`, and
-`osm_only`; the frontend maps the last value to its distinct `osmOnly` state.
-It is not presented as full success or total failure:
+- `complete`: Overture enrichment finished; facilities combine OSM and Overture
+  when both lookups succeeded, or identify Overture-only coverage when the OSM
+  lookup failed.
+- `osm_only`: Overture failed or was disabled; the boundary and any OSM results
+  remain available.
+- An Overpass failure does not remove the boundary; phase one returns an empty,
+  schema-complete OSM collection with a coverage warning, and Overture can still
+  populate the terminal result.
 
-- `enriching`: phase-one boundary and OSM data are already usable; the client
-  polls the same URL with backoff.
-- `complete`: optional Overture enrichment finished and the merged result is
-  available.
-- `osm_only`: map data remains usable, but enrichment either failed or was
-  disabled. Configuration-off results say so explicitly and do not claim an
-  upstream failure.
+## Current boundary contract
 
-If both configured Overpass endpoints are unavailable, phase one returns a
-schema-complete empty OSM collection plus a visible coverage warning. Overture
-may still populate the final result.
+### Normal path: `routed_isochrone`
 
-## What the boundary means
+`pipeline.isochrone_geometry` combines all polygonal features returned by
+Valhalla into one GeoJSON `Polygon` or `MultiPolygon`. No `coordinates[0]`
+shortcut is used: disconnected components and interior holes are preserved.
+React Leaflet renders that geometry and fits the viewport around its full
+bounds.
 
-The normal result is the routed isochrone itself:
+That exact geometry object is also used to:
 
-1. The API attempts to snap the selected point to a drivable public road. If
-   Valhalla locate is unavailable or finds no suitable road, it retains the
-   user-selected coordinates for the routed isochrone request.
-2. Valhalla computes a ten-minute `auto` isochrone under free-flow costs.
-3. The API returns that geometry as returned — every `Polygon` /
-   `MultiPolygon` component and every interior hole — as the displayed
-   boundary: `boundary_mode="routed_isochrone"`. The same geometry object
-   filters OSM facilities, filters the Overture merge, and is re-checked by
-   the consistency guard; the upstream POI queries use its full bounding box.
+- define the Overpass and Overture query envelope;
+- filter OSM facilities;
+- filter and merge Overture Places; and
+- re-check response consistency before totals are reported.
 
-Both bundled and live isochrone requests use Valhalla `denoise=0.3`.
-"As returned" therefore means the complete geometry in Valhalla's
-post-denoise response, not every smaller reachable fragment that Valhalla may
-remove before returning that response.
+The consistency check can catch a code path that bypasses filtering. It does
+not independently validate drive time because it reuses the display predicate.
 
-The isochrone is a **model estimate** of the free-flow, approximately
-ten-minute driving range from posted speed limits, with no live or historical
-traffic. Until this migration the API displayed an equal-area circle derived
-from the isochrone; the preregistered benchmark
-(`reports/accuracy/BENCHMARK_PLAN.md`, run
-`20260729T082833Z_cfge03df09d_pland796c05b`) measured that circle at 9.1 %
-macro false inclusion and 24.7 % macro false exclusion against Valhalla's own
-geometry, failing its frozen acceptance rule, so the circle approximation was
-retired on both the bundled and the live path (`docs/DECISIONS.md`, D-2).
-Rendering the isochrone removes that model-internal approximation layer. It
-does not validate real-world drive time, which would need GPS traces,
-historical traffic data or field sampling that this project does not have.
+### Routing failure: `nominal_radius_circle`
 
-If Valhalla is unavailable, the API uses a fixed radius with no road-network
-input, `boundary_mode="nominal_radius_circle"`, and returns a user-displayable
-warning; only this fallback reports a radius. Facility-filter provenance
-changes with the boundary mode instead of claiming that a nominal circle came
-from routing.
+If the Valhalla isochrone request fails, the API discards any snapped point and
+returns a fixed 3 km circle around the requested coordinates. The response says
+that no road-network input produced the boundary, includes a visible warning,
+and uses the same circle for display and filtering. This is the only current
+mode that reports a radius.
 
-Point-in-polygon checks confirm that the returned facilities satisfy the same
-boundary predicate used to filter them. They do **not** independently validate
-facility quality or real-world drive time. The repository's benchmark uses a
-Valhalla isochrone as its reference and is likewise a model-consistency study,
-not field validation.
+### Retired representation
 
-## Technology
+The former routed equal-area circle is not a current boundary mode. Legacy
+cache entries carrying `routed_equal_area_circle`, or no mode at all, are
+treated as misses and recomputed. The bundled Apple Park boundary was also
+regenerated as the routed isochrone.
 
-| Layer | Tools |
-|---|---|
-| Frontend | React 19, TypeScript, Vite, React Leaflet, Leaflet vector layers |
-| Backend | Python 3.11, FastAPI, Uvicorn, background threads, atomic JSON file cache |
-| Public data | OpenStreetMap tiles and Overpass, Valhalla, Photon, Nominatim, Overture Places |
-| Testing | pytest, Vitest, React Testing Library, Playwright with intercepted API fixtures |
-| Delivery | GitHub Actions, multi-stage Docker, Render Blueprint |
+A preregistered five-location benchmark measured the retired circle against
+Valhalla's own geometry: 9.1% macro false inclusion and 24.7% macro false
+exclusion, failing the frozen acceptance rule. That result motivated the
+migration; it does **not** validate real-world travel time. Likewise, the
+current isochrone's zero error against itself is definitional, not an accuracy
+claim. See [the decision record](docs/DECISIONS.md#d-2--boundary-representation-adopt-the-true-isochrone)
+and [run of record](reports/accuracy/runs/20260729T082833Z_cfge03df09d_pland796c05b/report.md).
 
-No database, authentication layer, client state-management library, or
-API-key map provider is required for this project scope.
+## Bundled demo data
+
+The committed Apple Park snapshot is a deterministic startup view, not a live
+query:
+
+- `map/data/isochrone.json` is a recorded, unsnapped Valhalla response from
+  2026-07-12.
+- `map/data/boundary.json` is a 25.76 km² Polygon generated from that recorded
+  response through the same boundary code used by the API.
+- `map/data/facilities.json` contains 921 facilities across eight categories.
+  It was rebuilt offline from 12,600 frozen benchmark candidates and filtered
+  with the production predicate.
+- `map/data/landmarks.json` contains six curated Apple Park landmarks.
+
+Those checks establish artifact reproducibility and
+dataset-to-display-boundary consistency. They do not establish facility
+quality or real-world drive-time accuracy. Live searches may also differ from
+the bundled view because they attempt road snapping and use current upstream
+data.
 
 ## Run locally
 
-Prerequisites: Python 3.11 and Node.js 24.
+Prerequisites: Python 3.11 and Node.js 24.15 or newer.
 
-Start the API in one terminal:
+Install the backend and test dependencies:
 
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt -r requirements-dev.txt
-.venv/bin/uvicorn app:app --port 8642 --app-dir map/server
+python3.11 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt -r requirements-dev.txt
 ```
 
-Start Vite in another terminal:
+Start FastAPI:
+
+```bash
+.venv/bin/python -m uvicorn app:app --port 8642 --app-dir map/server
+```
+
+In a second terminal, start Vite:
 
 ```bash
 cd web
@@ -192,8 +169,8 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`. Vite proxies `/api` and `/data` to port 8642.
-For the production-shaped single-service path, build first and open port 8642:
+Open `http://localhost:5173`. To exercise the production-shaped single-service
+path, build the frontend first and then use the same FastAPI command:
 
 ```bash
 cd web
@@ -201,15 +178,27 @@ npm ci
 npm run typecheck
 npm run build
 cd ..
-.venv/bin/uvicorn app:app --port 8642 --app-dir map/server
+.venv/bin/python -m uvicorn app:app --port 8642 --app-dir map/server
 ```
 
-The React application in `web/` is the only production frontend. The previous
-single-file Leaflet implementation was removed because neither the FastAPI
-production mount nor the Docker image used it; it remains available through
-Git history with `git log --all -- map/index.html`.
+The application is also runnable as the deployed container shape:
+
+```bash
+docker build -t nearby-10min-map .
+docker run --rm -p 10000:10000 nearby-10min-map
+```
 
 ## Tests and CI
+
+The current suite contains 266 deterministic checks:
+
+| Suite | Count | What it covers |
+|---|---:|---|
+| pytest | 213 | Geometry components and holes, boundary/facility agreement, degradation, cache lifecycle, rate limiting, deduplication, provenance, licensing, and benchmark logic |
+| Vitest + React Testing Library | 51 | State transitions, API errors, retries and timeouts, stale-response prevention, attribution, provenance labels, and Leaflet geometry rendering |
+| Playwright | 2 | `enriching → complete` and `enriching → osm_only` browser flows |
+
+Run the same checks as CI:
 
 ```bash
 .venv/bin/pytest -rs
@@ -218,132 +207,92 @@ cd web
 npm run typecheck
 npm test
 npm run build
+npx --no-install playwright install chromium
 npm run test:e2e
 ```
 
-The Python suite is offline and blocks socket access. Vitest and React Testing
-Library cover the state machine, every terminal UI state, timeouts, retries,
-request cancellation, unmount cleanup, and stale-response races. Playwright
-intercepts `/api/geocode` and `/api/area` for both
-`enriching → complete` and `enriching → osm_only`; CI never depends on a public
-upstream's availability or usage allowance. Five small, provenance-bearing
-Valhalla response fixtures replay the benchmark locations in clean CI, while a
-Shapely cross-check independently verifies the production boundary predicate
-over all 12,600 frozen Apple Park POI candidates. These are dataset-consistency
-checks, not claims about real-world drive time or POI quality.
+The Python suite blocks socket creation. Frontend tests mock fetches, and the
+Playwright scenarios intercept API responses and map tiles while rejecting
+unexpected external requests. Passing tests therefore do not depend on public
+upstream availability.
 
-GitHub Actions runs Python 3.11 tests plus the Node 24 typecheck, component
-tests, production build, and browser tests. Render's Blueprint uses
-`autoDeployTrigger: checksPass`, so a commit is deployed only after those
-checks pass.
+GitHub Actions runs Python 3.11 and Node 24 jobs on pushes and pull requests.
+The Render Blueprint uses `autoDeployTrigger: checksPass`; the multi-stage image
+builds `web/dist`, installs the Python runtime separately, retains attribution
+files, runs as a non-root user, and exposes `/api/health` as its health check.
 
-## Public deployment
+## Configuration
 
-[`render.yaml`](render.yaml) defines one free Docker Web Service.
-[`Dockerfile`](Dockerfile) builds `web/dist` in a Node stage, installs the
-Python runtime separately, retains required attribution files, runs as a
-non-root user, and starts Uvicorn on `0.0.0.0:$PORT`. The health check is
-`/api/health`, which performs no network work.
+The committed defaults are intentionally explicit:
 
-`ENABLE_OVERTURE` makes the memory-heavy second phase configurable. It is
-enabled for the current deployment; if the 512 MB free instance cannot sustain
-it, setting the variable to `false` produces an explicit, usable `osm_only`
-result. The production Overture release is pinned to `2026-08-19.0`.
+| Variable | Default | Effect |
+|---|---:|---|
+| `ENABLE_OVERTURE` | `true` | Set `false` to make OSM-only results an explicit terminal mode |
+| `OVERTURE_RELEASE` | `2026-08-19.0` | Pins live enrichment provenance |
+| `NOMINAL_RADIUS_M` | `3000` | Fixed fallback radius used only when the routed isochrone cannot be produced |
+| `UPSTREAM_USER_AGENT` | repository contact URL | Identifies backend requests to public services |
+| `GEOCODE_TIMEOUT_SECONDS` | `15` | Per-geocoder timeout |
+| `VALHALLA_LOCATE_TIMEOUT_SECONDS` | `5` | Per-road-snap locate timeout |
+| `SNAP_TOTAL_TIMEOUT_SECONDS` | `20` | Total road-snap probing budget |
+| `VALHALLA_ISOCHRONE_TIMEOUT_SECONDS` | `30` | Routed-boundary request timeout |
+| `OVERTURE_PROCESS_TIMEOUT_SECONDS` | `600` | Background enrichment process timeout |
 
-## Known limitations and observed variability
+The pipeline also defines bounded Overpass and Overture HTTP timeouts, while
+the Blueprint overrides the Overpass defaults. See [`render.yaml`](render.yaml)
+and [`map/server/pipeline.py`](map/server/pipeline.py) for the complete
+configuration surface.
 
-- **Free-instance sleep and cold start:** Render can spin down the service
-  after 15 minutes without inbound traffic. One wake-up observed on
-  2026-08-31 took **21.894 seconds**. That is a one-time observation, not an
-  availability or latency SLA; later starts can be faster or slower.
-- **Ephemeral cache:** the free service has no persistent disk. Cached
-  geocodes, phase-one areas, and enriched results can disappear after sleep,
-  restart, or redeploy. Correctness cannot depend on those files. If a process
-  disappears while a cached result says `enriching`, the next request resumes
-  phase two instead of leaving it stuck forever.
-- **Public upstreams have no SLA:** Photon, Nominatim, Valhalla, Overpass, and
-  the Overture public bucket can be slow, rate-limited, unavailable, or updated
-  independently. Timeouts, fallback paths, and warnings make these failures
-  visible but cannot create an availability guarantee.
-- **Facility counts are not stable metrics:** two Stanford University queries
-  observed on 2026-08-31 completed with **1,095** and **1,304** facilities.
-  Overpass was unavailable during the 1,095-result run. Counts vary with
-  upstream availability, source updates, confidence filtering, and deduplication;
-  neither number is a promised inventory.
-- **Pinned Overture releases expire:** `overturemaps` downloads a named release
-  from a public bucket that rotates out older releases. The default in
-  `map/server/pipeline.py` and the production value in `render.yaml` should be
-  updated together so local and deployed behavior remain reproducible. If the
-  release that is actually in use disappears or becomes unavailable,
-  enrichment can end as `osm_only` or remain incomplete.
-- **The boundary is a model estimate:** the routed mode displays Valhalla's
-  free-flow isochrone as returned. That removes the former circle
-  approximation but does not make the ten-minute range a measured quantity;
-  road snapping alone can change the modelled area several-fold at some
-  destinations (`docs/DECISIONS.md`, D-6). The nominal mode is a fixed-radius
-  fallback with no road-network input and must always remain visibly labeled.
-- **No traffic model:** Valhalla uses free-flow costs; rush hour, closures,
-  weather, parking, and time spent leaving a campus or airport are absent.
-- **Facility quality is not independently verified:** the committed Apple Park
-  snapshot contains 921 facilities, but the repository has no record of manual
-  review for all 921. Its six-landmark check only verifies containment.
-- **Demo-scale service:** unauthenticated public endpoints and community
-  upstreams are suitable for a portfolio deployment, not high-volume
-  commercial traffic. A production service would use owned or contracted
-  routing, geocoding, POI, and tile infrastructure.
+## Honest limitations
+
+- **The boundary is a model estimate.** Valhalla uses free-flow road costs and
+  has no live or historical traffic. Rush hour, closures, parking, weather, and
+  time spent leaving a campus or airport are absent.
+- **Road snapping is consequential.** Large campuses and airports can produce
+  substantially different isochrones depending on the selected origin and
+  nearby drivable edge. The UI discloses that the bundled view is unsnapped.
+- **The fallback is not routed.** `nominal_radius_circle` is a fixed-radius
+  degraded mode and must not be interpreted as a 10-minute road-network area.
+- **Public upstreams have no application SLA.** Photon, Nominatim, Valhalla,
+  Overpass, Overture storage, and OSM tiles may be slow, limited, unavailable,
+  or updated independently.
+- **Facility coverage is incomplete and variable.** Results depend on source
+  freshness, category mapping, confidence filtering, and heuristic
+  deduplication. Counts are not a stable inventory.
+- **Caches are opportunistic.** The free deployment has no persistent disk and
+  no TTL. The area key uses coordinates rounded to four decimals, not the place
+  name, so very close candidates can share the first cached label.
+- **This is a portfolio-scale service.** The API has no authentication, user
+  quota, durable job queue, or global concurrency budget for distinct area
+  requests. Commercial traffic would require owned or contracted geocoding,
+  routing, POI, and tile infrastructure.
+- **Pinned Overture releases expire.** The code and Blueprint values must be
+  updated together when a pinned public release rotates out.
 
 ## Evidence and audit trail
 
-This repository keeps limitations next to evidence rather than turning old
-measurements into permanent product claims:
-
-- [`docs/CURRENT_STATE_AUDIT.md`](docs/CURRENT_STATE_AUDIT.md) is the dated,
-  point-in-time audit of the pre-upgrade application. Its legacy frontend line
-  references remain reproducible through Git history.
-- [`docs/DECISIONS.md`](docs/DECISIONS.md) records architecture and geometry
-  tradeoffs, including what evidence would change a decision.
+- [`docs/CURRENT_STATE_AUDIT.md`](docs/CURRENT_STATE_AUDIT.md) is a historical
+  audit of the pre-upgrade 2026-07-29 codebase. Its equal-area-circle,
+  single-file frontend, and no-test findings are not descriptions of current
+  behavior.
+- [`docs/DECISIONS.md`](docs/DECISIONS.md) records the benchmark decisions and
+  later implementation status. Equal-area-circle references there describe a
+  retired candidate retained for auditability.
 - [`reports/accuracy/BENCHMARK_PLAN.md`](reports/accuracy/BENCHMARK_PLAN.md) and
-  immutable run directories preserve the preregistered model benchmark.
-- [`docs/ATTRIBUTION_AUDIT.md`](docs/ATTRIBUTION_AUDIT.md) records OSM,
-  Overture, and Foursquare attribution findings and remediation.
+  immutable run directories preserve the preregistered model-consistency
+  benchmark.
+- [`docs/ATTRIBUTION_AUDIT.md`](docs/ATTRIBUTION_AUDIT.md) records the original
+  attribution findings and subsequent remediation.
 
-The committed Apple Park snapshot contains 921 facilities across the eight
-categories (`633/44/56/28/69/61/1/29`). It is rebuilt offline by
-`map/scripts/facilities_from_frozen_universe.py` from the benchmark run of
-record's frozen POI universe (Overture release `2026-07-22.0`, Overpass query
-hash and dedup rules recorded in `facilities.json.metadata.provenance`),
-filtered with the same boundary predicate the live API uses. The earlier
-snapshot was fetched over the retired circle's bounding box, which the true
-isochrone extends beyond by up to about 3.9 km, so it could not simply be
-re-filtered. Compared with the pre-migration snapshot at commit `2b9289f`, 70
-previously displayed records that fall inside the new boundary have no exact
-`(category, name)` match in the regenerated snapshot. This is a label-level
-reconciliation, not a count of physical facilities removed: the committed
-artifacts do not classify how many reflect source-version drift, renaming,
-deduplication, or an actual disappearance. The frozen universe stores no OSM
-tags; `kind`, `addr` and the OSM id were carried over from the earlier snapshot
-where the same named place lies within 150 m and are otherwise null. The
-bundled boundary itself is the recorded `map/data/isochrone.json` (unsnapped
-ring-building origin, 2026-07-12), written through the live
-`pipeline.boundary_from_isochrone` by `map/scripts/make_boundary.py`.
+## Data sources and license
 
-## Data sources, policies, and license
-
-| Source | Use | Operational or license note |
+| Source | Use | Note |
 |---|---|---|
-| [OpenStreetMap](https://www.openstreetmap.org/copyright) | Raster map and Overpass POIs | ODbL; visible attribution retained |
-| [Valhalla public server](https://gis-ops.com/global-open-valhalla-server-online/) | Road snap and isochrone | Community service; no SLA |
-| [Photon](https://photon.komoot.io) and [Nominatim](https://nominatim.org) | Geocoding candidates | Explicit-submit search; backend caching and rate limiting |
-| [Overture Maps](https://overturemaps.org) | Optional facility enrichment | Modified Places data; release and transformation provenance retained |
+| [OpenStreetMap](https://www.openstreetmap.org/copyright) | Raster tiles and Overpass facilities | ODbL; visible attribution retained |
+| [Valhalla public server](https://gis-ops.com/global-open-valhalla-server-online/) | Road snap and routed isochrone | Community service; no SLA |
+| [Photon](https://photon.komoot.io) and [Nominatim](https://nominatim.org) | Geocoding candidates | Explicit-submit search with backend caching and rate limiting |
+| [Overture Maps](https://overturemaps.org) | Optional facility enrichment | Places release and transformations recorded in generated metadata |
 
-The browser uses the official OSM raster URL, visible attribution, ordinary
-Referer and browser caching behavior, and no prefetch or bulk download. A
-commercial deployment should replace community endpoints with infrastructure
-that provides an appropriate SLA and usage agreement.
-
-Code is available under the [`MIT License`](LICENSE). Map data is ©
-OpenStreetMap contributors under ODbL. POI results can include modified
-Overture Maps Foundation and Foursquare Places data. Required notices and the
-Apache-2.0 text are retained in
-[`NOTICE`](NOTICE) and
-[`LICENSES/Apache-2.0.txt`](LICENSES/Apache-2.0.txt).
+Code is available under the [MIT License](LICENSE). Map data is © OpenStreetMap
+contributors under ODbL. POI results can include modified Overture Maps
+Foundation and Foursquare Places data. Required notices and the Apache-2.0 text
+are retained in [`NOTICE`](NOTICE) and [`LICENSES/Apache-2.0.txt`](LICENSES/Apache-2.0.txt).

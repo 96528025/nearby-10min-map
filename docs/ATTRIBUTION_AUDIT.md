@@ -1,5 +1,13 @@
 # Attribution / NOTICE Audit
 
+> **Historical audit with later remediation.** Sections that cite
+> `map/index.html` describe the pre-React interface inspected on 2026-07-29;
+> that file is no longer the production frontend. The current React page keeps
+> Leaflet's OpenStreetMap attribution and links OSM, Overture, and Foursquare
+> attribution from its footer; repository NOTICE and licence files are covered
+> by automated checks. The original findings remain below as an audit trail
+> rather than as claims about the current UI.
+
 **Date:** 2026-07-29 · **Scope:** Run 1 — audit and record only. No vendor
 switching, no tile prefetching, no UI changes are made in this round.
 
