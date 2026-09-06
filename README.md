@@ -104,8 +104,9 @@ FastAPI (one process)
    empty collection with a coverage warning.
 
 Routed responses record method, costing, denoise, the free-flow assumption
-and source; enriched responses add the Overture release and dedup rules; the
-fallback circle records its mode, radius and a warning.
+and source; enriched responses add the Overture release, attribution,
+confidence floor and a transformation summary; the fallback circle records its
+mode, radius and a warning.
 
 **Frontend.** A typed reducer with nine states (`idle`, `geocoding`,
 `candidates`, `empty`, `loadingArea`, `enriching`, `complete`, `osmOnly`,
