@@ -24,8 +24,10 @@ circle was close enough, the project measured it.
 **Method.** Five Bay Area destinations with different road-network shapes
 (corporate campus, university, airport, dense downtown, coastal town). For
 each, the shipped circle was scored against Valhalla's own 10-minute isochrone
-using every named facility in the area: *false inclusion* (shown but not
-reachable under the model) and *false exclusion* (reachable but hidden).
+over a frozen universe of named facilities in the app's eight categories
+(category-mapped, confidence-filtered and deduplicated before scoring):
+*false inclusion* (shown but not reachable under the model) and *false
+exclusion* (reachable but hidden).
 Thresholds were frozen before any request was made; the plan file is
 SHA-256-hashed into every run; a preflight manifest is written before the
 first network call; run directories are immutable.
@@ -52,8 +54,8 @@ multipolygon fixtures.
 free-flow model, not real-world travel time; the isochrone's 0% / 0% score
 against itself is definitional. One more diagnostic from the same run: snapping
 the origin to the nearest public road changed the modelled area 3.57x at Apple
-Park and 106x at San José airport, which bounds how precisely any boundary can
-mean "ten minutes".
+Park and 106x at San José airport, which illustrates how sensitive the modelled
+area is to where the origin lands on the road network.
 
 [Run of record](reports/accuracy/runs/20260729T082833Z_cfge03df09d_pland796c05b/report.md) ·
 [preregistered plan](reports/accuracy/BENCHMARK_PLAN.md) ·
@@ -69,24 +71,27 @@ Browser (React + TypeScript + React Leaflet)
 
 FastAPI (one process)
 ├── /api/health     liveness only
-├── /api/geocode    file cache → one in-flight request per normalised query
-│                   → ≥ 1 s between upstream starts → Nominatim + Photon
+├── /api/geocode    file cache → one in-flight fetch per normalised query + bias
+│                   → ≥ 1 s between fetch starts → Nominatim, then Photon
 ├── /api/area       cache key = coordinates rounded to 4 decimals
-│   ├── phase 1     snap to a public road → Valhalla auto isochrone (denoise 0.3)
+│   ├── phase 1     snap to a public road if one is found → Valhalla auto isochrone (denoise 0.3)
 │   │               → OSM facilities via Overpass → respond "enriching"
 │   └── phase 2     background thread merges Overture Places → atomic cache replace
 └── /               built Vite app, mounted last
 ```
 
-1. **Geocode on submit only.** Queries are NFKC-normalised, whitespace-collapsed
-   and case-folded into a cache key. Hits return at once; identical misses
-   share one upstream request; distinct misses start at most one upstream call
-   per second.
+1. **Geocode on submit only.** The query is NFKC-normalised, whitespace-collapsed
+   and case-folded, and hashed together with the map-view bias into a cache
+   key. Hits return at once; identical misses share one fetch; distinct misses
+   start at most one fetch per second, and each fetch queries Nominatim and
+   then Photon.
 2. **The user confirms a candidate.** A fuzzy geocoder never silently picks the
    destination.
 3. **Phase 1.** The point is snapped to the nearest motorway-to-residential
    class road, probing outward in 500 m rings up to 2 km for campuses and
-   airports whose pin sits far from any public road. Overpass is queried over
+   airports whose pin sits far from any public road. If Valhalla's locate call
+   is unavailable or nothing qualifies, the requested point is used unsnapped
+   and no snap distance is recorded. Overpass is queried over
    the polygon's full bounding box and results are filtered point-in-polygon.
 4. **Phase 2.** One background flight per cache key merges Overture Places
    (confidence >= 0.6, deduplicated against OSM) and atomically replaces the
@@ -98,8 +103,9 @@ FastAPI (one process)
    A failed Overpass lookup keeps the boundary and returns a schema-complete
    empty collection with a coverage warning.
 
-Every response carries its provenance: method, costing, denoise, the
-free-flow assumption, source URLs, Overture release and dedup rules.
+Routed responses record method, costing, denoise, the free-flow assumption
+and source; enriched responses add the Overture release and dedup rules; the
+fallback circle records its mode, radius and a warning.
 
 **Frontend.** A typed reducer with nine states (`idle`, `geocoding`,
 `candidates`, `empty`, `loadingArea`, `enriching`, `complete`, `osmOnly`,
@@ -113,8 +119,8 @@ Status text is in an `aria-live` region; tile attribution is always visible.
 
 ## Bundled startup data
 
-The page opens on a committed Apple Park snapshot so it works before any
-upstream is contacted: a Valhalla response recorded 2026-07-12
+The page opens on a committed Apple Park snapshot, so the first view makes no
+API calls (map tiles still load from OpenStreetMap): a Valhalla response recorded 2026-07-12
 (`map/data/isochrone.json`), the 25.76 km² Polygon built from it by the same
 function the API uses (`boundary.json`), 921 facilities in 8 categories
 rebuilt offline from the benchmark's 12,600-point frozen POI universe
