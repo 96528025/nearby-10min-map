@@ -12,6 +12,8 @@ standing in for it.
 (free tier; the first search after an idle period can take about a minute to
 wake the service, and the page says so while it waits).
 
+![Complete live result showing the routed isochrone and nearby facilities](docs/assets/live-demo-complete.jpg)
+
 Stack: React 19 + TypeScript + React Leaflet; FastAPI; one Docker image on
 Render; GitHub Actions running pytest, Vitest and Playwright.
 
