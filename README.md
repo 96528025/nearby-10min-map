@@ -95,10 +95,14 @@ FastAPI (one process)
    is unavailable or nothing qualifies, the requested point is used unsnapped
    and no snap distance is recorded. Overpass is queried over
    the polygon's full bounding box and results are filtered point-in-polygon.
+   Identical requests that miss the cache at the same time share one phase-1
+   computation.
 4. **Phase 2.** One background flight per cache key merges Overture Places
    (confidence >= 0.6, deduplicated against OSM) and atomically replaces the
    cache entry. If the worker died mid-flight, the next request for that key
-   resumes the work.
+   resumes the work. At most `MAX_CONCURRENT_ENRICHMENTS` flights (default 2)
+   run at once; a key without a free slot stays `enriching`, and the next poll
+   starts it.
 5. **Terminal states are explicit.** `complete` (OSM + Overture, or Overture
    alone if Overpass was down), `osm_only` (Overture failed or disabled), or a
    labelled `nominal_radius_circle` fallback of 3 km when routing itself fails.
@@ -165,11 +169,11 @@ docker run --rm -p 10000:10000 nearby-10min-map
 
 ## Tests and CI
 
-266 checks, all runnable offline:
+272 checks, all runnable offline:
 
 | Suite | Count | Covers |
 |---|---:|---|
-| pytest | 213 | Isochrone components and holes, boundary/facility agreement, degraded modes, cache lifecycle and legacy-entry migration, rate limiting and coalescing, deduplication, provenance fields, licence files, benchmark scoring |
+| pytest | 219 | Isochrone components and holes, boundary/facility agreement, degraded modes, cache lifecycle and legacy-entry migration, rate limiting and coalescing (geocode and phase-1 area requests), the enrichment cap, generic upstream error bodies, deduplication, provenance fields, licence files, benchmark scoring |
 | Vitest + React Testing Library | 51 | Reducer transitions, API error shapes, retries and deadlines, stale-response rejection, attribution labels, Leaflet geometry rendering |
 | Playwright | 2 | `enriching → complete` and `enriching → osm_only` in a real browser with every off-origin request intercepted |
 
@@ -202,6 +206,7 @@ and runs as a non-root user.
 | `ENABLE_OVERTURE` | `true` | `false` makes `osm_only` the terminal state |
 | `OVERTURE_RELEASE` | `2026-08-19.0` | Overture Places release recorded in every enriched response |
 | `NOMINAL_RADIUS_M` | `3000` | Fallback circle radius, used only when routing fails |
+| `MAX_CONCURRENT_ENRICHMENTS` | `2` | Overture enrichments (one subprocess each) allowed to run at once; further keys start on a later poll |
 | `GEOCODE_TIMEOUT_SECONDS` / `VALHALLA_LOCATE_TIMEOUT_SECONDS` / `SNAP_TOTAL_TIMEOUT_SECONDS` / `VALHALLA_ISOCHRONE_TIMEOUT_SECONDS` / `OVERTURE_PROCESS_TIMEOUT_SECONDS` | `15` / `5` / `20` / `30` / `600` | Per-stage upstream budgets in seconds |
 
 `UPSTREAM_USER_AGENT` and the Overpass / Overture HTTP timeouts are also
@@ -220,9 +225,9 @@ overrides in [`render.yaml`](render.yaml).
 - **The fallback is labelled, not hidden.** `nominal_radius_circle` is a fixed
   3 km circle that discards the snapped point, carries a visible warning, and
   is the only mode that reports a radius.
-- **One process, opportunistic caches.** Request coalescing, the geocode rate
-  limiter and the enrichment single-flight are `threading.Lock` constructs
-  inside one FastAPI process. Caches are JSON files on the container's
+- **One process, opportunistic caches.** Geocode and phase-1 request
+  coalescing, the geocode rate limiter, the enrichment single-flight and its
+  concurrency cap are `threading.Lock` constructs inside one FastAPI process. Caches are JSON files on the container's
   ephemeral disk with no TTL. There is no authentication, quota or job queue,
   and the public upstreams (Nominatim, Photon, Valhalla, Overpass, Overture
   storage, OSM tiles) offer no SLA. Real traffic would need owned or contracted
