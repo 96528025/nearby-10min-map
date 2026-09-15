@@ -23,7 +23,7 @@ def test_notice_retains_attribution_and_describes_project_changes():
     required = (
         "Overture Maps Foundation",
         "2026-08-19.0",
-        "release remains unknown",
+        "2026-07-22.0",
         "Copyright 2024 Foursquare Labs, Inc.",
         "© 2026 Foursquare Labs, Inc.",
         "LICENSES/Apache-2.0.txt",

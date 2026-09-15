@@ -181,7 +181,7 @@ describe("App workflow", () => {
     });
     expect(areaMock).toHaveBeenCalledTimes(2);
     expect(workflowRoot()).toHaveAttribute("data-workflow-state", "complete");
-    expect(screen.getByText(/Facilities complete \(42\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Facility enrichment complete \(42\)/)).toBeInTheDocument();
   });
 
   it("renders osm_only as a usable warning rather than success or failure", async () => {
@@ -195,7 +195,7 @@ describe("App workflow", () => {
     });
 
     fireEvent.click(choice);
-    expect(await screen.findByText(/当前为 OSM-only 结果/)).toBeInTheDocument();
+    expect(await screen.findByText(/OSM-only results/)).toBeInTheDocument();
     expect(workflowRoot()).toHaveAttribute("data-workflow-state", "osmOnly");
     expect(screen.getByText("OSM-only")).toBeInTheDocument();
     expect(screen.getByText(/enrichment failed/)).toBeInTheDocument();
@@ -216,13 +216,13 @@ describe("App workflow", () => {
     );
 
     expect(
-      await screen.findByText(/enrichment is disabled for this deployment/),
+      await screen.findByText(/enrichment is disabled/),
     ).toBeInTheDocument();
     expect(screen.queryByText(/enrichment failed/)).not.toBeInTheDocument();
     expect(workflowRoot()).toHaveAttribute("data-workflow-state", "osmOnly");
   });
 
-  it("shows the routed isochrone provenance and modelled area, never a radius, when boundary_mode says routed", async () => {
+  it("shows the routed isochrone provenance and modeled area, never a radius, when boundary_mode says routed", async () => {
     const stanford = candidate("Stanford University");
     geocodeMock.mockResolvedValue({ candidates: [stanford] });
     areaMock.mockResolvedValue(
@@ -241,7 +241,7 @@ describe("App workflow", () => {
       await screen.findByText("Routed isochrone (Valhalla, free-flow)"),
     ).toBeInTheDocument();
     expect(screen.getByText("Routed isochrone")).toBeInTheDocument();
-    expect(screen.getByText("Modelled area")).toBeInTheDocument();
+    expect(screen.getByText("Modeled area")).toBeInTheDocument();
     expect(screen.getByText("25.8 km²")).toBeInTheDocument();
     expect(
       screen.getByText(/Geometry: Polygon · 1 component · 0 holes/),
@@ -250,7 +250,7 @@ describe("App workflow", () => {
       screen.getByText(/does not establish real-world drive-time accuracy/),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Searches attempt to snap to the nearest public drivable road/),
+      screen.getByText(/Searches attempt to snap to the nearest retained drivable road/),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/if none is found, they keep the requested point/),
@@ -268,13 +268,13 @@ describe("App workflow", () => {
     expect(
       screen.getByText("Routed isochrone (Valhalla, free-flow)"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Modelled area")).toBeInTheDocument();
+    expect(screen.getByText("Modeled area")).toBeInTheDocument();
     expect(screen.getByText("25.8 km²")).toBeInTheDocument();
     expect(
       screen.getByText(/bundled Apple Park snapshot uses a recorded unsnapped point/),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Searches may snap to the nearest public drivable road/),
+      screen.getByText(/Searches may snap to the nearest retained drivable road/),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Boundary radius/)).not.toBeInTheDocument();
   });
@@ -288,7 +288,7 @@ describe("App workflow", () => {
     expect(screen.getByText("Boundary mode not reported")).toBeInTheDocument();
     expect(screen.getByText("Boundary extent")).toBeInTheDocument();
     expect(screen.getByText("Not reported")).toBeInTheDocument();
-    expect(screen.queryByText("Modelled area")).not.toBeInTheDocument();
+    expect(screen.queryByText("Modeled area")).not.toBeInTheDocument();
     expect(screen.queryByText("Fixed radius")).not.toBeInTheDocument();
   });
 
@@ -314,10 +314,10 @@ describe("App workflow", () => {
     expect(screen.getByText("Fixed radius · no routing")).toBeInTheDocument();
     expect(screen.getByText("Fixed radius")).toBeInTheDocument();
     expect(screen.getByText("5.0 km")).toBeInTheDocument();
-    expect(screen.queryByText("Modelled area")).not.toBeInTheDocument();
+    expect(screen.queryByText("Modeled area")).not.toBeInTheDocument();
     expect(
       screen.getByText(
-        "当前显示的是固定半径的近似范围，不是基于真实路网计算的约 10 分钟驾车可达范围。",
+        "This is a fixed-radius fallback, not an estimated 10-minute driving area calculated from the road network.",
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("Valhalla was unavailable.")).toBeInTheDocument();
@@ -344,7 +344,7 @@ describe("App workflow", () => {
       await screen.findByText("Boundary mode not reported"),
     ).toBeInTheDocument();
     expect(screen.getByText("Boundary extent")).toBeInTheDocument();
-    expect(screen.queryByText("Modelled area")).not.toBeInTheDocument();
+    expect(screen.queryByText("Modeled area")).not.toBeInTheDocument();
     expect(screen.queryByText("Fixed radius")).not.toBeInTheDocument();
     expect(
       screen.queryByText(/routed 10-minute drive isochrone \(test fixture\)/),
@@ -380,7 +380,7 @@ describe("App workflow", () => {
       firstArea.resolve(areaResponse("complete", stanford, 42));
       await Promise.resolve();
     });
-    expect(screen.getByText(/Facilities complete/)).toBeInTheDocument();
+    expect(screen.getByText(/Facility enrichment complete/)).toBeInTheDocument();
     expect(screen.queryByText(/service may be waking/)).not.toBeInTheDocument();
   });
 
@@ -414,7 +414,7 @@ describe("App workflow", () => {
       await Promise.resolve();
     });
     expect(workflowRoot()).toHaveAttribute("data-workflow-state", "error");
-    expect(screen.queryByText(/Facilities complete \(99\)/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Facility enrichment complete \(99\)/)).not.toBeInTheDocument();
   });
 
   it("cancels first-area wake and deadline timers on unmount", async () => {

@@ -157,11 +157,11 @@ async function runAreaScenario(
     .toHaveAttribute("data-workflow-state", terminalDomState, { timeout: 10_000 });
 
   if (terminalStatus === "complete") {
-    await expect(page.getByText(/Facilities complete \(42\)/)).toBeVisible();
+    await expect(page.getByText(/Facility enrichment complete \(42\)/)).toBeVisible();
     await expect(page.getByText("Complete", { exact: true })).toBeVisible();
   } else {
     await expect(page.locator(".status-card__message")).toContainText(
-      "当前为 OSM-only 结果 · Overture enrichment failed",
+      "OSM-only results. Overture enrichment failed",
     );
     await expect(
       page.getByText(

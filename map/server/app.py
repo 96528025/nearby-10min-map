@@ -34,7 +34,7 @@ CACHE = MAP_DIR / "cache"
 CACHE.mkdir(parents=True, exist_ok=True)
 
 NOMINAL_BOUNDARY_WARNING = (
-    "当前显示的是固定半径的近似范围，不是基于真实路网计算的约 10 分钟驾车可达范围。"
+    "This is a fixed-radius fallback, not an estimated 10-minute driving area calculated from the road network."
 )
 OVERTURE_DISABLED_WARNING = (
     "Overture enrichment is disabled for this deployment; current results "

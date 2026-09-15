@@ -6,7 +6,9 @@
 
 [Open the demo](https://nearby-10min-map.onrender.com) · [Read the geometry benchmark](reports/accuracy/runs/20260729T082833Z_cfge03df09d_pland796c05b/report.md) · [Architecture decisions](docs/DECISIONS.md)
 
-![Map showing the routed boundary and completed facility results](docs/assets/live-demo-complete.jpg)
+![Bundled Apple Park map with the recorded boundary and facility layers](docs/assets/bundled-snapshot.png)
+
+The screenshot shows the bundled first view captured from the application. A new live search can return different geometry and facilities.
 
 **Stack:** React 19, TypeScript, React Leaflet, FastAPI, Python, Docker, Render, GitHub Actions, pytest, Vitest, and Playwright.
 
@@ -45,9 +47,9 @@ flowchart TD
 ```
 
 1. **Search and confirm.** The browser geocodes only on submission. Query text is NFKC-normalized, whitespace-collapsed, and case-folded; the cache key also includes map bias. Identical in-flight geocode misses share work, and distinct fetches start at least one second apart. The pipeline queries Nominatim and then Photon and combines usable candidates. The user chooses the destination explicitly.
-2. **Compute the boundary.** `/api/area` uses coordinates rounded to four decimals as its file-cache key. On a miss, it tries to locate a suitable public road, including outward probes in 500 m rings up to 2 km. If no suitable snap is available, it keeps the requested point. Valhalla returns an `auto` ten-minute isochrone with `denoise=0.3`.
+2. **Compute the boundary.** `/api/area` uses coordinates rounded to four decimals as its file-cache key. On a miss, it tries to locate a nearby road segment accepted by its road-class filter, including outward probes in 500 m rings up to 2 km. If no suitable snap is available, it keeps the requested point. Valhalla returns an `auto` ten-minute isochrone with `denoise=0.3`.
 3. **Return initial facilities.** Overpass supplies named OSM facilities over the full boundary bounding box. Shared geometry predicates filter them into the actual polygon rather than the bounding box. The response contains both geometry and facilities, so display and inclusion use the same boundary.
-4. **Enrich asynchronously.** A background thread downloads and merges Overture Places, applies category mapping, a confidence floor of `0.6`, spatial filtering, and heuristic deduplication. The result is written using a temporary file and atomic replacement. Only one enrichment flight per area cache key runs in a given process.
+4. **Enrich asynchronously.** A background thread downloads and merges Overture Places, applies category mapping, a confidence floor of `0.6`, spatial filtering, and heuristic deduplication. The result is written using a temporary file and atomic replacement. Only one enrichment flight per area cache key runs in a given process, with at most two running at once by default.
 5. **Poll to a terminal state.** The UI keeps the initial map visible while checking the same endpoint. If a process disappeared during enrichment, a later request can restart work from its cached intermediate result.
 
 ## Frontend behavior and degraded modes
@@ -143,6 +145,7 @@ The two-stage Dockerfile builds the frontend with Node and runs Python as a non-
 
 | Variable | Code default | Purpose |
 | --- | --- | --- |
+| `MAX_CONCURRENT_ENRICHMENTS` | `2` | Maximum background enrichment tasks per API process |
 | `ENABLE_OVERTURE` | `true` | Enable background enrichment; otherwise return `osm_only` |
 | `OVERTURE_RELEASE` | `2026-08-19.0` | Pinned Places release; update consistently with `render.yaml` |
 | `NOMINAL_RADIUS_M` | `3000` | Radius only for the labelled routing fallback |
@@ -156,7 +159,7 @@ User-agent, Overpass timeouts, and Overture HTTP timeouts are also configurable 
 
 ## Tests and delivery
 
-The checked-in suites contain **213 pytest cases, 51 Vitest tests, and two Playwright browser scenarios**. Backend tests block real socket creation and use recorded/fake upstream responses; browser scenarios intercept requests. These tests verify deterministic behavior without asserting the availability of live providers.
+The offline suites cover geometry components and holes, display/filter agreement, cache recovery, geocode and area-request coalescing, the enrichment concurrency limit, generic API error responses, and frontend transitions. Browser tests exercise progressive and degraded results with controlled upstream responses. Test output provides the current case counts; these checks do not establish live-provider availability.
 
 ```bash
 .venv/bin/pytest -rs
@@ -175,7 +178,7 @@ GitHub Actions runs Python 3.11 and Node 24 jobs on pushes and pull requests. Th
 ## Current deployment boundaries
 
 - Caches are JSON files on ephemeral disk with no TTL. They are an optimization, not durable job or user storage.
-- Geocode coordination and enrichment single-flight are process-local. Initial `/api/area` computations are not coalesced in this main-branch implementation, and distinct enrichment threads have no global concurrency cap.
+- Geocode and identical area requests share work per process. Background enrichment is capped per process; deferred areas start on a later poll, without durable queuing or fair scheduling.
 - There is no durable queue, authentication, user quota, or multi-instance coordination. Live searches depend on public geocoding, routing, POI, and tile services.
 - The map models free-flow reachability; it has no traffic feed, turn-by-turn navigation, reservations, or real-time facility inventory.
 - Facility completeness depends on source freshness, category mapping, confidence thresholds, and name/address/distance deduplication heuristics. `complete` describes enrichment completion, not exhaustive coverage.
@@ -199,3 +202,15 @@ GitHub Actions runs Python 3.11 and Node 24 jobs on pushes and pull requests. Th
 OpenStreetMap supplies raster tiles and Overpass facilities; Nominatim and Photon provide geocoding; the public Valhalla service supplies road snapping and isochrones; optional Overture Maps/Foursquare-derived Places data enriches facilities. Responses and the UI carry source/processing attribution.
 
 Application code: [MIT](LICENSE). OpenStreetMap data: [ODbL attribution](https://www.openstreetmap.org/copyright). Overture/Foursquare notices and the applicable Apache-2.0 text are included in [NOTICE](NOTICE) and [LICENSES/Apache-2.0.txt](LICENSES/Apache-2.0.txt).
+
+## Request limits and bundled data
+
+Identical area requests that miss the cache share one phase-one computation per process. Background Overture enrichment is limited to one task per area key and at most `MAX_CONCURRENT_ENRICHMENTS` tasks per process, with a default of 2.
+
+An area without a free enrichment slot remains `enriching`. A later request can start its enrichment after a slot becomes available; there is no durable queue or guarantee of fair scheduling. Coordination is local to one process, and cached files have no TTL.
+
+The bundled view contains six curated landmark markers. Per-landmark driving times and route distances are omitted because their original routing records are unavailable. The markers do not establish a verified point-to-point travel time.
+
+The configured live enrichment release is Overture Places 2026-08-19.0. The committed facilities snapshot records release 2026-07-22.0 and was rebuilt offline on September 2, 2026, from the benchmark's frozen POI universe. These are separate data paths; the bundled snapshot was not generated from the configured live release. See map/data/facilities.json for its recorded provenance.
+
+The pipeline searches for a nearby road segment accepted by its road-class filter, using outward probes when needed. That filter is not an independent verification of public access to the road. If no suitable snap is found, the requested point is retained for the routing request.

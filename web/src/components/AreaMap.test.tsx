@@ -181,6 +181,16 @@ describe("AreaMap rendering", () => {
     expect(d.match(/z/g)).toHaveLength(3);
   });
 
+  it("labels a radius fallback without claiming a driving-time boundary", () => {
+    const { container, getByText } = render(
+      <AreaMap boundary={boundary(POLYGON_WITH_HOLE, "nominal_radius_circle")}
+        facilities={facilities(0)} center={CENTER} centerName="Test center" />,
+    );
+    expect(container.querySelector("[aria-label*='fixed-radius fallback']")).not.toBeNull();
+    expect(getByText("Fixed-radius fallback area")).toBeInTheDocument();
+    expect(container.textContent).not.toContain("Estimated 10-minute driving area");
+  });
+
   it("draws a Polygon with a hole as one path with two rings", () => {
     const { container } = render(
       <AreaMap

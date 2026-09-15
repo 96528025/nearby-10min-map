@@ -404,10 +404,7 @@ round exists to eliminate.
   only re-measured against whatever graph is live then. This is now stated in
   every run's `provenance.reproducibility_note`. POI-level rates **are** fully
   recomputable from the committed `poi_universe.json`.
-- The ~490 MB raw response cache remains gitignored. Committing it would make
-  the geometry independently recomputable at a size no application repository
-  should carry; a targeted alternative (committing only the five isochrone
-  responses, a few hundred KB) is the right Run 2 fix.
+- The approximately 490 MB raw response cache remains excluded from version control. Reproducing the geometry independently requires the relevant routing responses and model context; the committed POI universe supports recalculating the reported facility inclusion and exclusion rates.
 
 ---
 
