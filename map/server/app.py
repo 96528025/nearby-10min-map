@@ -18,6 +18,7 @@ import tempfile
 import threading
 import traceback
 from pathlib import Path
+from threading import Event
 
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -74,6 +75,26 @@ app = FastAPI()
 _lock = threading.Lock()
 _enriching: set[str] = set()
 _geocode = GeocodeCoordinator(CACHE / "geocode", pipeline.geocode)
+
+# Each enrichment runs an overturemaps subprocess. This caps how many run at once
+# in this process; a key without a free slot stays "enriching", and the client's
+# next poll starts it.
+MAX_CONCURRENT_ENRICHMENTS = max(
+    1, int(os.getenv("MAX_CONCURRENT_ENRICHMENTS", "2"))
+)
+
+
+class _AreaFlight:
+    """One in-progress phase-1 computation that identical requests wait on."""
+
+    def __init__(self) -> None:
+        self.done = Event()
+        self.result: dict | None = None
+        self.error: BaseException | None = None
+
+
+_area_flights: dict[str, _AreaFlight] = {}
+_area_flights_lock = threading.Lock()
 
 
 def slug_for(lat: float, lon: float) -> str:
@@ -154,7 +175,10 @@ def api_geocode(q: str, bias_lat: float | None = None,
     try:
         return _geocode.geocode(q, bias_lat=bias_lat, bias_lon=bias_lon)
     except Exception as error:
-        raise HTTPException(502, f"geocoding failed: {error}") from error
+        # Upstream errors can carry URLs and client details: log them, and
+        # keep the response body generic.
+        traceback.print_exc()
+        raise HTTPException(502, "geocoding failed") from error
 
 
 def _enrich_async(slug: str, area: dict):
@@ -180,9 +204,11 @@ def _enrich_async(slug: str, area: dict):
 
 
 def _start_enrichment(slug: str, area: dict) -> None:
-    """Start at most one in-process enrichment flight per cache key."""
+    """Start at most one enrichment per cache key, and at most
+    MAX_CONCURRENT_ENRICHMENTS in total. A key that finds no free slot is not
+    queued: its cache entry stays "enriching" and a later poll starts it."""
     with _lock:
-        if slug in _enriching:
+        if slug in _enriching or len(_enriching) >= MAX_CONCURRENT_ENRICHMENTS:
             return
         _enriching.add(slug)
         threading.Thread(
@@ -208,24 +234,64 @@ def _read_cached_area(path: Path) -> dict | None:
     return value if isinstance(value, dict) else None
 
 
-@app.get("/api/area")
-def api_area(lat: float, lon: float, name: str = ""):
-    slug = slug_for(lat, lon)
+def _serve_cached_area(slug: str) -> dict | None:
     area = _read_cached_area(cache_path(slug))
     if area is not None:
         # A retired-mode entry comes back as None and falls through to a
         # fresh computation that overwrites it.
         area = _normalise_cached_area(area)
+    if area is None:
+        return None
+    if area.get("status") == "enriching":
+        if OVERTURE_ENRICHMENT_ENABLED:
+            # A prior worker can disappear mid-enrichment on Render's
+            # ephemeral free service. The next request resumes the work.
+            _start_enrichment(slug, area)
+        else:
+            _mark_overture_disabled(slug, area)
+    return area
+
+
+@app.get("/api/area")
+def api_area(lat: float, lon: float, name: str = ""):
+    slug = slug_for(lat, lon)
+    area = _serve_cached_area(slug)
     if area is not None:
-        if area.get("status") == "enriching":
-            if OVERTURE_ENRICHMENT_ENABLED:
-                # A prior worker can disappear mid-enrichment on Render's
-                # ephemeral free service. The next request resumes the work.
-                _start_enrichment(slug, area)
-            else:
-                _mark_overture_disabled(slug, area)
         return area
 
+    # Identical cache misses share one phase-1 computation: the first request
+    # computes and writes the cache; the others wait for its result instead of
+    # repeating the snap, isochrone and Overpass calls.
+    with _area_flights_lock:
+        flight = _area_flights.get(slug)
+        leader = flight is None
+        if leader:
+            flight = _AreaFlight()
+            _area_flights[slug] = flight
+    if not leader:
+        flight.done.wait()
+        if flight.error is not None:
+            raise flight.error
+        return flight.result
+
+    try:
+        # A previous flight may have written the cache between our first read
+        # and becoming the leader.
+        area = _serve_cached_area(slug)
+        if area is None:
+            area = _compute_area(slug, lat, lon, name)
+        flight.result = area
+        return area
+    except BaseException as error:
+        flight.error = error
+        raise
+    finally:
+        flight.done.set()
+        with _area_flights_lock:
+            _area_flights.pop(slug, None)
+
+
+def _compute_area(slug: str, lat: float, lon: float, name: str) -> dict:
     warnings: list[str] = []
     boundary_mode = pipeline.ROUTED_BOUNDARY_MODE
     try:
@@ -264,13 +330,13 @@ def api_area(lat: float, lon: float, name: str = ""):
             warnings.append(OSM_LOOKUP_WARNING)
         total = pipeline.verify_inside(facilities, geometry)
     except AssertionError as error:
-        raise HTTPException(
-            500, f"boundary verification failed: {error}"
-        ) from error
+        traceback.print_exc()
+        raise HTTPException(500, "boundary verification failed") from error
     except Exception as error:
-        raise HTTPException(
-            502, f"area computation failed: {error}"
-        ) from error
+        # Upstream errors can carry URLs and client details: log them, and
+        # keep the response body generic.
+        traceback.print_exc()
+        raise HTTPException(502, "area computation failed") from error
 
     area = {
         "status": "enriching",
