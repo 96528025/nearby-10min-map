@@ -169,7 +169,7 @@ describe("App workflow", () => {
       await Promise.resolve();
     });
     expect(workflowRoot()).toHaveAttribute("data-workflow-state", "enriching");
-    expect(screen.getByText(/OSM facilities are visible now/)).toBeInTheDocument();
+    expect(screen.getByText(/Map boundary is ready/)).toBeInTheDocument();
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1_999);
