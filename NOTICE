@@ -6,11 +6,7 @@ Overture Maps Places
 This project uses modified Places data from Overture Maps Foundation,
 https://overturemaps.org.
 
-For reproducible production enrichment, this project selects Overture Places
-release 2026-08-19.0, the current release when this notice was added. The
-committed static facilities snapshot does not record its historical Overture
-release; that release remains unknown and the snapshot is not represented here
-as having been generated from 2026-08-19.0.
+The configured live enrichment release is Overture Places 2026-08-19.0. The committed facilities snapshot records release 2026-07-22.0 and was rebuilt offline on September 2, 2026, from the benchmark's frozen POI universe. These are separate data paths; the bundled snapshot was not generated from the configured live release. See map/data/facilities.json for its recorded provenance.
 
 The Overture attribution page identifies the Foursquare-derived portion of the
 Places theme as follows:

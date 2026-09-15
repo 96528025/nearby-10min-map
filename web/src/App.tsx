@@ -31,7 +31,7 @@ import {
 
 const APPLE_PARK = { lat: 37.33484, lon: -122.01139 };
 const NOMINAL_BOUNDARY_WARNING =
-  "当前显示的是固定半径的近似范围，不是基于真实路网计算的约 10 分钟驾车可达范围。";
+  "This is a fixed-radius fallback, not an estimated 10-minute driving area calculated from the road network.";
 
 type NoticeTone = "info" | "loading" | "success" | "warning" | "error";
 
@@ -121,7 +121,7 @@ interface BoundaryMetric {
 
 /**
  * The one size figure the declared mode can vouch for. A routed isochrone has
- * no radius, so its modelled area is shown; only the nominal fallback is a
+ * no radius, so its modeled area is shown; only the nominal fallback is a
  * fixed circle with a radius. Nothing is derived from the geometry's shape.
  */
 function boundaryMetric(area: DisplayArea): BoundaryMetric {
@@ -140,7 +140,7 @@ function boundaryMetric(area: DisplayArea): BoundaryMetric {
     metadata.isochrone_area_km2 !== undefined
   ) {
     return {
-      label: "Modelled area",
+      label: "Modeled area",
       value: `${metadata.isochrone_area_km2.toFixed(1)} km²`,
     };
   }
@@ -164,8 +164,8 @@ function routingOriginNote(
   if (area.boundaryMode !== "routed_isochrone") return null;
 
   return isBundledDefault
-    ? "Origin: This bundled Apple Park snapshot uses a recorded unsnapped point. Searches may snap to the nearest public drivable road, so the same place can produce a substantially different modelled area."
-    : "Origin: Searches attempt to snap to the nearest public drivable road; if none is found, they keep the requested point. The bundled Apple Park snapshot uses a recorded unsnapped point, so the same place can produce a substantially different modelled area.";
+    ? "Origin: This bundled Apple Park snapshot uses a recorded unsnapped point. Searches may snap to the nearest retained drivable road, so the same place can produce a substantially different modeled area."
+    : "Origin: Searches attempt to snap to the nearest retained drivable road; if none is found, they keep the requested point. The bundled Apple Park snapshot uses a recorded unsnapped point, so the same place can produce a substantially different modeled area.";
 }
 
 function displayedWarnings(area: DisplayArea): string[] {
@@ -206,7 +206,7 @@ function noticeForWorkflow(
     case "empty":
       return {
         tone: "warning",
-        message: "没有找到该地点 · No matching places found.",
+        message: "No matching places found.",
       };
     case "loadingArea":
       return areaWakeNotice
@@ -234,19 +234,19 @@ function noticeForWorkflow(
     case "complete":
       return {
         tone: "success",
-        message: `设施补全完成 · Facilities complete (${workflow.latestArea?.total ?? 0})`,
+        message: `Facility enrichment complete (${workflow.latestArea?.total ?? 0})`,
       };
     case "osmOnly":
       return workflow.latestArea?.enrich_error === true
         ? {
             tone: "warning",
             message:
-              "当前为 OSM-only 结果 · Overture enrichment failed; the map data remains usable.",
+              "OSM-only results. Overture enrichment failed; the map remains usable.",
           }
         : {
             tone: "warning",
             message:
-              "当前为 OSM-only 结果 · Overture enrichment is disabled for this deployment; the map data remains usable.",
+              "OSM-only results. Overture enrichment is disabled; the map remains usable.",
           };
     case "error": {
       const prefix = {
@@ -675,7 +675,7 @@ export default function App() {
     <main className="app-shell" data-workflow-state={workflow.status}>
       <header className="app-header">
         <div>
-          <p className="eyebrow">DRIVE-TIME CONTEXT · 驾车范围</p>
+          <p className="eyebrow">DRIVE-TIME CONTEXT</p>
           <h1 className="app-title">What is within roughly 10 minutes?</h1>
           <p className="app-subtitle">
             Submit a destination, confirm the intended place, and explore a

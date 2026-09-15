@@ -113,7 +113,8 @@ function mapsUrl(name: string, lat: number, lon: number, address?: string | null
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
-function FacilityPopup({ category, item }: {
+function FacilityPopup({ category, item, fallback }: {
+  fallback: boolean;
   category: FacilityCategory;
   item: FacilityCategory["items"][number];
 }) {
@@ -123,12 +124,12 @@ function FacilityPopup({ category, item }: {
     <div className="map-popup">
       <strong className="map-popup__title">{item.name}</strong>
       <span className="map-popup__eyebrow">
-        {category.label_zh} · {category.label_en}
+        {category.label_en}
         {kind ? ` · ${kind}` : ""}
       </span>
       {item.addr ? <span className="map-popup__address">{item.addr}</span> : null}
       <span className="map-popup__note">
-        位于约 10 分钟驾车范围内 · Within the ~10-minute driving range
+        {fallback ? "Inside the displayed fallback area" : "Inside the displayed estimated driving area"}
       </span>
       <a
         className="map-popup__link"
@@ -145,13 +146,8 @@ function FacilityPopup({ category, item }: {
 function LandmarkPopup({ landmark }: { landmark: Landmark }) {
   return (
     <div className="map-popup">
-      <strong className="map-popup__title">{landmark.name_zh}</strong>
-      <span className="map-popup__eyebrow">{landmark.name_en}</span>
-      <span>{landmark.desc_zh}</span>
+      <strong className="map-popup__title">{landmark.name_en}</strong>
       <span>{landmark.desc_en}</span>
-      <span className="map-popup__drive">
-        🚗 约 {landmark.drive_min} 分钟 · {landmark.drive_km} km from Apple Park
-      </span>
       <a
         className="map-popup__link"
         href={mapsUrl(landmark.name_en, landmark.lat, landmark.lon)}
@@ -188,6 +184,7 @@ export function AreaMap({
   );
 
   const boundaryKey = boundaryLayerKey(boundary, center);
+  const fallback = boundary.boundary_mode === "nominal_radius_circle";
 
   const toggleCategory = (key: FacilityCategoryKey) => {
     setHiddenCategories((current) => {
@@ -201,7 +198,7 @@ export function AreaMap({
   return (
     <section
       className={["area-map", className].filter(Boolean).join(" ")}
-      aria-label={`Map of the approximately 10-minute driving range from ${centerName}`}
+      aria-label={fallback ? `Map of the fixed-radius fallback area around ${centerName}` : `Map of the estimated 10-minute driving area from ${centerName}`}
     >
       <MapContainer
         center={[center.lat, center.lon]}
@@ -237,7 +234,7 @@ export function AreaMap({
                   }}
                 >
                   <Popup>
-                    <FacilityPopup category={category} item={item} />
+                    <FacilityPopup category={category} item={item} fallback={fallback} />
                   </Popup>
                 </CircleMarker>
               )),
@@ -278,7 +275,7 @@ export function AreaMap({
           <Popup>
             <div className="map-popup">
               <strong className="map-popup__title">{centerName}</strong>
-              <span className="map-popup__eyebrow">范围中心 · Area center</span>
+              <span className="map-popup__eyebrow">Area center</span>
               <a
                 className="map-popup__link"
                 href={mapsUrl(centerName, center.lat, center.lon)}
@@ -294,7 +291,6 @@ export function AreaMap({
 
       <aside className="map-legend" aria-label="Map layers">
         <div className="map-legend__heading">
-          <span>设施图层</span>
           <span>Facility layers</span>
         </div>
         <div className="map-legend__items">
@@ -313,7 +309,7 @@ export function AreaMap({
                   aria-hidden="true"
                 />
                 <span className="map-layer__label">
-                  {category.label_zh} · {category.label_en}
+                  {category.label_en}
                 </span>
                 <span className="map-layer__count">{category.count}</span>
               </label>
@@ -321,10 +317,10 @@ export function AreaMap({
           })}
         </div>
         <div className="map-legend__key">
-          <span><i className="map-key map-key--area" />约 10 分钟驾车范围（模型估算）</span>
-          <span><i className="map-key map-key--center" />中心</span>
+          <span><i className="map-key map-key--area" />{fallback ? "Fixed-radius fallback area" : "Estimated 10-minute driving area"}</span>
+          <span><i className="map-key map-key--center" />Center</span>
           {landmarks.length > 0 ? (
-            <span><i className="map-key map-key--landmark" />默认视图地标</span>
+            <span><i className="map-key map-key--landmark" />Bundled landmark</span>
           ) : null}
         </div>
       </aside>

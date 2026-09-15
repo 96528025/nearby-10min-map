@@ -1,3 +1,5 @@
+> Historical record. This document describes the repository at the date shown below. See the root README for the current application behavior.
+
 # Attribution / NOTICE Audit
 
 > **Historical audit with later remediation.** Sections that cite

@@ -133,8 +133,6 @@ export interface Landmark {
   name_zh: string;
   lat: number;
   lon: number;
-  drive_min: number;
-  drive_km: number;
   desc_en: string;
   desc_zh: string;
   osm: string;

@@ -1,3 +1,5 @@
+> Historical record. This document describes the repository at the date shown below. See the root README for the current application behavior.
+
 # Historical Current-State Audit (2026-07-29)
 
 > **Historical snapshot, not current architecture.** This audit describes the

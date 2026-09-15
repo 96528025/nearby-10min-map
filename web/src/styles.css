@@ -733,7 +733,7 @@ input {
     bottom: 24px;
     left: 10px;
     width: auto;
-    max-height: 185px;
+    max-height: 255px;
     padding: 10px 11px;
   }
 
@@ -752,7 +752,7 @@ input {
   }
 
   .map-legend__key {
-    display: none;
+    display: grid;
   }
 
   .area-map .leaflet-control-attribution {
@@ -770,4 +770,8 @@ input {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+@media (max-width: 600px) {
+  .area-stats dd { white-space: normal; overflow: visible; }
 }
