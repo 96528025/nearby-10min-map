@@ -23,7 +23,7 @@ The screenshot shows the bundled first view captured from the application. A new
 | Evidence-driven design | A preregistered five-location benchmark rejected the previous equal-area circle | [Plan](reports/accuracy/BENCHMARK_PLAN.md), [recorded run](reports/accuracy/runs/20260729T082833Z_cfge03df09d_pland796c05b/report.md) |
 | Delivery | React bundle and Python API in one non-root container; CI checks backend, frontend, and browser workflows | [Dockerfile](Dockerfile), [CI](.github/workflows/ci.yml), [Render configuration](render.yaml) |
 
-The driving boundary is an estimate from Valhalla's free-flow routing model. It does not incorporate live/historical traffic or establish real-world arrival times. The public demo uses a free Render service, so live searches can require a cold start; the committed startup map remains available without computing a new area.
+The driving boundary is an estimate from Valhalla's free-flow routing model. It does not incorporate live/historical traffic or establish real-world arrival times. The committed Render configuration selects the free plan, so live searches can require a cold start; the committed startup map remains available without computing a new area.
 
 ## How a search works
 
@@ -82,7 +82,7 @@ An earlier version replaced the routed boundary with a circle of equal area. A b
 
 Macro averages weight each location equally; micro rates pool facility counts. The result motivated preserving Valhalla's actual Polygon/MultiPolygon, all components and holes, throughout the runtime and bundled-data paths.
 
-The benchmark plan and configuration are hashed into the results, with immutable run directories and a preflight manifest. The run of record completed using 161 cache hits and zero external requests. It is a recorded experiment, not a benchmark rerun on every app deployment.
+The benchmark plan and configuration are hashed into the results, with dated run directories and a preflight manifest. The run of record completed using 161 cache hits and zero external requests. It is a recorded experiment, not a benchmark rerun on every app deployment.
 
 **Interpretation boundaries:** comparison is against a routing model, not observed driving times. The true isochrone's zero error against itself is definitional. A component/hole parsing defect was found during the work but was not triggered by the five sampled geometries. The same run also records strong origin-snap sensitivity at some locations; those site-specific diagnostics do not establish a general travel-time accuracy claim.
 
