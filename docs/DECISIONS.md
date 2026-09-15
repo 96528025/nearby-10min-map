@@ -405,7 +405,7 @@ round exists to eliminate.
   every run's `provenance.reproducibility_note`. POI-level rates **are** fully
   recomputable from the committed `poi_universe.json`.
 - The ~490 MB raw response cache remains gitignored. Committing it would make
-  the geometry independently recomputable at a size no portfolio repository
+  the geometry independently recomputable at a size no application repository
   should carry; a targeted alternative (committing only the five isochrone
   responses, a few hundred KB) is the right Run 2 fix.
 
