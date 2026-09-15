@@ -223,13 +223,13 @@ function noticeForWorkflow(
       if (workflow.pollFailureCount > 0) {
         return {
           tone: "warning",
-          message: `The OSM map remains available. An enrichment update failed (${workflow.pollFailureCount}/${MAX_CONSECUTIVE_POLL_FAILURES}); retrying automatically…`,
+          message: `The current map remains available. An enrichment update failed (${workflow.pollFailureCount}/${MAX_CONSECUTIVE_POLL_FAILURES}); retrying automatically…`,
         };
       }
       return {
         tone: "loading",
         message:
-          "OSM facilities are visible now. Overture enrichment is still running…",
+          "Map boundary is ready. Overture enrichment is still running…",
       };
     case "complete":
       return {
