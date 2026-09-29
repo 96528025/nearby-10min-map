@@ -47,7 +47,7 @@ flowchart TD
 ```
 
 1. **Search and confirm.** The browser geocodes only on submission. Query text is NFKC-normalized, whitespace-collapsed, and case-folded; the cache key also includes map bias. Identical in-flight geocode misses share work, and distinct fetches start at least one second apart. The pipeline queries Nominatim and then Photon and combines usable candidates. The user chooses the destination explicitly.
-2. **Compute the boundary.** `/api/area` uses coordinates rounded to four decimals as its file-cache key. On a miss, it tries to locate a nearby road segment accepted by its road-class filter, including outward probes in 500 m rings up to 2 km. If no suitable snap is available, it keeps the requested point. Valhalla returns an `auto` ten-minute isochrone with `denoise=0.3`.
+2. **Compute the boundary.** `/api/area` uses coordinates rounded to four decimals as its file-cache key. Identical in-flight cache misses share one phase-one computation per process. On a miss, it tries to locate a nearby road segment accepted by its road-class filter, including outward probes in 500 m rings up to 2 km. The road-class filter does not independently verify public access. If no suitable snap is available, it keeps the requested point. Valhalla returns an `auto` ten-minute isochrone with `denoise=0.3`.
 3. **Return initial facilities.** Overpass supplies named OSM facilities over the full boundary bounding box. Shared geometry predicates filter them into the actual polygon rather than the bounding box. The response contains both geometry and facilities, so display and inclusion use the same boundary.
 4. **Enrich asynchronously.** A background thread downloads and merges Overture Places, applies category mapping, a confidence floor of `0.6`, spatial filtering, and heuristic deduplication. The result is written using a temporary file and atomic replacement. Only one enrichment flight per area cache key runs in a given process, with at most two running at once by default.
 5. **Poll to a terminal state.** The UI keeps the initial map visible while checking the same endpoint. If a process disappeared during enrichment, a later request can restart work from its cached intermediate result.
@@ -91,6 +91,8 @@ The benchmark plan and configuration are hashed into the results, with dated run
 ## Bundled first view
 
 The app opens with committed Apple Park data from [`map/data`](map/data): a recorded Valhalla response, its approximately 25.76 km² polygon, 921 facilities across eight categories, and six curated landmarks. The facility snapshot was rebuilt offline from the benchmark's frozen universe and records its provenance. The bundled origin is disclosed as unsnapped; it need not match a new live snapped search.
+
+Landmark markers omit per-location driving times and distances because their original routing records are unavailable. The facilities snapshot records Overture Places 2026-07-22.0 and an offline rebuild on September 2, 2026; live enrichment is separately configured for 2026-08-19.0. See [NOTICE](NOTICE) and the [snapshot metadata](map/data/facilities.json).
 
 Startup data is served from `/data/*.json` without geocoding or routing calls. OpenStreetMap raster tiles still require network access.
 
@@ -202,15 +204,3 @@ GitHub Actions runs Python 3.11 and Node 24 jobs on pushes and pull requests. Th
 OpenStreetMap supplies raster tiles and Overpass facilities; Nominatim and Photon provide geocoding; the public Valhalla service supplies road snapping and isochrones; optional Overture Maps/Foursquare-derived Places data enriches facilities. Responses and the UI carry source/processing attribution.
 
 Application code: [MIT](LICENSE). OpenStreetMap data: [ODbL attribution](https://www.openstreetmap.org/copyright). Overture/Foursquare notices and the applicable Apache-2.0 text are included in [NOTICE](NOTICE) and [LICENSES/Apache-2.0.txt](LICENSES/Apache-2.0.txt).
-
-## Request limits and bundled data
-
-Identical area requests that miss the cache share one phase-one computation per process. Background Overture enrichment is limited to one task per area key and at most `MAX_CONCURRENT_ENRICHMENTS` tasks per process, with a default of 2.
-
-An area without a free enrichment slot remains `enriching`. A later request can start its enrichment after a slot becomes available; there is no durable queue or guarantee of fair scheduling. Coordination is local to one process, and cached files have no TTL.
-
-The bundled view contains six curated landmark markers. Per-landmark driving times and route distances are omitted because their original routing records are unavailable. The markers do not establish a verified point-to-point travel time.
-
-The configured live enrichment release is Overture Places 2026-08-19.0. The committed facilities snapshot records release 2026-07-22.0 and was rebuilt offline on September 2, 2026, from the benchmark's frozen POI universe. These are separate data paths; the bundled snapshot was not generated from the configured live release. See map/data/facilities.json for its recorded provenance.
-
-The pipeline searches for a nearby road segment accepted by its road-class filter, using outward probes when needed. That filter is not an independent verification of public access to the road. If no suitable snap is found, the requested point is retained for the routing request.

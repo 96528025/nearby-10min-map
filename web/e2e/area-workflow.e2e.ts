@@ -150,7 +150,7 @@ async function runAreaScenario(
 
   await expect(page.locator("[data-workflow-state]"))
     .toHaveAttribute("data-workflow-state", "enriching");
-  await expect(page.getByText(/OSM facilities are visible now/)).toBeVisible();
+  await expect(page.getByText(/Map boundary is ready/)).toBeVisible();
 
   const terminalDomState = terminalStatus === "complete" ? "complete" : "osmOnly";
   await expect(page.locator("[data-workflow-state]"))
